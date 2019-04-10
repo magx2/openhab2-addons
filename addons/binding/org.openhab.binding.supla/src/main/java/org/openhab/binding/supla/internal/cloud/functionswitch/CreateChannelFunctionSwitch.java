@@ -105,7 +105,7 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onOpeningSensorDoor() {
-        return emptyList();
+        return createSwitchChannel();
     }
 
     @Override
