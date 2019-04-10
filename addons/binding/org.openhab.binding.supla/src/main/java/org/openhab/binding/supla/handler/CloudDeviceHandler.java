@@ -170,7 +170,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                                                    .stream()
                                                    .filter(channel -> !channel.isHidden())
                                                    .map(channel -> new CreateChannelFunctionSwitch(channel, thing.getUID()))
-                                                   .map(s -> DISPATCHER.dispatch(s.getChannel().getFunction().getName(), s))
+                                                   .map(s -> DISPATCHER.dispatch(s.getChannel(), s))
                                                    .flatMap(List::stream)
                                                    .collect(Collectors.toList());
             updateChannels(channels);
@@ -341,7 +341,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     private Optional<State> findState(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         FindStateFunctionSwitch aSwitch = new FindStateFunctionSwitch(channel);
-        return ChannelFunctionDispatcher.DISPATCHER.dispatch(channel.getFunction().getName(), aSwitch);
+        return ChannelFunctionDispatcher.DISPATCHER.dispatch(channel, aSwitch);
     }
 
     void refresh() {

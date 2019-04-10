@@ -1,10 +1,17 @@
 package org.openhab.binding.supla.internal.cloud;
 
+import pl.grzeslowski.jsupla.api.generated.model.Channel;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames;
 
+@SuppressWarnings("PackageAccessibility")
 public class ChannelFunctionDispatcher {
     public static final ChannelFunctionDispatcher DISPATCHER = new ChannelFunctionDispatcher();
 
+    public <T> T dispatch(Channel channel, FunctionSwitch<T> functionSwitch) {
+        return dispatch(channel.getFunction().getName(), functionSwitch);
+    }
+
+    @SuppressWarnings("WeakerAccess")
     public <T> T dispatch(ChannelFunctionEnumNames function, FunctionSwitch<T> functionSwitch) {
         switch (function) {
             case NONE:
