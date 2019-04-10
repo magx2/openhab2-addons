@@ -1,0 +1,131 @@
+{
+  "id": 7036,
+  "channelNumber": 1,
+  "caption": "Czujnik pe\u0142nego zamkni\u0119cia bramy",
+  "type": {
+	"id": 1000,
+	"name": "SENSORNO",
+	"caption": "Sensor (normal open)",
+	"output": false
+  },
+  "function": {
+	"id": 70,
+	"name": "OPENINGSENSOR_GARAGEDOOR",
+	"caption": "Garage door opening sensor",
+	"possibleActions": [],
+	"possibleVisualStates": [
+	  "opened",
+	  "closed"
+	],
+	"maxAlternativeIconIndex": 0
+  },
+  "param1": 7035,
+  "param2": 0,
+  "param3": 0,
+  "textParam1": null,
+  "textParam2": null,
+  "textParam3": null,
+  "altIcon": 0,
+  "hidden": false,
+  "flags": 0,
+  "inheritedLocation": true,
+  "supportedFunctions": [
+	{
+	  "id": 50,
+	  "name": "OPENINGSENSOR_GATEWAY",
+	  "caption": "Gateway opening sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 60,
+	  "name": "OPENINGSENSOR_GATE",
+	  "caption": "Gate opening sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 2
+	},
+	{
+	  "id": 70,
+	  "name": "OPENINGSENSOR_GARAGEDOOR",
+	  "caption": "Garage door opening sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 100,
+	  "name": "OPENINGSENSOR_DOOR",
+	  "caption": "Door opening sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 80,
+	  "name": "NOLIQUIDSENSOR",
+	  "caption": "No liquid sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"empty",
+		"full"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 120,
+	  "name": "OPENINGSENSOR_ROLLERSHUTTER",
+	  "caption": "Roller shutter opening sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"revealed",
+		"shut"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 230,
+	  "name": "OPENINGSENSOR_WINDOW",
+	  "caption": "Window opening sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 240,
+	  "name": "MAILSENSOR",
+	  "caption": "Mail sensor",
+	  "possibleActions": [],
+	  "possibleVisualStates": [
+		"empty",
+		"full"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	}
+  ],
+  "iodeviceId": 2832,
+  "locationId": 2520,
+  "functionId": 70,
+  "userIconId": null,
+  "typeId": 1000,
+  "state": {
+	"connected": true,
+	"hi": true
+  }
+}

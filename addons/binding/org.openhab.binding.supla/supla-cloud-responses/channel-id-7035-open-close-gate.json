@@ -1,0 +1,159 @@
+{
+  "id": 7035,
+  "channelNumber": 0,
+  "caption": "Brama",
+  "type": {
+	"id": 2900,
+	"name": "RELAY",
+	"caption": "Relay",
+	"output": true
+  },
+  "function": {
+	"id": 30,
+	"name": "CONTROLLINGTHEGARAGEDOOR",
+	"caption": "Garage door operation",
+	"possibleActions": [
+	  {
+		"id": 10,
+		"name": "OPEN",
+		"nameSlug": "open",
+		"caption": "Open"
+	  },
+	  {
+		"id": 20,
+		"name": "CLOSE",
+		"nameSlug": "close",
+		"caption": "Close"
+	  },
+	  {
+		"id": 90,
+		"name": "OPEN_CLOSE",
+		"nameSlug": "open-close",
+		"caption": "Open \/ close"
+	  }
+	],
+	"possibleVisualStates": [
+	  "opened",
+	  "closed"
+	],
+	"maxAlternativeIconIndex": 0
+  },
+  "param1": 500,
+  "param2": 7036,
+  "param3": 0,
+  "textParam1": null,
+  "textParam2": null,
+  "textParam3": null,
+  "altIcon": 0,
+  "hidden": false,
+  "flags": 0,
+  "inheritedLocation": true,
+  "supportedFunctions": [
+	{
+	  "id": 10,
+	  "name": "CONTROLLINGTHEGATEWAYLOCK",
+	  "caption": "Gateway lock operation",
+	  "possibleActions": [
+		{
+		  "id": 10,
+		  "name": "OPEN",
+		  "nameSlug": "open",
+		  "caption": "Open"
+		}
+	  ],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 20,
+	  "name": "CONTROLLINGTHEGATE",
+	  "caption": "Gate operation",
+	  "possibleActions": [
+		{
+		  "id": 10,
+		  "name": "OPEN",
+		  "nameSlug": "open",
+		  "caption": "Open"
+		},
+		{
+		  "id": 20,
+		  "name": "CLOSE",
+		  "nameSlug": "close",
+		  "caption": "Close"
+		},
+		{
+		  "id": 90,
+		  "name": "OPEN_CLOSE",
+		  "nameSlug": "open-close",
+		  "caption": "Open \/ close"
+		}
+	  ],
+	  "possibleVisualStates": [
+		"opened",
+		"closed",
+		"partially_closed"
+	  ],
+	  "maxAlternativeIconIndex": 2
+	},
+	{
+	  "id": 30,
+	  "name": "CONTROLLINGTHEGARAGEDOOR",
+	  "caption": "Garage door operation",
+	  "possibleActions": [
+		{
+		  "id": 10,
+		  "name": "OPEN",
+		  "nameSlug": "open",
+		  "caption": "Open"
+		},
+		{
+		  "id": 20,
+		  "name": "CLOSE",
+		  "nameSlug": "close",
+		  "caption": "Close"
+		},
+		{
+		  "id": 90,
+		  "name": "OPEN_CLOSE",
+		  "nameSlug": "open-close",
+		  "caption": "Open \/ close"
+		}
+	  ],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	},
+	{
+	  "id": 90,
+	  "name": "CONTROLLINGTHEDOORLOCK",
+	  "caption": "Door lock operation",
+	  "possibleActions": [
+		{
+		  "id": 10,
+		  "name": "OPEN",
+		  "nameSlug": "open",
+		  "caption": "Open"
+		}
+	  ],
+	  "possibleVisualStates": [
+		"opened",
+		"closed"
+	  ],
+	  "maxAlternativeIconIndex": 0
+	}
+  ],
+  "iodeviceId": 2832,
+  "locationId": 2520,
+  "functionId": 30,
+  "userIconId": null,
+  "typeId": 2900,
+  "state": {
+	"connected": true,
+	"hi": true
+  }
+}
