@@ -74,6 +74,7 @@ import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnu
 public final class CloudDeviceHandler extends AbstractDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class);
     private final Map<ChannelUID, HSBType> ledStates = new HashMap<>();
+    private final FindStateFunctionSwitch findStateFunctionSwitch = new FindStateFunctionSwitch();
     private ApiClient apiClient;
     private ChannelsApi channelsApi;
     private int cloudId;
@@ -169,8 +170,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                                                    .getChannels()
                                                    .stream()
                                                    .filter(channel -> !channel.isHidden())
-                                                   .map(channel -> new CreateChannelFunctionSwitch(channel, thing.getUID()))
-                                                   .map(s -> DISPATCHER.dispatch(s.getChannel(), s))
+                                                   .map(channel -> DISPATCHER.dispatch(channel, new CreateChannelFunctionSwitch(thing.getUID())))
                                                    .flatMap(List::stream)
                                                    .collect(Collectors.toList());
             updateChannels(channels);
@@ -340,8 +340,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     }
 
     private Optional<State> findState(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        FindStateFunctionSwitch aSwitch = new FindStateFunctionSwitch(channel);
-        return ChannelFunctionDispatcher.DISPATCHER.dispatch(channel, aSwitch);
+        return ChannelFunctionDispatcher.DISPATCHER.dispatch(channel, findStateFunctionSwitch);
     }
 
     void refresh() {
