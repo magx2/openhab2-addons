@@ -8,7 +8,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -18,7 +17,9 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.ApiClientFactory;
+import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
+import org.openhab.binding.supla.internal.cloud.functionswitch.FindStateFunctionSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiClient;
@@ -26,12 +27,9 @@ import pl.grzeslowski.jsupla.api.generated.ApiException;
 import pl.grzeslowski.jsupla.api.generated.api.ChannelsApi;
 import pl.grzeslowski.jsupla.api.generated.api.IoDevicesApi;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
-import pl.grzeslowski.jsupla.api.generated.model.ChannelFunction;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum;
-import pl.grzeslowski.jsupla.api.generated.model.ChannelState;
 import pl.grzeslowski.jsupla.api.generated.model.Device;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +42,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 import static org.eclipse.smarthome.core.library.types.UpDownType.UP;
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
@@ -343,58 +338,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     }
 
     private Optional<State> findState(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        final Optional<ChannelState> state = of(channel.getState());
-        final ChannelFunction function = channel.getFunction();
-        boolean param2Present = channel.getParam2() != null && channel.getParam2() > 0;
-
-        switch (function.getName()) {
-            case OPENINGSENSOR_GATEWAY:
-            case OPENINGSENSOR_GATE:
-            case OPENINGSENSOR_GARAGEDOOR:
-            case NOLIQUIDSENSOR:
-            case CONTROLLINGTHEDOORLOCK:
-            case OPENINGSENSOR_DOOR:
-            case OPENINGSENSOR_ROLLERSHUTTER:
-            case OPENINGSENSOR_WINDOW:
-            case MAILSENSOR:
-            case CONTROLLINGTHEGATEWAYLOCK:
-            case CONTROLLINGTHEGATE:
-            case CONTROLLINGTHEGARAGEDOOR:
-                if (param2Present || !channel.getType().isOutput()) {
-                    return state.map(ChannelState::getHi).map(hi -> hi ? ON : OFF);
-                } else {
-                    return empty();
-                }
-            case POWERSWITCH:
-            case STAIRCASETIMER:
-            case LIGHTSWITCH:
-                return state.map(ChannelState::getOn).map(on -> on ? ON : OFF);
-            case DIMMER:
-                return state.map(ChannelState::getBrightness)
-                               .map(b -> b / 100.0)
-                               .map(DecimalType::new);
-            case RGBLIGHTING:
-                return state.map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness()));
-            case DIMMERANDRGBLIGHTING:
-                return state.map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness(), s.getBrightness()));
-            case DEPTHSENSOR:
-                return state.map(ChannelState::getDepth).map(DecimalType::new);
-            case DISTANCESENSOR:
-                return state.map(ChannelState::getDistance).map(DecimalType::new);
-            case CONTROLLINGTHEROLLERSHUTTER:
-                return state.map(ChannelState::getShut).map(PercentType::new);
-            case THERMOMETER:
-                return state.map(s -> findTemperature(s, channel)).map(DecimalType::new);
-            case HUMIDITY:
-                return state.map(s -> findHumidity(s, channel)).map(DecimalType::new);
-            case HUMIDITYANDTEMPERATURE:
-                return state.map(s -> findTemperature(s, channel) + " °C" + findHumidity(s, channel) + "%").map(StringType::new);
-            case NONE:
-                return empty();
-            default:
-                logger.warn("Does not know how to map `{}` to OpenHAB state", channel.getState());
-                return empty();
-        }
+        FindStateFunctionSwitch aSwitch = new FindStateFunctionSwitch(channel);
+        return ChannelFunctionDispatcher.DISPATCHER.dispatch(channel.getFunction().getName(), aSwitch);
     }
 
     void refresh() {
@@ -417,21 +362,6 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         return channelsApi.getChannel(channelId, asList("supportedFunctions", "state"));
     }
 
-    private BigDecimal findTemperature(ChannelState channelState,
-                                       pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return findValueWithAdjustment(channelState.getTemperature(), channel.getParam2());
-    }
 
-    private BigDecimal findHumidity(ChannelState channelState,
-                                    pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return findValueWithAdjustment(channelState.getHumidity(), channel.getParam3());
-    }
 
-    private BigDecimal findValueWithAdjustment(BigDecimal value, Integer adjustment) {
-        return Optional.ofNullable(adjustment)
-                       .map(v -> v / 100)
-                       .map(BigDecimal::new)
-                       .orElse(BigDecimal.ZERO)
-                       .add(value);
-    }
 }
