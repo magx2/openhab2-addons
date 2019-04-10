@@ -305,15 +305,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                                       final boolean firstOrSecond,
                                       final ChannelFunctionActionEnum first,
                                       final ChannelFunctionActionEnum second) throws ApiException {
-        final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
-        final boolean invertedLogic = channel.getParam3() != null && channel.getParam3() > 1;
-        final ChannelFunctionActionEnum action;
-        if (invertedLogic) {
-            action = firstOrSecond ? second : first;
-        } else {
-            action = firstOrSecond ? first : second;
-        }
-        logger.trace("Executing 0/1 command `{}` inverted={}", action, invertedLogic);
+        final ChannelFunctionActionEnum action = firstOrSecond ? first : second;
+        logger.trace("Executing 0/1 command `{}`", action);
         channelsApi.executeAction(new ChannelExecuteActionRequest().action(action), channelId);
     }
 
