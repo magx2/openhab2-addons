@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.ApiClientFactory;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
+import org.openhab.binding.supla.internal.cloud.functionswitch.CreateChannelFunctionSwitch;
 import org.openhab.binding.supla.internal.cloud.functionswitch.FindStateFunctionSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_E
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.NONE;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
-import static org.openhab.binding.supla.internal.cloud.CloudChannelFactory.FACTORY;
+import static org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher.DISPATCHER;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
@@ -168,7 +169,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                                                    .getChannels()
                                                    .stream()
                                                    .filter(channel -> !channel.isHidden())
-                                                   .map(channel -> FACTORY.createChannels(channel, thing.getUID()))
+                                                   .map(channel -> new CreateChannelFunctionSwitch(channel, thing.getUID()))
+                                                   .map(s -> DISPATCHER.dispatch(s.getChannel().getFunction().getName(), s))
                                                    .flatMap(List::stream)
                                                    .collect(Collectors.toList());
             updateChannels(channels);
@@ -361,7 +363,5 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     private pl.grzeslowski.jsupla.api.generated.model.Channel queryForChannel(final int channelId) throws ApiException {
         return channelsApi.getChannel(channelId, asList("supportedFunctions", "state"));
     }
-
-
 
 }
