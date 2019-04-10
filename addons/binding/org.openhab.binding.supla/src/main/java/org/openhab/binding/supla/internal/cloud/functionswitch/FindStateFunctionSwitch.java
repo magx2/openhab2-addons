@@ -14,7 +14,6 @@ import pl.grzeslowski.jsupla.api.generated.model.ChannelState;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
@@ -202,11 +201,11 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
     }
 
     private Optional<State> hiType(Channel channel) {
-        boolean param2Present = channel.getParam2() != null && channel.getParam2() > 0;
-        if (param2Present || !channel.getType().isOutput()) {
-            return of(channel).map(Channel::getState).map(ChannelState::getHi).map(hi -> hi ? ON : OFF);
-        } else {
-            return empty();
-        }
+        boolean invertedLogic = channel.getParam3() != null && channel.getParam3() > 1;
+        return of(channel)
+                       .map(Channel::getState)
+                       .map(ChannelState::getHi)
+                       .map(hi -> invertedLogic ? !hi : hi)
+                       .map(hi -> hi ? ON : OFF);
     }
 }
