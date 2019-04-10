@@ -157,7 +157,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     private boolean checkIfIsEnabled() throws ApiException {
         final Device device = ioDevicesApi.getIoDevice(cloudId, emptyList());
         if (device.isEnabled() == null || !device.isEnabled()) {
-            updateStatus(OFFLINE, NONE, "This device is tuned off in Supla Cloud.");
+            updateStatus(OFFLINE, NONE, "This device is turned off in Supla Cloud.");
             return false;
         } else {
             return true;
