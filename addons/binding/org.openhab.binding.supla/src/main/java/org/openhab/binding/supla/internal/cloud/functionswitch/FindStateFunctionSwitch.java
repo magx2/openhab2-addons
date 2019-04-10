@@ -223,9 +223,14 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
      * https://github.com/SUPLA/supla-cloud/wiki/Channel-Functions-states
      */
     private Optional<State> optionalHiType(Channel channel) {
+        boolean invertedLogic = channel.getParam3() != null && channel.getParam3() > 1;
         boolean param2Present = channel.getParam2() != null && channel.getParam2() > 0;
         if (param2Present || !channel.getType().isOutput()) {
-            return of(channel).map(Channel::getState).map(ChannelState::getHi).map(hi -> hi ? ON : OFF);
+            return of(channel)
+                           .map(Channel::getState)
+                           .map(ChannelState::getHi)
+                           .map(hi -> invertedLogic ? !hi : hi)
+                           .map(hi -> hi ? ON : OFF);
         } else {
             return empty();
         }
