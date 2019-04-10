@@ -31,175 +31,170 @@ import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATU
 @SuppressWarnings("PackageAccessibility")
 public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<List<Channel>> {
     private final Logger logger = LoggerFactory.getLogger(CreateChannelFunctionSwitch.class);
-    private final pl.grzeslowski.jsupla.api.generated.model.Channel channel;
     private final ThingUID thingUID;
 
-    public CreateChannelFunctionSwitch(final pl.grzeslowski.jsupla.api.generated.model.Channel channel, final ThingUID thingUID) {
-        this.channel = requireNonNull(channel);
+    public CreateChannelFunctionSwitch(final ThingUID thingUID) {
         this.thingUID = requireNonNull(thingUID);
     }
 
-    public pl.grzeslowski.jsupla.api.generated.model.Channel getChannel() {
-        return channel;
-    }
-
     @Override
-    public List<Channel> onNone() {
+    public List<Channel> onNone(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         return emptyList();
     }
 
     @Override
-    public List<Channel> onControllingTheGatewayLock() {
-        return createSwitchChannel();
+    public List<Channel> onControllingTheGatewayLock(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onControllingTheGate() {
-        return createSwitchChannel();
+    public List<Channel> onControllingTheGate(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onControllingTheGarageDoor() {
-        return createSwitchChannel();
+    public List<Channel> onControllingTheGarageDoor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onThermometer() {
-        return singletonList(createChannel(TEMPERATURE_CHANNEL_ID, "Number"));
+    public List<Channel> onThermometer(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, TEMPERATURE_CHANNEL_ID, "Number"));
     }
 
     @Override
-    public List<Channel> onHumidity() {
-        return singletonList(createChannel(HUMIDITY_CHANNEL_ID, "Number"));
+    public List<Channel> onHumidity(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, HUMIDITY_CHANNEL_ID, "Number"));
     }
 
     @Override
-    public List<Channel> onHumidityAndTemperature() {
-        return singletonList(createChannel(TEMPERATURE_AND_HUMIDITY_CHANNEL_ID, "String"));
+    public List<Channel> onHumidityAndTemperature(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, TEMPERATURE_AND_HUMIDITY_CHANNEL_ID, "String"));
     }
 
     @Override
-    public List<Channel> onOpeningSensorGateway() {
-        return createSwitchChannel();
+    public List<Channel> onOpeningSensorGateway(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onOpeningSensorGate() {
-        return createSwitchChannel();
+    public List<Channel> onOpeningSensorGate(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onOpeningSensorGarageDoor() {
-        return createSwitchChannel();
+    public List<Channel> onOpeningSensorGarageDoor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onNoLiquidSensor() {
-        return createSwitchChannel();
+    public List<Channel> onNoLiquidSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onControllingTheDoorLock() {
-        return createSwitchChannel();
+    public List<Channel> onControllingTheDoorLock(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onOpeningSensorDoor() {
-        return createSwitchChannel();
+    public List<Channel> onOpeningSensorDoor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onControllingTheRollerShutter() {
-        return singletonList(createChannel(ROLLER_SHUTTER_CHANNEL_ID, "Rollershutter"));
+    public List<Channel> onControllingTheRollerShutter(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, ROLLER_SHUTTER_CHANNEL_ID, "Rollershutter"));
     }
 
     @Override
-    public List<Channel> onOpeningSensorRollerShutter() {
-        return createSwitchChannel();
+    public List<Channel> onOpeningSensorRollerShutter(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onPowerSwitch() {
-        return createSwitchChannel();
+    public List<Channel> onPowerSwitch(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onLightSwitch() {
-        return singletonList(createChannel(LIGHT_CHANNEL_ID, "Switch"));
+    public List<Channel> onLightSwitch(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, LIGHT_CHANNEL_ID, "Switch"));
     }
 
     @Override
-    public List<Channel> onDimmer() {
-        return singletonList(createChannel(DIMMER_CHANNEL_ID, "Dimmer"));
+    public List<Channel> onDimmer(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, DIMMER_CHANNEL_ID, "Dimmer"));
     }
 
     @Override
-    public List<Channel> onRgbLighting() {
-        return singletonList(createChannel(RGB_CHANNEL_ID, "Color"));
+    public List<Channel> onRgbLighting(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, RGB_CHANNEL_ID, "Color"));
     }
 
     @Override
-    public List<Channel> onDimmerAndRgbLightning() {
-        return singletonList(createChannel(RGB_CHANNEL_ID, "Color"));
+    public List<Channel> onDimmerAndRgbLightning(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, RGB_CHANNEL_ID, "Color"));
     }
 
     @Override
-    public List<Channel> onDepthSensor() {
-        return singletonList(createChannel(DECIMAL_CHANNEL_ID, "Number"));
+    public List<Channel> onDepthSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, DECIMAL_CHANNEL_ID, "Number"));
     }
 
     @Override
-    public List<Channel> onDistanceSensor() {
-        return singletonList(createChannel(DECIMAL_CHANNEL_ID, "Number"));
+    public List<Channel> onDistanceSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, DECIMAL_CHANNEL_ID, "Number"));
     }
 
     @Override
-    public List<Channel> onOpeningSensorWindow() {
-        return createSwitchChannel();
+    public List<Channel> onOpeningSensorWindow(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onMailSensor() {
-        return createSwitchChannel();
+    public List<Channel> onMailSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onWindSensor() {
+    public List<Channel> onWindSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         return emptyList();
     }
 
     @Override
-    public List<Channel> onPressureSensor() {
+    public List<Channel> onPressureSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         return emptyList();
     }
 
     @Override
-    public List<Channel> onRainSensor() {
+    public List<Channel> onRainSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         return emptyList();
     }
 
     @Override
-    public List<Channel> onWeightSensor() {
+    public List<Channel> onWeightSensor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         return emptyList();
     }
 
     @Override
-    public List<Channel> onWeatherStation() {
+    public List<Channel> onWeatherStation(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         return emptyList();
     }
 
     @Override
-    public List<Channel> onStaircaseTimer() {
-        return createSwitchChannel();
+    public List<Channel> onStaircaseTimer(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return createSwitchChannel(channel);
     }
 
     @Override
-    public List<Channel> onDefault() {
+    public List<Channel> onDefault(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         logger.warn("Does not know type of this `{}` function", channel.getFunction().getName());
         return emptyList();
     }
 
     private Channel createChannel(
+            final pl.grzeslowski.jsupla.api.generated.model.Channel channel,
             final String id,
             final String acceptedItemType,
             final String channelId) {
@@ -215,15 +210,18 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
         return channelBuilder.build();
     }
 
-    private Channel createChannel(String id, final String acceptedItemType) {
-        return createChannel(id, acceptedItemType, valueOf(channel.getId()));
+    private Channel createChannel(
+            final pl.grzeslowski.jsupla.api.generated.model.Channel channel,
+            final String id,
+            final String acceptedItemType) {
+        return createChannel(channel, id, acceptedItemType, valueOf(channel.getId()));
     }
 
-    private List<Channel> createSwitchChannel() {
+    private List<Channel> createSwitchChannel(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
         if (channel.getType().isOutput()) {
-            return singletonList(createChannel(SWITCH_CHANNEL_ID, "Switch"));
+            return singletonList(createChannel(channel, SWITCH_CHANNEL_ID, "Switch"));
         } else {
-            return singletonList(createChannel(SWITCH_CHANNEL_RO_ID, "Switch"));
+            return singletonList(createChannel(channel, SWITCH_CHANNEL_RO_ID, "Switch"));
         }
     }
 
