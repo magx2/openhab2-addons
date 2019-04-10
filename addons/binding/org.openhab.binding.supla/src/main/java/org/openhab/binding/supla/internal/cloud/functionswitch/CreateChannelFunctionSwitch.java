@@ -80,27 +80,27 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onOpeningSensorGateway() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
     public List<Channel> onOpeningSensorGate() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
     public List<Channel> onOpeningSensorGarageDoor() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
     public List<Channel> onNoLiquidSensor() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
     public List<Channel> onControllingTheDoorLock() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
@@ -115,12 +115,12 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onOpeningSensorRollerShutter() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
     public List<Channel> onPowerSwitch() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
@@ -155,12 +155,12 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onOpeningSensorWindow() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
     public List<Channel> onMailSensor() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
@@ -190,7 +190,7 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onStaircaseTimer() {
-        return createSwichChannel();
+        return createSwitchChannel();
     }
 
     @Override
@@ -220,20 +220,6 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
     }
 
     private List<Channel> createSwitchChannel() {
-        boolean param2Present = channel.getParam2() != null && channel.getParam2() > 0;
-        if (param2Present) {
-            if (channel.getType().isOutput()) {
-                return singletonList(createChannel(SWITCH_CHANNEL_ID, "Switch"));
-            } else {
-                return singletonList(createChannel(SWITCH_CHANNEL_RO_ID, "Switch"));
-            }
-        } else {
-            logger.debug("Channel with function `{}` has not param2! {}", channel.getFunction().getName(), channel);
-            return emptyList();
-        }
-    }
-
-    private List<Channel> createSwichChannel() {
         if (channel.getType().isOutput()) {
             return singletonList(createChannel(SWITCH_CHANNEL_ID, "Switch"));
         } else {
