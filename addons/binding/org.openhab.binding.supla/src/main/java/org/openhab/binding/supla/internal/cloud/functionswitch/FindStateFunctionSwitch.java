@@ -14,6 +14,7 @@ import pl.grzeslowski.jsupla.api.generated.model.ChannelState;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
@@ -34,12 +35,12 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
 
     @Override
     public Optional<State> onControllingTheGate(Channel channel) {
-        return hiType(channel);
+        return optionalHiType(channel);
     }
 
     @Override
     public Optional<State> onControllingTheGarageDoor(Channel channel) {
-        return hiType(channel);
+        return optionalHiType(channel);
     }
 
     @Override
@@ -207,5 +208,26 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
                        .map(ChannelState::getHi)
                        .map(hi -> invertedLogic ? !hi : hi)
                        .map(hi -> hi ? ON : OFF);
+    }
+
+    /**
+     * For `CONTROLLINGTHEGATE` and `CONTROLLINGTHEGARAGEDOOR` `hi` exists only when `param2` is set.
+     * <p>
+     * From doc:
+     * <p>
+     * "hi is either true or false depending on paired opening sensor state; the hi value is provided only if the
+     * channel has param2 set (i.e. has opening sensor chosen); partial_hi is either true or false depending on paired
+     * secondary opening sensor state; the partial_hi value is provided only if the channel has param3 set (i.e. has
+     * secondary opening sensor chosen)"
+     * <p>
+     * https://github.com/SUPLA/supla-cloud/wiki/Channel-Functions-states
+     */
+    private Optional<State> optionalHiType(Channel channel) {
+        boolean param2Present = channel.getParam2() != null && channel.getParam2() > 0;
+        if (param2Present || !channel.getType().isOutput()) {
+            return of(channel).map(Channel::getState).map(ChannelState::getHi).map(hi -> hi ? ON : OFF);
+        } else {
+            return empty();
+        }
     }
 }
