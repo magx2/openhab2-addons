@@ -129,12 +129,12 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onRgbLighting(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return singletonList(createChannel(channel, RGB_CHANNEL_ID, "Color"));
+        return createLedChannels(channel);
     }
 
     @Override
     public List<Channel> onDimmerAndRgbLightning(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return singletonList(createChannel(channel, RGB_CHANNEL_ID, "Color"));
+        return createLedChannels(channel);
     }
 
     @Override
@@ -225,4 +225,7 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
         }
     }
 
+    private List<Channel> createLedChannels(final pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, RGB_CHANNEL_ID, "Color"));
+    }
 }
