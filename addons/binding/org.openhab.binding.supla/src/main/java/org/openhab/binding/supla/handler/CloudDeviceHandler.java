@@ -276,21 +276,18 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     }
 
     private void sendNewLedValue(final ChannelUID channelUID, int channelId, final HSBType hsbType) throws ApiException {
-        final String rgb = HsbTypeConverter.INSTANCE.convert(hsbType);
-        final int brightness = hsbType.getBrightness().intValue();
-        final int colorBrightness;
-        if (brightness > 0) {
-            colorBrightness = hsbType.getSaturation().intValue();
-        } else {
-            logger.trace("Set colorBrightness to 0% because brightness is 0%");
-            colorBrightness = 0;
-        }
-        logger.trace("Changing RGB to {}, color brightness {}%, brightness {}%", rgb, colorBrightness, brightness);
+        final int colorBrightness = hsbType.getBrightness().intValue();
+        final HSBType hsbToConvertToRgb = new HSBType(
+                hsbType.getHue(),
+                hsbType.getSaturation(),
+                PercentType.HUNDRED
+        );
+        final String rgb = HsbTypeConverter.INSTANCE.convert(hsbToConvertToRgb);
+        logger.trace("Changing RGB to {}, color brightness {}%, brightness {}%", rgb, colorBrightness, "N/A");
         final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest()
                                                            .action(SET_RGBW_PARAMETERS)
                                                            .color(rgb)
-                                                           .colorBrightness(colorBrightness)
-                                                           .brightness(brightness);
+                                                           .colorBrightness(colorBrightness);
         channelsApi.executeAction(action, channelId);
         ledStates.put(channelUID, hsbType);
     }
