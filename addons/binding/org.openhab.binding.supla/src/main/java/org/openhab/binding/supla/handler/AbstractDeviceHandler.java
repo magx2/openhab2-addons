@@ -64,8 +64,8 @@ abstract class AbstractDeviceHandler extends BaseThingHandler {
                         command, command.getClass().getSimpleName(), channelUID);
             }
         } catch (Exception ex) {
-            logger.error("Error occurred while handling command `{}` on channel `{}`!",
-                    command, channelUID, ex);
+            logger.error("Error occurred while handling command `{}` ({}) on channel `{}`!",
+                    command, command.getClass().getSimpleName(), channelUID, ex);
         }
     }
 

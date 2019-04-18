@@ -10,6 +10,7 @@ import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -134,7 +135,11 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onDimmerAndRgbLightning(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return createLedChannels(channel);
+        final List<Channel> ledChannels = createLedChannels(channel);
+        final List<Channel> channels = new ArrayList<>(ledChannels);
+        final Channel brightnessChannel = createChannel(DIMMER_CHANNEL_ID, "Dimmer", channel.getId() + "_brightness", "Brightness");
+        channels.add(brightnessChannel);
+        return channels;
     }
 
     @Override
@@ -194,18 +199,18 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
     }
 
     private Channel createChannel(
-            final pl.grzeslowski.jsupla.api.generated.model.Channel channel,
             final String id,
             final String acceptedItemType,
-            final String channelId) {
+            final String channelId,
+            final String caption) {
         final ChannelUID channelUid = new ChannelUID(thingUID, channelId);
         final ChannelTypeUID channelTypeUID = new ChannelTypeUID(SuplaBindingConstants.BINDING_ID, id);
 
         final ChannelBuilder channelBuilder = ChannelBuilder.create(channelUid, acceptedItemType)
                                                       .withType(channelTypeUID);
 
-        if (!isNullOrEmpty(channel.getCaption())) {
-            channelBuilder.withLabel(channel.getCaption());
+        if (!isNullOrEmpty(caption)) {
+            channelBuilder.withLabel(caption);
         }
         return channelBuilder.build();
     }
@@ -214,7 +219,7 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
             final pl.grzeslowski.jsupla.api.generated.model.Channel channel,
             final String id,
             final String acceptedItemType) {
-        return createChannel(channel, id, acceptedItemType, valueOf(channel.getId()));
+        return createChannel(id, acceptedItemType, valueOf(channel.getId()), channel.getCaption());
     }
 
     private List<Channel> createSwitchChannel(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {

@@ -93,7 +93,7 @@
 	</channel-type>
 
 	<channel-type id="dimmer-channel">
-		<item-type>channel</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 	</channel-type>
 

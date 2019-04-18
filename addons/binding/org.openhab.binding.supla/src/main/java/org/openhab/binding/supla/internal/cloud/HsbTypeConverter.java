@@ -25,7 +25,7 @@ public final class HsbTypeConverter {
         return addZeroPrefix ? "0" + hex : hex;
     }
 
-    public HSBType toHsbType(String hex, int saturation, int brightness) {
+    public HSBType toHsbType(String hex, int value) {
         if (!hex.startsWith(HEX_PREFIX)) {
             throw new IllegalArgumentException("Hex should start with `" + HEX_PREFIX + "`. Was " + hex);
         }
@@ -39,12 +39,8 @@ public final class HsbTypeConverter {
                 Integer.parseInt(green, 16),
                 Integer.parseInt(blue, 16));
         return new HSBType(
-                hsbType.getHue(), 
-                new PercentType(saturation), 
-                new PercentType(brightness));
-    }
-
-    public HSBType toHsbType(String hex, int saturation) {
-        return toHsbType(hex, saturation, 100);
+                hsbType.getHue(),
+                hsbType.getSaturation(),
+                new PercentType(value));
     }
 }

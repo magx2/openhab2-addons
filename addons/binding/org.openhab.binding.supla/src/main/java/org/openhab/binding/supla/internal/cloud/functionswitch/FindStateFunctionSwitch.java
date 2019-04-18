@@ -1,11 +1,16 @@
 package org.openhab.binding.supla.internal.cloud.functionswitch;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
+import org.openhab.binding.supla.internal.cloud.ChannelIfoParser;
+import org.openhab.binding.supla.internal.cloud.ChannelInfo;
 import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
+import org.openhab.binding.supla.internal.cloud.LedCommandExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.model.Channel;
@@ -20,41 +25,48 @@ import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 
 @SuppressWarnings("PackageAccessibility")
-public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<Optional<State>> {
+public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<Optional<? extends State>> {
     private final Logger logger = LoggerFactory.getLogger(FindStateFunctionSwitch.class);
+    private final LedCommandExecutor ledCommandExecutor;
+    private final ChannelUID channelUID;
+
+    public FindStateFunctionSwitch(LedCommandExecutor ledCommandExecutor, final ChannelUID channelUID) {
+        this.ledCommandExecutor = ledCommandExecutor;
+        this.channelUID = channelUID;
+    }
 
     @Override
-    public Optional<State> onNone(Channel channel) {
+    public Optional<? extends State> onNone(Channel channel) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<State> onControllingTheGatewayLock(Channel channel) {
+    public Optional<? extends State> onControllingTheGatewayLock(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onControllingTheGate(Channel channel) {
+    public Optional<? extends State> onControllingTheGate(Channel channel) {
         return optionalHiType(channel);
     }
 
     @Override
-    public Optional<State> onControllingTheGarageDoor(Channel channel) {
+    public Optional<? extends State> onControllingTheGarageDoor(Channel channel) {
         return optionalHiType(channel);
     }
 
     @Override
-    public Optional<State> onThermometer(Channel channel) {
+    public Optional<? extends State> onThermometer(Channel channel) {
         return of(channel).map(Channel::getState).map(s -> findTemperature(s, channel.getParam2())).map(DecimalType::new);
     }
 
     @Override
-    public Optional<State> onHumidity(Channel channel) {
+    public Optional<? extends State> onHumidity(Channel channel) {
         return of(channel).map(Channel::getState).map(channelState -> findHumidity(channelState, channel.getParam3())).map(DecimalType::new);
     }
 
     @Override
-    public Optional<State> onHumidityAndTemperature(Channel channel) {
+    public Optional<? extends State> onHumidityAndTemperature(Channel channel) {
         return of(channel).map(Channel::getState).map(s -> findTemperature(s, channel.getParam2()) + " °C" + findHumidity(s, channel.getParam3()) + "%").map(StringType::new);
     }
 
@@ -75,133 +87,151 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
     }
 
     @Override
-    public Optional<State> onOpeningSensorGateway(Channel channel) {
+    public Optional<? extends State> onOpeningSensorGateway(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onOpeningSensorGate(Channel channel) {
+    public Optional<? extends State> onOpeningSensorGate(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onOpeningSensorGarageDoor(Channel channel) {
+    public Optional<? extends State> onOpeningSensorGarageDoor(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onNoLiquidSensor(Channel channel) {
+    public Optional<? extends State> onNoLiquidSensor(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onControllingTheDoorLock(Channel channel) {
+    public Optional<? extends State> onControllingTheDoorLock(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onOpeningSensorDoor(Channel channel) {
+    public Optional<? extends State> onOpeningSensorDoor(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onControllingTheRollerShutter(Channel channel) {
+    public Optional<? extends State> onControllingTheRollerShutter(Channel channel) {
         return of(channel).map(Channel::getState).map(ChannelState::getShut).map(PercentType::new);
     }
 
     @Override
-    public Optional<State> onOpeningSensorRollerShutter(Channel channel) {
+    public Optional<? extends State> onOpeningSensorRollerShutter(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onPowerSwitch(Channel channel) {
+    public Optional<? extends State> onPowerSwitch(Channel channel) {
         return onOffType(channel);
     }
 
     @Override
-    public Optional<State> onLightSwitch(Channel channel) {
+    public Optional<? extends State> onLightSwitch(Channel channel) {
         return onOffType(channel);
     }
 
-    private Optional<State> onOffType(Channel channel) {
+    private Optional<? extends State> onOffType(Channel channel) {
         return of(channel).map(Channel::getState).map(ChannelState::getOn).map(on -> on ? ON : OFF);
     }
 
     @Override
-    public Optional<State> onDimmer(Channel channel) {
+    public Optional<? extends State> onDimmer(Channel channel) {
         return of(channel).map(Channel::getState).map(ChannelState::getBrightness)
                        .map(b -> b / 100.0)
                        .map(DecimalType::new);
     }
 
     @Override
-    public Optional<State> onRgbLighting(Channel channel) {
-        return of(channel).map(Channel::getState).map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness()));
+    public Optional<? extends State> onRgbLighting(Channel channel) {
+        final Optional<HSBType> state = of(channel)
+                                                .map(Channel::getState)
+                                                .map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness()));
+        state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+        return state;
     }
 
     @Override
-    public Optional<State> onDimmerAndRgbLightning(Channel channel) {
-        return of(channel).map(Channel::getState).map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness(), s.getBrightness()));
+    public Optional<? extends State> onDimmerAndRgbLightning(Channel channel) {
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        if (channelInfo.getAdditionalChannelType() == null) {
+            final Optional<HSBType> state = of(channel)
+                                                    .map(Channel::getState)
+                                                    .map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness()));
+            state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+            return state;
+        } else {
+            final Optional<PercentType> state = of(channel)
+                                                        .map(Channel::getState)
+                                                        .map(ChannelState::getBrightness)
+                                                        .map(PercentType::new);
+            state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+            return state;
+        }
     }
 
     @Override
-    public Optional<State> onDepthSensor(Channel channel) {
+    public Optional<? extends State> onDepthSensor(Channel channel) {
         return of(channel).map(Channel::getState).map(ChannelState::getDepth).map(DecimalType::new);
     }
 
     @Override
-    public Optional<State> onDistanceSensor(Channel channel) {
+    public Optional<? extends State> onDistanceSensor(Channel channel) {
         return of(channel).map(Channel::getState).map(ChannelState::getDistance).map(DecimalType::new);
     }
 
     @Override
-    public Optional<State> onOpeningSensorWindow(Channel channel) {
+    public Optional<? extends State> onOpeningSensorWindow(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onMailSensor(Channel channel) {
+    public Optional<? extends State> onMailSensor(Channel channel) {
         return hiType(channel);
     }
 
     @Override
-    public Optional<State> onWindSensor(Channel channel) {
+    public Optional<? extends State> onWindSensor(Channel channel) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<State> onPressureSensor(Channel channel) {
+    public Optional<? extends State> onPressureSensor(Channel channel) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<State> onRainSensor(Channel channel) {
+    public Optional<? extends State> onRainSensor(Channel channel) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<State> onWeightSensor(Channel channel) {
+    public Optional<? extends State> onWeightSensor(Channel channel) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<State> onWeatherStation(Channel channel) {
+    public Optional<? extends State> onWeatherStation(Channel channel) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<State> onStaircaseTimer(Channel channel) {
+    public Optional<? extends State> onStaircaseTimer(Channel channel) {
         return onOffType(channel);
     }
 
     @Override
-    public Optional<State> onDefault(Channel channel) {
+    public Optional<? extends State> onDefault(Channel channel) {
         logger.warn("Does not know how to map `{}` to OpenHAB state", channel.getState());
         return Optional.empty();
     }
 
-    private Optional<State> hiType(Channel channel) {
+    private Optional<? extends State> hiType(Channel channel) {
         boolean invertedLogic = channel.getParam3() != null && channel.getParam3() > 0;
         return of(channel)
                        .map(Channel::getState)
@@ -222,7 +252,7 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
      * <p>
      * https://github.com/SUPLA/supla-cloud/wiki/Channel-Functions-states
      */
-    private Optional<State> optionalHiType(Channel channel) {
+    private Optional<? extends State> optionalHiType(Channel channel) {
         boolean invertedLogic = channel.getParam3() != null && channel.getParam3() > 0;
         boolean param2Present = channel.getParam2() != null && channel.getParam2() > 0;
         if (param2Present || !channel.getType().isOutput()) {

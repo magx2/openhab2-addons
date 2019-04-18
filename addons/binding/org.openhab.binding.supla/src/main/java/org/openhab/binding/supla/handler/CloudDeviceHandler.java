@@ -18,7 +18,9 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.ApiClientFactory;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
-import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
+import org.openhab.binding.supla.internal.cloud.ChannelIfoParser;
+import org.openhab.binding.supla.internal.cloud.ChannelInfo;
+import org.openhab.binding.supla.internal.cloud.LedCommandExecutor;
 import org.openhab.binding.supla.internal.cloud.functionswitch.CreateChannelFunctionSwitch;
 import org.openhab.binding.supla.internal.cloud.functionswitch.FindStateFunctionSwitch;
 import org.slf4j.Logger;
@@ -31,9 +33,7 @@ import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum;
 import pl.grzeslowski.jsupla.api.generated.model.Device;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,7 +42,6 @@ import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static java.util.Objects.requireNonNull;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 import static org.eclipse.smarthome.core.library.types.UpDownType.UP;
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
@@ -53,12 +52,12 @@ import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_E
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.NONE;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 import static org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher.DISPATCHER;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL_PARTIALLY;
-import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SET_RGBW_PARAMETERS;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SHUT;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_OFF;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_ON;
@@ -73,12 +72,13 @@ import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnu
 @SuppressWarnings("PackageAccessibility")
 public final class CloudDeviceHandler extends AbstractDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class);
-    private final Map<ChannelUID, HSBType> ledStates = new HashMap<>();
-    private final FindStateFunctionSwitch findStateFunctionSwitch = new FindStateFunctionSwitch();
     private ApiClient apiClient;
     private ChannelsApi channelsApi;
     private int cloudId;
     private IoDevicesApi ioDevicesApi;
+
+    // CommandExecutors
+    private LedCommandExecutor ledCommandExecutor;
 
     public CloudDeviceHandler(final Thing thing) {
         super(thing);
@@ -121,6 +121,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         }
 
         initChannels();
+        initCommandExecutors();
 
         // done
         updateStatus(ONLINE);
@@ -180,6 +181,10 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         }
     }
 
+    private void initCommandExecutors() {
+        ledCommandExecutor = new LedCommandExecutor(channelsApi);
+    }
+
     private void updateChannels(final List<Channel> channels) {
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withChannels(channels);
@@ -188,17 +193,16 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleRefreshCommand(final ChannelUID channelUID) throws Exception {
-        final int channelId = parseInt(channelUID.getId());
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
         logger.trace("Refreshing channel `{}`", channelUID);
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
-        Optional<State> foundState = findState(channel);
+        final FindStateFunctionSwitch findStateFunctionSwitch = new FindStateFunctionSwitch(ledCommandExecutor, channelUID);
+        Optional<? extends State> foundState = ChannelFunctionDispatcher.DISPATCHER.dispatch(channel, findStateFunctionSwitch);
         if (foundState.isPresent()) {
             final State state = foundState.get();
             logger.trace("Updating state `{}` to `{}`", channelUID, state);
             updateState(channelUID, state);
-            if (state instanceof HSBType) {
-                ledStates.put(channelUID, (HSBType) state);
-            }
         } else {
             logger.warn("There was no found state for channel `{}` channelState={}, function={}",
                     channelUID, channel.getState(), channel.getFunction());
@@ -207,7 +211,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleOnOffCommand(final ChannelUID channelUID, final OnOffType command) throws Exception {
-        final int channelId = parseInt(channelUID.getId());
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
             case CONTROLLINGTHEGATE:
@@ -221,18 +226,20 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleUpDownCommand(final ChannelUID channelUID, final UpDownType command) throws Exception {
-        final int channelId = parseInt(channelUID.getId());
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
         handleOneZeroCommand(channelId, command == UP, REVEAL, SHUT);
     }
 
     @Override
     protected void handleHsbCommand(final ChannelUID channelUID, final HSBType command) throws ApiException {
-        final int channelId = parseInt(channelUID.getId());
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
             case RGBLIGHTING:
             case DIMMERANDRGBLIGHTING:
-                sendNewLedValue(channelUID, channelId, command);
+                ledCommandExecutor.changeColor(channelId, channelUID, command);
                 return;
             default:
                 logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
@@ -241,13 +248,15 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleOpenClosedCommand(final ChannelUID channelUID, final OpenClosedType command) throws ApiException {
-        final int channelId = parseInt(channelUID.getId());
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
         handleOneZeroCommand(channelId, command == OpenClosedType.OPEN, OPEN, CLOSE);
     }
 
     @Override
     protected void handlePercentCommand(final ChannelUID channelUID, final PercentType command) throws ApiException {
-        final int channelId = parseInt(channelUID.getId());
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
             case CONTROLLINGTHEROLLERSHUTTER:
@@ -258,38 +267,15 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                 return;
             case RGBLIGHTING:
             case DIMMERANDRGBLIGHTING:
-                if (!ledStates.containsKey(channelUID)) {
-                    logger.warn("There is no LED state for channel `{}`!", channelUID);
-                    return;
+                if (channelInfo.getAdditionalChannelType() == null) {
+                    ledCommandExecutor.changeColorBrightness(channelId, channelUID, command);
+                } else if (channelInfo.getAdditionalChannelType() == LED_BRIGHTNESS) {
+                    ledCommandExecutor.changeBrightness(channelId, channelUID, command);
                 }
-                final HSBType hsbType = requireNonNull(ledStates.get(channelUID));
-                final HSBType newHsbType = new HSBType(
-                        hsbType.getHue(),
-                        hsbType.getSaturation(),
-                        command
-                );
-                sendNewLedValue(channelUID, channelId, newHsbType);
                 return;
             default:
                 logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
         }
-    }
-
-    private void sendNewLedValue(final ChannelUID channelUID, int channelId, final HSBType hsbType) throws ApiException {
-        final int colorBrightness = hsbType.getBrightness().intValue();
-        final HSBType hsbToConvertToRgb = new HSBType(
-                hsbType.getHue(),
-                hsbType.getSaturation(),
-                PercentType.HUNDRED
-        );
-        final String rgb = HsbTypeConverter.INSTANCE.convert(hsbToConvertToRgb);
-        logger.trace("Changing RGB to {}, color brightness {}%, brightness {}%", rgb, colorBrightness, "N/A");
-        final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest()
-                                                           .action(SET_RGBW_PARAMETERS)
-                                                           .color(rgb)
-                                                           .colorBrightness(colorBrightness);
-        channelsApi.executeAction(action, channelId);
-        ledStates.put(channelUID, hsbType);
     }
 
     @Override
@@ -310,7 +296,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
     protected void handleStopMoveTypeCommand(final @NonNull ChannelUID channelUID, final @NonNull StopMoveType command) throws ApiException {
-        final int channelId = parseInt(channelUID.getId());
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
             case CONTROLLINGTHEROLLERSHUTTER:
@@ -334,10 +321,6 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                 logger.trace("Sending stop action `{}` to channel with UUID `{}`", action, channelUID);
                 channelsApi.executeAction(new ChannelExecuteActionRequest().action(action), channel.getId());
         }
-    }
-
-    private Optional<State> findState(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return ChannelFunctionDispatcher.DISPATCHER.dispatch(channel, findStateFunctionSwitch);
     }
 
     void refresh() {
