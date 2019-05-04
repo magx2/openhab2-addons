@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.lang.String.valueOf;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
@@ -28,6 +27,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.Channels.SWITCH_CH
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.SWITCH_CHANNEL_RO_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_AND_HUMIDITY_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_CHANNEL_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TOGGLE_GAT_CHANNEL_ID;
 
 @SuppressWarnings("PackageAccessibility")
 public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<List<Channel>> {
@@ -50,12 +50,12 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onControllingTheGate(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return createSwitchChannel(channel);
+        return createToggleGateChannel(channel);
     }
 
     @Override
     public List<Channel> onControllingTheGarageDoor(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return createSwitchChannel(channel);
+        return createToggleGateChannel(channel);
     }
 
     @Override
@@ -228,6 +228,10 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
         } else {
             return singletonList(createChannel(channel, SWITCH_CHANNEL_RO_ID, "Switch"));
         }
+    }
+
+    private List<Channel> createToggleGateChannel(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
+        return singletonList(createChannel(channel, TOGGLE_GAT_CHANNEL_ID, "String"));
     }
 
     private List<Channel> createLedChannels(final pl.grzeslowski.jsupla.api.generated.model.Channel channel) {

@@ -22,14 +22,15 @@ public class ChannelIfoParser {
         } else {
             trimmedId = fullId;
         }
-        return new ChannelInfo(parse(trimmedId), additionalChannelType.orElse(null));
+        return new ChannelInfo(parse(trimmedId, fullId), additionalChannelType.orElse(null));
     }
 
-    private int parse(String id) {
+    private int parse(String id, String fullId) {
         try {
             return Integer.parseInt(id);
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Given id `" + id + "` is not int!", ex);
+            throw new IllegalArgumentException("Given id `" + id + "` is not int! Full ID = `" + fullId + "`", ex);
         }
     }
 }
+// ZjA0MWIwZWZmYWE5MTEzZGM3NDU3NjZjZDQ1ZTA3MTNjNGViNDUzOGYyNGQ3NjU2YTc5NGZkMTkzZjIzOTBhYQ.aHR0cHM6Ly9zdnIxOS5zdXBsYS5vcmc=

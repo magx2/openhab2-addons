@@ -8,7 +8,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.supla.handler.CloudBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.grzeslowski.jsupla.api.ApiClientFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiClient;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
 import pl.grzeslowski.jsupla.api.generated.api.IoDevicesApi;

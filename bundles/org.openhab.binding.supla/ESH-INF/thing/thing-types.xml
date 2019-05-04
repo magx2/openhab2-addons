@@ -97,6 +97,18 @@
 		<label>Dimmer</label>
 	</channel-type>
 
+	<channel-type id="toggle-gate-channel">
+		<item-type>String</item-type>
+		<label>Open/Close Gate</label>
+		<command>
+			<options>
+				<option value="NONE">None</option>
+				<option value="SELECT">Alert</option>
+				<option value="LSELECT">Long Alert</option>
+			</options>
+		</command>
+	</channel-type>
+
 	<channel-type id="unknown-channel">
 		<item-type>String</item-type>
 		<label>Unknown channel</label>
