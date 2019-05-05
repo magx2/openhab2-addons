@@ -1032,6 +1032,15 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.zway/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-supla" description="Supla Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:pl.grzeslowski.jsupla.api/swagger-java-client/2.0.2</bundle>
+        <bundle dependency="true">wrap:mvn:pl.grzeslowski.jSupla/nettyServer/0.9.14</bundle>
+        <bundle dependency="true">wrap:mvn:com.google.guava/guava/27.1-jre</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.zway/${project.version}</bundle>
+    </feature>
+
     <!-- io -->
 
     <feature name="openhab-transport-modbus" description="Modbus Transport" version="${project.version}">
