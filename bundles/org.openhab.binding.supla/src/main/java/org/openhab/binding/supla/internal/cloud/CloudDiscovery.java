@@ -45,7 +45,7 @@ public final class CloudDiscovery extends AbstractDiscoveryService {
                     bridgeHandler.getThing().getUID());
             return;
         }
-        final ApiClient apiClient = ApiClientFactory.INSTANCE.newApiClient(token.get());
+        final ApiClient apiClient = ApiClientFactory.FACTORY.newApiClient(token.get(), logger);
         final IoDevicesApi api = new IoDevicesApi(apiClient);
         try {
             api.getIoDevices(singletonList("channels")).forEach(this::addThing);

@@ -219,7 +219,7 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
             final pl.grzeslowski.jsupla.api.generated.model.Channel channel,
             final String id,
             final String acceptedItemType) {
-        return createChannel(id, acceptedItemType, valueOf(channel.getId()), channel.getCaption());
+        return createChannel(id, acceptedItemType, String.valueOf(channel.getId()), channel.getCaption());
     }
 
     private List<Channel> createSwitchChannel(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
