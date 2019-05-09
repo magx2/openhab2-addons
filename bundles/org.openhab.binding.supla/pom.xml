@@ -16,7 +16,7 @@
 
 	<properties>
 		<bnd.importpackage>
-			!android.net,!android.util,!com.android.org.conscrypt,!org.apache.harmony.xnet.provider.jsse,!sun.security.ssl,!sun.misc
+			!android.net,!android.util,!com.android.org.conscrypt,!org.apache.harmony.xnet.provider.jsse,!sun.security.ssl,!sun.misc,!com.barchart.udt,!com.barchart.udt.nio,!com.fasterxml.aalto,!com.fasterxml.aalto.stax,!com.google.protobuf,!com.google.protobuf.nano,!com.jcraft.jzlib
 		</bnd.importpackage>
 	</properties>
 
