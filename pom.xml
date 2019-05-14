@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.openhab.addons</groupId>
@@ -24,6 +22,12 @@
       <url>https://www.eclipse.org/legal/epl-2.0/</url>
     </license>
   </licenses>
+
+  <modules>
+    <module>bom</module>
+    <module>bundles</module>
+    <module>features</module>
+  </modules>
 
   <scm>
     <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
@@ -65,46 +69,8 @@
     <bnd.exportpackage></bnd.exportpackage>
     <bnd.includeresource></bnd.includeresource>
 
+    <feature.directory>src/main/feature/feature.xml</feature.directory>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>jcenter</id>
-      <name>JCenter Repository</name>
-      <url>https://jcenter.bintray.com</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-    <repository>
-      <id>openhab-artifactory-release</id>
-      <name>JFrog Artifactory Repository</name>
-      <url>https://openhab.jfrog.io/openhab/libs-release</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>openhab-artifactory-release</id>
-      <url>https://openhab.jfrog.io/openhab/libs-release</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencyManagement>
     <dependencies>
@@ -146,6 +112,45 @@
     </dependencies>
   </dependencyManagement>
 
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>jcenter</id>
+      <name>JCenter Repository</name>
+      <url>https://jcenter.bintray.com</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>openhab-artifactory-release</id>
+      <name>JFrog Artifactory Repository</name>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>openhab-artifactory-release</id>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <build>
     <resources>
       <resource>
@@ -154,8 +159,10 @@
       <resource>
         <directory>.</directory>
         <includes>
-          <include>NOTICE</include> <!-- general -->
-          <include>*.xsd</include> <!-- only a very rare -->
+          <!-- general -->
+          <include>NOTICE</include>
+          <!-- only a very rare -->
+          <include>*.xsd</include>
         </includes>
       </resource>
     </resources>
@@ -170,8 +177,7 @@
           <artifactId>bnd-maven-plugin</artifactId>
           <version>${bnd.version}</version>
           <configuration>
-            <bnd><![CDATA[
-Bundle-SymbolicName: ${project.artifactId}
+            <bnd><![CDATA[Bundle-SymbolicName: ${project.artifactId}
 Automatic-Module-Name: ${def;bsn}
 Import-Package: \\
   io.swagger.annotations.*;resolution:=optional,\\
@@ -190,8 +196,7 @@ Import-Package: \\
   ${bnd.exportpackage}
 -sources: false
 -contract: *
--includeresource: ${bnd.includeresource}
-]]></bnd>
+-includeresource: ${bnd.includeresource}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
           </configuration>
@@ -249,8 +254,7 @@ Import-Package: \\
           <version>${bnd.version}</version>
           <configuration>
             <failOnChanges>false</failOnChanges>
-            <bndruns>
-            </bndruns>
+            <bndruns></bndruns>
           </configuration>
           <executions>
             <execution>
@@ -648,15 +652,16 @@ Import-Package: \\
     <profile>
       <id>add-libraries-cli</id>
       <activation>
-        <file>
-          <exists>lib/</exists>
-        </file>
         <property>
           <name>!m2e.version</name>
         </property>
+        <file>
+          <exists>lib/</exists>
+        </file>
       </activation>
       <properties>
         <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <feature.directory>../../src/main/feature/feature.xml</feature.directory>
       </properties>
       <build>
         <plugins>
@@ -690,15 +695,15 @@ Import-Package: \\
     <profile>
       <id>add-libraries-eclipse</id>
       <activation>
-        <file>
-          <exists>lib/</exists>
-        </file>
         <property>
           <name>m2e.version</name>
         </property>
+        <file>
+          <exists>lib/</exists>
+        </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
       </properties>
     </profile>
 
@@ -749,25 +754,19 @@ Import-Package: \\
       </activation>
       <repositories>
         <repository>
-          <id>openhab-artifactory-snapshot</id>
-          <name>JFrog Artifactory Repository</name>
-          <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
           <releases>
             <enabled>false</enabled>
           </releases>
           <snapshots>
             <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
+            <updatePolicy>daily</updatePolicy>
           </snapshots>
+          <id>openhab-artifactory-snapshot</id>
+          <name>JFrog Artifactory Repository</name>
+          <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
         </repository>
       </repositories>
     </profile>
   </profiles>
-
-  <modules>
-    <module>bom</module>
-    <module>bundles</module>
-    <module>features</module>
-  </modules>
 
 </project>
