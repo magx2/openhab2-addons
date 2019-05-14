@@ -102,9 +102,7 @@
 		<label>Open/Close Gate</label>
 		<command>
 			<options>
-				<option value="NONE">None</option>
-				<option value="SELECT">Alert</option>
-				<option value="LSELECT">Long Alert</option>
+				<option value="open-close">Open/Close</option>
 			</options>
 		</command>
 	</channel-type>
