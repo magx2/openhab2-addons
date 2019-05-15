@@ -14,11 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.DECIMAL_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.DIMMER_CHANNEL_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.Channels.EXTRA_LIGHT_ACTIONS_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.HUMIDITY_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.LIGHT_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.RGB_CHANNEL_ID;
@@ -28,6 +30,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.Channels.SWITCH_CH
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_AND_HUMIDITY_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TOGGLE_GAT_CHANNEL_ID;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.EXTRA_LIGHT_ACTIONS;
 
 @SuppressWarnings("PackageAccessibility")
 public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<List<Channel>> {
@@ -235,6 +238,8 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
     }
 
     private List<Channel> createLedChannels(final pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return singletonList(createChannel(channel, RGB_CHANNEL_ID, "Color"));
+        return asList(
+                createChannel(channel, RGB_CHANNEL_ID, "Color"),
+                createChannel(EXTRA_LIGHT_ACTIONS_CHANNEL_ID, "String", channel.getId() + EXTRA_LIGHT_ACTIONS.getSuffix(), "Extra Actions"));
     }
 }

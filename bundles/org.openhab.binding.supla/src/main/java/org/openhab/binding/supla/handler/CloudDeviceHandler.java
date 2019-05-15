@@ -52,8 +52,11 @@ import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_E
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.NONE;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
+import static org.openhab.binding.supla.SuplaBindingConstants.Commands.OFF_LIGHT_COMMAND;
 import static org.openhab.binding.supla.SuplaBindingConstants.Commands.OPEN_CLOSE_GATE_COMMAND;
+import static org.openhab.binding.supla.SuplaBindingConstants.Commands.WHITE_LIGHT_COMMAND;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.EXTRA_LIGHT_ACTIONS;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 import static org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher.DISPATCHER;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
@@ -333,7 +336,23 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
             final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(OPEN_CLOSE);
             channelsApi.executeAction(action, channelId);
+        } else if (EXTRA_LIGHT_ACTIONS.equals(channelInfo.getAdditionalChannelType())) {
+            final ChannelUID mainLightChannel = new ChannelUID(channelUID.getThingUID(), String.valueOf(channelId));
+            if (command.toFullString().equals(WHITE_LIGHT_COMMAND)) {
+                changeColorOfRgb(HSBType.WHITE, mainLightChannel);
+            } else if (command.toFullString().equals(OFF_LIGHT_COMMAND)) {
+                changeColorOfRgb(HSBType.BLACK, mainLightChannel);
+            }
+        } else {
+            logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
         }
+    }
+
+    private void changeColorOfRgb(HSBType hsbType, ChannelUID rgbChannelUid) throws ApiException {
+        logger.trace("Setting color to `{}` for channel `{}`", hsbType, rgbChannelUid);
+        handleHsbCommand(rgbChannelUid, hsbType);
+        updateState(rgbChannelUid, hsbType);
+        handleCommand(rgbChannelUid, REFRESH);
     }
 
     void refresh() {
