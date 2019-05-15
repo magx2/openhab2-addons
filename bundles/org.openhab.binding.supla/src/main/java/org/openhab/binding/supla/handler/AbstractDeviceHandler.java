@@ -7,6 +7,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,6 +60,8 @@ abstract class AbstractDeviceHandler extends BaseThingHandler {
                 handleDecimalCommand(channelUID, (DecimalType) command);
             } else if (command instanceof StopMoveType) {
                 handleStopMoveTypeCommand(channelUID, (StopMoveType) command);
+            } else if (command instanceof StringType) {
+                handleStringCommand(channelUID, (StringType) command);
             } else {
                 logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!",
                         command, command.getClass().getSimpleName(), channelUID);
@@ -84,4 +87,6 @@ abstract class AbstractDeviceHandler extends BaseThingHandler {
     protected abstract void handleDecimalCommand(@NonNull final ChannelUID channelUID, @NonNull final DecimalType command) throws Exception;
 
     protected abstract void handleStopMoveTypeCommand(@NonNull final ChannelUID channelUID, @NonNull final StopMoveType command) throws Exception;
+
+    protected abstract void handleStringCommand(@NonNull final ChannelUID channelUID, @NonNull final StringType command) throws Exception;
 }

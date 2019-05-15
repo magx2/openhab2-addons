@@ -8,6 +8,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -51,11 +52,13 @@ import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_E
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.NONE;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
+import static org.openhab.binding.supla.SuplaBindingConstants.Commands.OPEN_CLOSE_GATE_COMMAND;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 import static org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher.DISPATCHER;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN_CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL_PARTIALLY;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SHUT;
@@ -320,6 +323,16 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                 final ChannelFunctionActionEnum action = ChannelFunctionActionEnum.STOP;
                 logger.trace("Sending stop action `{}` to channel with UUID `{}`", action, channelUID);
                 channelsApi.executeAction(new ChannelExecuteActionRequest().action(action), channel.getId());
+        }
+    }
+
+    @Override
+    protected void handleStringCommand(final ChannelUID channelUID, final StringType command) throws ApiException {
+        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final int channelId = channelInfo.getChannelId();
+        if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
+            final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(OPEN_CLOSE);
+            channelsApi.executeAction(action, channelId);
         }
     }
 

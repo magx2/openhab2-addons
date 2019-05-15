@@ -72,4 +72,8 @@ public class SuplaBindingConstants {
         public static final String TOGGLE_GAT_CHANNEL_ID = "toggle-gate-channel";
         public static final String UNKNOWN_CHANNEL_ID = "unknown-channel";
     }
+
+    public static class Commands {
+        public static final String OPEN_CLOSE_GATE_COMMAND = "open-close";
+    }
 }
