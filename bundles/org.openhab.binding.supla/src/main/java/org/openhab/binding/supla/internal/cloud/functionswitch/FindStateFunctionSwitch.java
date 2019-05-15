@@ -7,8 +7,8 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
-import org.openhab.binding.supla.internal.cloud.ChannelIfoParser;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
+import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
 import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
 import org.openhab.binding.supla.internal.cloud.LedCommandExecutor;
 import org.slf4j.Logger;
@@ -158,7 +158,7 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
 
     @Override
     public Optional<? extends State> onDimmerAndRgbLightning(Channel channel) {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         if (channelInfo.getAdditionalChannelType() == null) {
             final Optional<HSBType> state = of(channel)
                                                     .map(Channel::getState)

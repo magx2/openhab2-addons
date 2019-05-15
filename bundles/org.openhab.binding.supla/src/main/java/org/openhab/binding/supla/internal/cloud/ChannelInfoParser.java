@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import static java.util.Arrays.stream;
 
-public class ChannelIfoParser {
-    public static final ChannelIfoParser PARSER = new ChannelIfoParser();
+public class ChannelInfoParser {
+    public static final ChannelInfoParser PARSER = new ChannelInfoParser();
 
     public ChannelInfo parse(ChannelUID channelUID) {
         final String fullId = channelUID.getId();

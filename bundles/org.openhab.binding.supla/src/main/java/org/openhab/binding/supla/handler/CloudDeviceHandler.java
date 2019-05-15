@@ -19,8 +19,8 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.ApiClientFactory;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
-import org.openhab.binding.supla.internal.cloud.ChannelIfoParser;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
+import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
 import org.openhab.binding.supla.internal.cloud.LedCommandExecutor;
 import org.openhab.binding.supla.internal.cloud.functionswitch.CreateChannelFunctionSwitch;
 import org.openhab.binding.supla.internal.cloud.functionswitch.FindStateFunctionSwitch;
@@ -199,7 +199,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleRefreshCommand(final ChannelUID channelUID) throws Exception {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         logger.trace("Refreshing channel `{}`", channelUID);
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
@@ -217,7 +217,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleOnOffCommand(final ChannelUID channelUID, final OnOffType command) throws Exception {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
@@ -232,14 +232,14 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleUpDownCommand(final ChannelUID channelUID, final UpDownType command) throws Exception {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         handleOneZeroCommand(channelId, command == UP, REVEAL, SHUT);
     }
 
     @Override
     protected void handleHsbCommand(final ChannelUID channelUID, final HSBType command) throws ApiException {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
@@ -254,14 +254,14 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleOpenClosedCommand(final ChannelUID channelUID, final OpenClosedType command) throws ApiException {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         handleOneZeroCommand(channelId, command == OpenClosedType.OPEN, OPEN, CLOSE);
     }
 
     @Override
     protected void handlePercentCommand(final ChannelUID channelUID, final PercentType command) throws ApiException {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
@@ -302,7 +302,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @Override
     protected void handleStopMoveTypeCommand(final @NonNull ChannelUID channelUID, final @NonNull StopMoveType command) throws ApiException {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
@@ -331,7 +331,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleStringCommand(final ChannelUID channelUID, final StringType command) throws ApiException {
-        final ChannelInfo channelInfo = ChannelIfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
             final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(OPEN_CLOSE);
