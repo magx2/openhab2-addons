@@ -6,6 +6,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -59,6 +60,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL_PARTIALLY;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SHUT;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_OFF;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_ON;
@@ -323,6 +325,24 @@ class CloudDeviceHandlerTest {
         verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(rollerShutterChannelId));
         ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
         assertThat(value.getAction()).isEqualTo(SHUT);
+    }
+
+    @Test
+    @DisplayName("should send request to Supla Cloud to reveal partially roller shutter")
+    void revealPartiallyRollerShutter() throws Exception {
+
+        // given
+        final ChannelUID rollerShutterChannelUID = findRollerShutterChannelUID();
+        final int percentage = 33;
+
+        // when
+        handler.handlePercentCommand(rollerShutterChannelUID, new PercentType(percentage));
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(rollerShutterChannelId));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(REVEAL_PARTIALLY);
+        assertThat(value.getPercentage()).isEqualTo(percentage);
     }
 
     ChannelUID buildChannelUID(int id) {
