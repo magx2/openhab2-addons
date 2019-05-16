@@ -5,6 +5,7 @@ import io.github.glytching.junit.extension.random.RandomBeansExtension;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -56,6 +57,8 @@ import static org.mockito.Mockito.verify;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SHUT;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_OFF;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_ON;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.CONTROLLINGTHEGARAGEDOOR;
@@ -253,11 +256,47 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(CLOSE);
     }
 
+    @Test
+    @DisplayName("should send request to Supla cloud to reveal roller shutter")
+    void rollerShutterUp() throws Exception {
+
+        // given
+        final ChannelUID rollerShutterChannelUID = findRollerShutterChannelUID();
+
+        // when
+        handler.handleUpDownCommand(rollerShutterChannelUID, UpDownType.UP);
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(rollerShutterChannelId));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(REVEAL);
+    }
+
+    @Test
+    @DisplayName("should send request to Supla cloud to shut roller shutter")
+    void rollerShutterDown() throws Exception {
+
+        // given
+        final ChannelUID rollerShutterChannelUID = findRollerShutterChannelUID();
+
+        // when
+        handler.handleUpDownCommand(rollerShutterChannelUID, UpDownType.DOWN);
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(rollerShutterChannelId));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(SHUT);
+    }
+
     ChannelUID buildChannelUID(int id) {
         return new ChannelUID(thingUID, valueOf(id));
     }
 
     ChannelUID findLightChannelUID() {
         return buildChannelUID(lightChannelId);
+    }
+
+    ChannelUID findRollerShutterChannelUID() {
+        return buildChannelUID(rollerShutterChannelId);
     }
 }

@@ -248,7 +248,11 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     protected void handleUpDownCommand(final ChannelUID channelUID, final UpDownType command) throws Exception {
         final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
-        handleOneZeroCommand(channelId, command == UP, REVEAL, SHUT);
+        final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
+        switch (channel.getFunction().getName()) {
+            case CONTROLLINGTHEROLLERSHUTTER:
+                handleOneZeroCommand(channelId, command == UP, REVEAL, SHUT);
+        }
     }
 
     @Override
