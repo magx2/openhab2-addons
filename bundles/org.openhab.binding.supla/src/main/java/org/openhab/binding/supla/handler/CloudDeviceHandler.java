@@ -363,18 +363,28 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     protected void handleStringCommand(final ChannelUID channelUID, final StringType command) throws ApiException {
         final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
-        if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
-            final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(OPEN_CLOSE);
-            channelsApi.executeAction(action, channelId);
-        } else if (EXTRA_LIGHT_ACTIONS.equals(channelInfo.getAdditionalChannelType())) {
-            final ChannelUID mainLightChannel = new ChannelUID(channelUID.getThingUID(), String.valueOf(channelId));
-            if (command.toFullString().equals(WHITE_LIGHT_COMMAND)) {
-                changeColorOfRgb(HSBType.WHITE, mainLightChannel);
-            } else if (command.toFullString().equals(OFF_LIGHT_COMMAND)) {
-                changeColorOfRgb(HSBType.BLACK, mainLightChannel);
-            }
-        } else {
-            logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
+        final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
+        switch (channel.getFunction().getName()) {
+            case CONTROLLINGTHEGATE:
+            case CONTROLLINGTHEGARAGEDOOR:
+                if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
+                    final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(OPEN_CLOSE);
+                    channelsApi.executeAction(action, channelId);
+                }
+                break;
+            case RGBLIGHTING:
+            case DIMMERANDRGBLIGHTING:
+                if (EXTRA_LIGHT_ACTIONS.equals(channelInfo.getAdditionalChannelType())) {
+                    final ChannelUID mainLightChannel = new ChannelUID(channelUID.getThingUID(), String.valueOf(channelId));
+                    if (command.toFullString().equals(WHITE_LIGHT_COMMAND)) {
+                        changeColorOfRgb(HSBType.WHITE, mainLightChannel);
+                    } else if (command.toFullString().equals(OFF_LIGHT_COMMAND)) {
+                        changeColorOfRgb(HSBType.BLACK, mainLightChannel);
+                    }
+                }
+                break;
+            default:
+                logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
         }
     }
 
