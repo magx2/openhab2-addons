@@ -23,11 +23,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApiFactory;
-import org.openhab.binding.supla.internal.cloud.api.CloudApiClientFactory;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
-import org.osgi.framework.BundleContext;
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
 import pl.grzeslowski.jsupla.api.generated.model.Channel;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
@@ -67,10 +64,7 @@ class CloudDeviceHandlerTest {
     @Mock Bridge bridge;
     @Mock ThingUID bridgeUid;
     @Mock ThingRegistry thingRegistry;
-    @Mock BundleContext bundleContext;
     @Mock CloudBridgeHandler bridgeHandler;
-    @Mock CloudApiClientFactory apiClientFactory;
-    @Mock ApiClient apiClient;
     @Mock Configuration configuration;
     @Mock ChannelsCloudApiFactory channelsCloudApiFactory;
     @Mock IoDevicesCloudApiFactory ioDevicesCloudApiFactory;
@@ -111,7 +105,7 @@ class CloudDeviceHandlerTest {
         setUpInternalInitialize();
     }
 
-    void setUpChannels() throws ApiException {
+    void setUpChannels() {
         allChannels = asList(lightChannel, rgbChannel, dimmerAndRgbChannel, rollerShutterChannel, gateChannel);
         allChannels.forEach(channel -> given(channel.isHidden()).willReturn(false));
         given(lightChannel.getFunction()).willReturn(new ChannelFunction().name(LIGHTSWITCH));
