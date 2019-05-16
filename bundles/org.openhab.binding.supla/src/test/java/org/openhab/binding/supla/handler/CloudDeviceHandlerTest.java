@@ -19,6 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -52,8 +54,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_OFF;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_ON;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.CONTROLLINGTHEGARAGEDOOR;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.CONTROLLINGTHEGATE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.CONTROLLINGTHEROLLERSHUTTER;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.DIMMERANDRGBLIGHTING;
@@ -94,6 +99,11 @@ class CloudDeviceHandlerTest {
     @Mock Channel gateChannel;
     @Random
     @Min(1) @Max(100) int gateChannelId;
+    @Mock Channel garageDoorChannel;
+    @Random
+    @Min(1) @Max(100) int garageDoorChannelId;
+
+
     List<Channel> allChannels;
 
     @Random String oAuthToken;
@@ -123,6 +133,7 @@ class CloudDeviceHandlerTest {
         given(dimmerAndRgbChannel.getFunction()).willReturn(new ChannelFunction().name(DIMMERANDRGBLIGHTING));
         given(rollerShutterChannel.getFunction()).willReturn(new ChannelFunction().name(CONTROLLINGTHEROLLERSHUTTER));
         given(gateChannel.getFunction()).willReturn(new ChannelFunction().name(CONTROLLINGTHEGATE));
+        given(garageDoorChannel.getFunction()).willReturn(new ChannelFunction().name(CONTROLLINGTHEGARAGEDOOR));
 
         getAllFieldsList(CloudDeviceHandlerTest.class)
                 .stream()
@@ -206,7 +217,47 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(TURN_OFF);
     }
 
+    @DisplayName("OPEN gate, garage")
+    @ParameterizedTest(name = "[{index}] should send request to Supla cloud to open {0}")
+    @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
+    void gateChannelOn(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+
+        // when
+        handler.handleOnOffCommand(channelUID, OnOffType.ON);
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(id));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(OPEN);
+    }
+
+    @ParameterizedTest(name = "[{index}] should send request to Supla cloud to close {0}")
+    @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
+    @DisplayName("CLOSE gate, garage")
+    void gateChannelOff(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+
+        // when
+        handler.handleOnOffCommand(channelUID, OnOffType.OFF);
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(id));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(CLOSE);
+    }
+
+    ChannelUID buildChannelUID(int id) {
+        return new ChannelUID(thingUID, valueOf(id));
+    }
+
     ChannelUID findLightChannelUID() {
-        return new ChannelUID(thingUID, valueOf(lightChannelId));
+        return buildChannelUID(lightChannelId);
     }
 }
