@@ -274,7 +274,12 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     protected void handleOpenClosedCommand(final ChannelUID channelUID, final OpenClosedType command) throws ApiException {
         final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
-        handleOneZeroCommand(channelId, command == OpenClosedType.OPEN, OPEN, CLOSE);
+        final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
+        switch (channel.getFunction().getName()) {
+            case CONTROLLINGTHEGATE:
+            case CONTROLLINGTHEGARAGEDOOR:
+                handleOneZeroCommand(channelId, command == OpenClosedType.OPEN, OPEN, CLOSE);
+        }
     }
 
     @Override

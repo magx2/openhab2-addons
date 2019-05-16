@@ -5,6 +5,7 @@ import io.github.glytching.junit.extension.random.RandomBeansExtension;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -189,7 +190,7 @@ class CloudDeviceHandlerTest {
     }
 
     @Test
-    @DisplayName("should send request to Supla cloud to turn light ON")
+    @DisplayName("should send request to Supla Cloud to turn light ON")
     void lightChannelOn() throws Exception {
 
         // given
@@ -205,7 +206,7 @@ class CloudDeviceHandlerTest {
     }
 
     @Test
-    @DisplayName("should send request to Supla cloud to turn light OFF")
+    @DisplayName("should send request to Supla Cloud to turn light OFF")
     void lightChannelOff() throws Exception {
 
         // given
@@ -221,7 +222,7 @@ class CloudDeviceHandlerTest {
     }
 
     @DisplayName("OPEN gate, garage")
-    @ParameterizedTest(name = "[{index}] should send request to Supla cloud to open {0}")
+    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to open {0}")
     @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
     void gateChannelOn(String idFieldName) throws Exception {
 
@@ -238,7 +239,7 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(OPEN);
     }
 
-    @ParameterizedTest(name = "[{index}] should send request to Supla cloud to close {0}")
+    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to close {0}")
     @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
     @DisplayName("CLOSE gate, garage")
     void gateChannelOff(String idFieldName) throws Exception {
@@ -256,8 +257,44 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(CLOSE);
     }
 
+    @DisplayName("OPEN gate, garage")
+    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to open {0}")
+    @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
+    void gateChannelOpen(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+
+        // when
+        handler.handleOpenClosedCommand(channelUID, OpenClosedType.OPEN);
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(id));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(OPEN);
+    }
+
+    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to close {0}")
+    @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
+    @DisplayName("CLOSE gate, garage")
+    void gateChannelClose(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+
+        // when
+        handler.handleOpenClosedCommand(channelUID, OpenClosedType.CLOSED);
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(id));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(CLOSE);
+    }
+
     @Test
-    @DisplayName("should send request to Supla cloud to reveal roller shutter")
+    @DisplayName("should send request to Supla Cloud to reveal roller shutter")
     void rollerShutterUp() throws Exception {
 
         // given
@@ -273,7 +310,7 @@ class CloudDeviceHandlerTest {
     }
 
     @Test
-    @DisplayName("should send request to Supla cloud to shut roller shutter")
+    @DisplayName("should send request to Supla Cloud to shut roller shutter")
     void rollerShutterDown() throws Exception {
 
         // given
