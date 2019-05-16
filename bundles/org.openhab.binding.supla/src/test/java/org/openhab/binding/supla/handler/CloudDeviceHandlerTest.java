@@ -239,8 +239,8 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(TURN_OFF);
     }
 
-    @DisplayName("OPEN gate, garage")
-    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to open {0}")
+    @DisplayName("should send request to Supla Cloud to open gate or garage door")
+    @ParameterizedTest
     @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
     void gateChannelOn(String idFieldName) throws Exception {
 
@@ -257,9 +257,9 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(OPEN);
     }
 
-    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to close {0}")
+    @ParameterizedTest
     @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
-    @DisplayName("CLOSE gate, garage")
+    @DisplayName("should send request to Supla Cloud to close gate or garage door")
     void gateChannelOff(String idFieldName) throws Exception {
 
         // given
@@ -275,8 +275,8 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(CLOSE);
     }
 
-    @DisplayName("OPEN gate, garage")
-    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to open {0}")
+    @DisplayName("should send request to Supla Cloud to open gate or garage door")
+    @ParameterizedTest
     @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
     void gateChannelOpen(String idFieldName) throws Exception {
 
@@ -293,9 +293,9 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(OPEN);
     }
 
-    @ParameterizedTest(name = "[{index}] should send request to Supla Cloud to close {0}")
+    @ParameterizedTest
     @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
-    @DisplayName("CLOSE gate, garage")
+    @DisplayName("should send request to Supla Cloud to close gate or garage door")
     void gateChannelClose(String idFieldName) throws Exception {
 
         // given
@@ -361,7 +361,7 @@ class CloudDeviceHandlerTest {
         assertThat(value.getPercentage()).isEqualTo(percentage);
     }
 
-    @ParameterizedTest(name = "[{index}] {0}")
+    @ParameterizedTest
     @ValueSource(strings = {"rgbChannelId", "dimmerAndRgbChannelId"})
     @DisplayName("should send request to LedExecutor to change color brightness")
     void revealPartiallyRollerShutter(String idFieldName) throws Exception {
