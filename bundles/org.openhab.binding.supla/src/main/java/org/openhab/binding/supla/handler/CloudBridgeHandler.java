@@ -36,7 +36,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.API_VERSION_CHANNE
 import static org.openhab.binding.supla.SuplaBindingConstants.CLOUD_VERSION_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.O_AUTH_TOKEN;
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
-import static org.openhab.binding.supla.internal.cloud.ApiClientFactory.FACTORY;
+import static org.openhab.binding.supla.internal.cloud.api.CloudApiClientFactory.FACTORY;
 
 public class CloudBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class);

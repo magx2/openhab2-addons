@@ -6,6 +6,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.supla.handler.CloudBridgeHandler;
+import org.openhab.binding.supla.internal.cloud.api.CloudApiClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiClient;
@@ -45,7 +46,7 @@ public final class CloudDiscovery extends AbstractDiscoveryService {
                     bridgeHandler.getThing().getUID());
             return;
         }
-        final ApiClient apiClient = ApiClientFactory.FACTORY.newApiClient(token.get(), logger);
+        final ApiClient apiClient = CloudApiClientFactory.FACTORY.newApiClient(token.get(), logger);
         final IoDevicesApi api = new IoDevicesApi(apiClient);
         try {
             api.getIoDevices(singletonList("channels")).forEach(this::addThing);

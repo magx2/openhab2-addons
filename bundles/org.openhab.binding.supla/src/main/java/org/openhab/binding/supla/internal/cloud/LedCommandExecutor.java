@@ -4,10 +4,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.api.ChannelsApi;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
 
 import java.util.HashMap;
@@ -22,9 +22,9 @@ import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnu
 public class LedCommandExecutor {
     private final Logger logger = LoggerFactory.getLogger(LedCommandExecutor.class);
     private final Map<ChannelUID, LedState> ledStates = new HashMap<>();
-    private final ChannelsApi channelsApi;
+    private final ChannelsCloudApi channelsApi;
 
-    public LedCommandExecutor(final ChannelsApi channelsApi) {
+    public LedCommandExecutor(final ChannelsCloudApi channelsApi) {
         this.channelsApi = channelsApi;
     }
 

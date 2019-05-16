@@ -17,19 +17,22 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.supla.internal.cloud.ApiClientFactory;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
 import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
 import org.openhab.binding.supla.internal.cloud.LedCommandExecutor;
+import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
+import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApiFactory;
+import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApi;
+import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
+import org.openhab.binding.supla.internal.cloud.api.SwaggerChannelsCloudApiFactory;
+import org.openhab.binding.supla.internal.cloud.api.SwaggerIoDevicesCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.functionswitch.CreateChannelFunctionSwitch;
 import org.openhab.binding.supla.internal.cloud.functionswitch.FindStateFunctionSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiClient;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.api.ChannelsApi;
-import pl.grzeslowski.jsupla.api.generated.api.IoDevicesApi;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum;
 import pl.grzeslowski.jsupla.api.generated.model.Device;
@@ -78,16 +81,28 @@ import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnu
 @SuppressWarnings("PackageAccessibility")
 public final class CloudDeviceHandler extends AbstractDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class);
+    private final ChannelsCloudApiFactory channelsCloudApiFactory;
+    private final IoDevicesCloudApiFactory ioDevicesCloudApiFactory;
+
     private ApiClient apiClient;
-    private ChannelsApi channelsApi;
+    private ChannelsCloudApi channelsApi;
     private int cloudId;
-    private IoDevicesApi ioDevicesApi;
+    private IoDevicesCloudApi ioDevicesApi;
 
     // CommandExecutors
     private LedCommandExecutor ledCommandExecutor;
 
-    public CloudDeviceHandler(final Thing thing) {
+    CloudDeviceHandler(
+            final Thing thing,
+            final ChannelsCloudApiFactory channelsCloudApiFactory,
+            final IoDevicesCloudApiFactory ioDevicesCloudApiFactory) {
         super(thing);
+        this.channelsCloudApiFactory = channelsCloudApiFactory;
+        this.ioDevicesCloudApiFactory = ioDevicesCloudApiFactory;
+    }
+
+    public CloudDeviceHandler(final Thing thing) {
+        this(thing, SwaggerChannelsCloudApiFactory.FACTORY, SwaggerIoDevicesCloudApiFactory.FACTORY);
     }
 
     @Override
@@ -146,9 +161,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     }
 
     private void initApi(final String token) {
-        apiClient = ApiClientFactory.FACTORY.newApiClient(token, logger);
-        ioDevicesApi = new IoDevicesApi(apiClient);
-        channelsApi = new ChannelsApi(apiClient);
+        ioDevicesApi = ioDevicesCloudApiFactory.newIoDevicesCloudApi(token);
+        channelsApi = channelsCloudApiFactory.newChannelsCloudApi(token);
     }
 
     private boolean checkIfIsOnline() throws ApiException {

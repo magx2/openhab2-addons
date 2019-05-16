@@ -1,4 +1,4 @@
-package org.openhab.binding.supla.internal.cloud;
+package org.openhab.binding.supla.internal.cloud.api;
 
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Response;
