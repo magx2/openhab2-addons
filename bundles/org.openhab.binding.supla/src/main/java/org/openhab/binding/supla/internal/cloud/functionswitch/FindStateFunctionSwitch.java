@@ -10,7 +10,7 @@ import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
 import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
 import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
-import org.openhab.binding.supla.internal.cloud.LedCommandExecutor;
+import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.model.Channel;

@@ -20,18 +20,19 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
 import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
-import org.openhab.binding.supla.internal.cloud.LedCommandExecutor;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.api.SwaggerChannelsCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.api.SwaggerIoDevicesCloudApiFactory;
+import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutor;
+import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutorFactory;
+import org.openhab.binding.supla.internal.cloud.executors.SuplaLedCommandExecutorFactory;
 import org.openhab.binding.supla.internal.cloud.functionswitch.CreateChannelFunctionSwitch;
 import org.openhab.binding.supla.internal.cloud.functionswitch.FindStateFunctionSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum;
@@ -83,8 +84,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class);
     private final ChannelsCloudApiFactory channelsCloudApiFactory;
     private final IoDevicesCloudApiFactory ioDevicesCloudApiFactory;
+    private final LedCommandExecutorFactory ledCommandExecutorFactory;
 
-    private ApiClient apiClient;
     private ChannelsCloudApi channelsApi;
     private int cloudId;
     private IoDevicesCloudApi ioDevicesApi;
@@ -95,14 +96,20 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     CloudDeviceHandler(
             final Thing thing,
             final ChannelsCloudApiFactory channelsCloudApiFactory,
-            final IoDevicesCloudApiFactory ioDevicesCloudApiFactory) {
+            final IoDevicesCloudApiFactory ioDevicesCloudApiFactory,
+            final LedCommandExecutorFactory ledCommandExecutorFactory) {
         super(thing);
         this.channelsCloudApiFactory = channelsCloudApiFactory;
         this.ioDevicesCloudApiFactory = ioDevicesCloudApiFactory;
+        this.ledCommandExecutorFactory = ledCommandExecutorFactory;
     }
 
     public CloudDeviceHandler(final Thing thing) {
-        this(thing, SwaggerChannelsCloudApiFactory.FACTORY, SwaggerIoDevicesCloudApiFactory.FACTORY);
+        this(
+                thing,
+                SwaggerChannelsCloudApiFactory.FACTORY,
+                SwaggerIoDevicesCloudApiFactory.FACTORY,
+                SuplaLedCommandExecutorFactory.FACTORY);
     }
 
     @Override
@@ -202,7 +209,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     }
 
     private void initCommandExecutors() {
-        ledCommandExecutor = new LedCommandExecutor(channelsApi);
+        ledCommandExecutor = ledCommandExecutorFactory.newLedCommandExecutor(channelsApi);
     }
 
     private void updateChannels(final List<Channel> channels) {

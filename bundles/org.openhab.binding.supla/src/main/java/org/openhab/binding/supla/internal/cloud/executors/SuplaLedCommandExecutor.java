@@ -1,9 +1,10 @@
-package org.openhab.binding.supla.internal.cloud;
+package org.openhab.binding.supla.internal.cloud.executors;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +20,16 @@ import static java.util.Optional.ofNullable;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SET_RGBW_PARAMETERS;
 
 @SuppressWarnings("PackageAccessibility")
-public class LedCommandExecutor {
-    private final Logger logger = LoggerFactory.getLogger(LedCommandExecutor.class);
+final class SuplaLedCommandExecutor implements LedCommandExecutor {
+    private final Logger logger = LoggerFactory.getLogger(SuplaLedCommandExecutor.class);
     private final Map<ChannelUID, LedState> ledStates = new HashMap<>();
     private final ChannelsCloudApi channelsApi;
 
-    public LedCommandExecutor(final ChannelsCloudApi channelsApi) {
+    SuplaLedCommandExecutor(final ChannelsCloudApi channelsApi) {
         this.channelsApi = channelsApi;
     }
 
+    @Override
     public void setLedState(ChannelUID channelUID, PercentType brightness) {
         final Optional<LedState> ledState = findLedState(channelUID);
         if (ledState.isPresent()) {
@@ -37,6 +39,7 @@ public class LedCommandExecutor {
         }
     }
 
+    @Override
     public void setLedState(ChannelUID channelUID, HSBType hsb) {
         final Optional<LedState> ledState = findLedState(channelUID);
         if (ledState.isPresent()) {
@@ -46,6 +49,7 @@ public class LedCommandExecutor {
         }
     }
 
+    @Override
     public void changeColor(final int channelId, final ChannelUID channelUID, final HSBType command) throws ApiException {
         final Optional<LedState> state = findLedState(channelUID);
         if (state.isPresent()) {
@@ -53,6 +57,7 @@ public class LedCommandExecutor {
         }
     }
 
+    @Override
     public void changeColorBrightness(final int channelId, final ChannelUID channelUID, final PercentType command) throws ApiException {
         final Optional<LedState> state = findLedState(channelUID);
         if (state.isPresent()) {
@@ -66,6 +71,7 @@ public class LedCommandExecutor {
         }
     }
 
+    @Override
     public void changeBrightness(final int channelId, final ChannelUID channelUID, final PercentType command) throws ApiException {
         final Optional<LedState> state = findLedState(channelUID);
         if (state.isPresent()) {

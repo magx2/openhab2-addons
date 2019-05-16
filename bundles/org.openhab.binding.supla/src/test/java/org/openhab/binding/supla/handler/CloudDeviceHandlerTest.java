@@ -28,10 +28,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.supla.internal.cloud.AdditionalChannelType;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
+import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutor;
+import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutorFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
 import pl.grzeslowski.jsupla.api.generated.model.Channel;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
@@ -57,6 +60,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
@@ -71,7 +75,7 @@ import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.LIGHTSWITCH;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.RGBLIGHTING;
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(RandomBeansExtension.class)
 class CloudDeviceHandlerTest {
@@ -79,6 +83,8 @@ class CloudDeviceHandlerTest {
     @Mock Thing thing;
     @Mock Bridge bridge;
     @Mock ThingUID bridgeUid;
+    @Mock LedCommandExecutorFactory ledCommandExecutorFactory;
+    @Mock LedCommandExecutor ledCommandExecutor;
     @Mock ThingRegistry thingRegistry;
     @Mock CloudBridgeHandler bridgeHandler;
     @Mock Configuration configuration;
@@ -108,7 +114,6 @@ class CloudDeviceHandlerTest {
     @Mock Channel garageDoorChannel;
     @Random
     @Min(1) @Max(100) int garageDoorChannelId;
-
 
     List<Channel> allChannels;
 
@@ -172,6 +177,7 @@ class CloudDeviceHandlerTest {
         given(device.isEnabled()).willReturn(true);
         given(device.getChannels()).willReturn(allChannels);
         given(thing.getUID()).willReturn(thingUID);
+        given(ledCommandExecutorFactory.newLedCommandExecutor(channelsCloudApi)).willReturn(ledCommandExecutor);
         given(channelsCloudApi.getChannel(anyInt(), any())).willAnswer(invocationOnMock -> {
             int channelId = invocationOnMock.getArgument(0);
             return allChannels.stream()
@@ -180,7 +186,7 @@ class CloudDeviceHandlerTest {
                            .orElseThrow(IllegalArgumentException::new);
         });
 
-        handler = new CloudDeviceHandler(thing, channelsCloudApiFactory, ioDevicesCloudApiFactory);
+        handler = new CloudDeviceHandler(thing, channelsCloudApiFactory, ioDevicesCloudApiFactory, ledCommandExecutorFactory);
         writeField(handler, "thingRegistry", thingRegistry, true);
         writeField(handler, "callback", callback, true);
         doAnswer(__ -> {
@@ -345,6 +351,38 @@ class CloudDeviceHandlerTest {
         assertThat(value.getPercentage()).isEqualTo(percentage);
     }
 
+    @ParameterizedTest(name = "[{index}] {0}")
+    @ValueSource(strings = {"rgbChannelId", "dimmerAndRgbChannelId"})
+    @DisplayName("should send request to LedExecutor to change color brightness")
+    void revealPartiallyRollerShutter(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+        final PercentType command = new PercentType(33);
+
+        // when
+        handler.handlePercentCommand(channelUID, command);
+
+        // then
+        verify(ledCommandExecutor).changeColorBrightness(id, channelUID, command);
+    }
+
+    @Test
+    @DisplayName("should send request to Supla Cloud to reveal partially roller shutter")
+    void changeBrightness() throws Exception {
+
+        // given
+        ChannelUID dimmerAndRgbChannelUID = findDimmerAndRgbChannelUID(LED_BRIGHTNESS);
+        final PercentType command = new PercentType(33);
+
+        // when
+        handler.handlePercentCommand(dimmerAndRgbChannelUID, command);
+
+        // then
+        verify(ledCommandExecutor).changeBrightness(dimmerAndRgbChannelId, dimmerAndRgbChannelUID, command);
+    }
+
     ChannelUID buildChannelUID(int id) {
         return new ChannelUID(thingUID, valueOf(id));
     }
@@ -355,5 +393,10 @@ class CloudDeviceHandlerTest {
 
     ChannelUID findRollerShutterChannelUID() {
         return buildChannelUID(rollerShutterChannelId);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    ChannelUID findDimmerAndRgbChannelUID(AdditionalChannelType channelType) {
+        return new ChannelUID(thingUID, dimmerAndRgbChannelId + channelType.getSuffix());
     }
 }
