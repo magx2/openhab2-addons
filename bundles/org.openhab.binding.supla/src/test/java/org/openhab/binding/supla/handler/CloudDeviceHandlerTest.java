@@ -7,6 +7,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -58,6 +59,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
@@ -66,6 +68,7 @@ import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnu
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL_PARTIALLY;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SHUT;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.STOP;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_OFF;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.TURN_ON;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.CONTROLLINGTHEGARAGEDOOR;
@@ -381,6 +384,36 @@ class CloudDeviceHandlerTest {
 
         // then
         verify(ledCommandExecutor).changeBrightness(dimmerAndRgbChannelId, dimmerAndRgbChannelUID, command);
+    }
+
+    @Test
+    @DisplayName("should send request to Supla Cloud to stop roller shutter")
+    void stopRollerShutter() throws Exception {
+
+        // given
+        ChannelUID rollerShutterChannelUID = findRollerShutterChannelUID();
+
+        // when
+        handler.handleStopMoveTypeCommand(rollerShutterChannelUID, StopMoveType.STOP);
+
+        // then
+        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(rollerShutterChannelId));
+        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
+        assertThat(value.getAction()).isEqualTo(STOP);
+    }
+
+    @Test
+    @DisplayName("should do nothing on move command for roller shutter")
+    void moveRollerShutter() throws Exception {
+
+        // given
+        ChannelUID rollerShutterChannelUID = findRollerShutterChannelUID();
+
+        // when
+        handler.handleStopMoveTypeCommand(rollerShutterChannelUID, StopMoveType.MOVE);
+
+        // then
+        verify(channelsCloudApi, times(0)).executeAction(channelExecuteActionRequestCaptor.capture(), eq(rollerShutterChannelId));
     }
 
     ChannelUID buildChannelUID(int id) {
