@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
+import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.valueOf;
+import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
+import static org.apache.commons.lang3.reflect.FieldUtils.getField;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,7 +111,7 @@ class CloudDeviceHandlerTest {
     }
 
     void setUpChannels() {
-        allChannels = FieldUtils.getAllFieldsList(CloudDeviceHandlerTest.class)
+        allChannels = getAllFieldsList(CloudDeviceHandlerTest.class)
                               .stream()
                               .filter(field -> Channel.class.isAssignableFrom(field.getType()))
                               .map(this::readField)
@@ -121,11 +124,13 @@ class CloudDeviceHandlerTest {
         given(rollerShutterChannel.getFunction()).willReturn(new ChannelFunction().name(CONTROLLINGTHEROLLERSHUTTER));
         given(gateChannel.getFunction()).willReturn(new ChannelFunction().name(CONTROLLINGTHEGATE));
 
-        given(lightChannel.getId()).willReturn(lightChannelId);
-        given(rgbChannel.getId()).willReturn(rgbChannelId);
-        given(dimmerAndRgbChannel.getId()).willReturn(dimmerAndRgbChannelId);
-        given(rollerShutterChannel.getId()).willReturn(rollerShutterChannelId);
-        given(gateChannel.getId()).willReturn(gateChannelId);
+        getAllFieldsList(CloudDeviceHandlerTest.class)
+                .stream()
+                .filter(field -> Channel.class.isAssignableFrom(field.getType()))
+                .map(field -> Pair.with(field, (Channel) readField(field)))
+                .map(pair -> Pair.with(getField(CloudDeviceHandlerTest.class, pair.getValue0().getName() + "Id", true), pair.getValue1()))
+                .map(pair -> Pair.with((int) readField(pair.getValue0()), pair.getValue1()))
+                .forEach(pair -> given(pair.getValue1().getId()).willReturn(pair.getValue0()));
     }
 
     private Object readField(final Field field) {
