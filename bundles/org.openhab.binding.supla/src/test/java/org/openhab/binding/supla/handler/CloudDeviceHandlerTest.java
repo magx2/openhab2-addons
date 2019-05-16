@@ -4,6 +4,7 @@ import io.github.glytching.junit.extension.random.Random;
 import io.github.glytching.junit.extension.random.RandomBeansExtension;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -62,8 +63,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.openhab.binding.supla.SuplaBindingConstants.Commands.OFF_LIGHT_COMMAND;
 import static org.openhab.binding.supla.SuplaBindingConstants.Commands.OPEN_CLOSE_GATE_COMMAND;
+import static org.openhab.binding.supla.SuplaBindingConstants.Commands.WHITE_LIGHT_COMMAND;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.EXTRA_LIGHT_ACTIONS;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
@@ -437,8 +441,49 @@ class CloudDeviceHandlerTest {
         assertThat(value.getAction()).isEqualTo(OPEN_CLOSE);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"rgbChannelId", "dimmerAndRgbChannelId"})
+    @DisplayName("should send request to LedExecutor to change color to white")
+    void setLightColorToWhite(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id, EXTRA_LIGHT_ACTIONS);
+        final ChannelUID parentChannelUID = buildChannelUID(id);
+
+        // when
+        handler.handleStringCommand(channelUID, new StringType(WHITE_LIGHT_COMMAND));
+
+        // then
+        verify(ledCommandExecutor).changeColor(id, parentChannelUID, HSBType.WHITE);
+        verify(callback).stateUpdated(parentChannelUID, HSBType.WHITE);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"rgbChannelId", "dimmerAndRgbChannelId"})
+    @DisplayName("should send request to LedExecutor to change color to black")
+    void turnOffRgbLights(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id, EXTRA_LIGHT_ACTIONS);
+        final ChannelUID parentChannelUID = buildChannelUID(id);
+
+        // when
+        handler.handleStringCommand(channelUID, new StringType(OFF_LIGHT_COMMAND));
+
+        // then
+        verify(ledCommandExecutor).changeColor(id, parentChannelUID, HSBType.BLACK);
+        verify(callback).stateUpdated(parentChannelUID, HSBType.BLACK);
+    }
+
     ChannelUID buildChannelUID(int id) {
         return new ChannelUID(thingUID, valueOf(id));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    ChannelUID buildChannelUID(int id, AdditionalChannelType channelType) {
+        return new ChannelUID(thingUID, id + channelType.getSuffix());
     }
 
     ChannelUID findLightChannelUID() {
