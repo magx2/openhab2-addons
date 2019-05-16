@@ -2,6 +2,7 @@ package org.openhab.binding.supla.handler;
 
 import io.github.glytching.junit.extension.random.Random;
 import io.github.glytching.junit.extension.random.RandomBeansExtension;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -33,11 +34,12 @@ import pl.grzeslowski.jsupla.api.generated.model.Device;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.valueOf;
-import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,7 +108,12 @@ class CloudDeviceHandlerTest {
     }
 
     void setUpChannels() {
-        allChannels = asList(lightChannel, rgbChannel, dimmerAndRgbChannel, rollerShutterChannel, gateChannel);
+        allChannels = FieldUtils.getAllFieldsList(CloudDeviceHandlerTest.class)
+                              .stream()
+                              .filter(field -> Channel.class.isAssignableFrom(field.getType()))
+                              .map(this::readField)
+                              .map(channel -> (Channel) channel)
+                              .collect(Collectors.toList());
         allChannels.forEach(channel -> given(channel.isHidden()).willReturn(false));
         given(lightChannel.getFunction()).willReturn(new ChannelFunction().name(LIGHTSWITCH));
         given(rgbChannel.getFunction()).willReturn(new ChannelFunction().name(RGBLIGHTING));
@@ -119,6 +126,14 @@ class CloudDeviceHandlerTest {
         given(dimmerAndRgbChannel.getId()).willReturn(dimmerAndRgbChannelId);
         given(rollerShutterChannel.getId()).willReturn(rollerShutterChannelId);
         given(gateChannel.getId()).willReturn(gateChannelId);
+    }
+
+    private Object readField(final Field field) {
+        try {
+            return FieldUtils.readDeclaredField(this, field.getName(), true);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     void setUpInternalInitialize() throws ApiException, IllegalAccessException {
