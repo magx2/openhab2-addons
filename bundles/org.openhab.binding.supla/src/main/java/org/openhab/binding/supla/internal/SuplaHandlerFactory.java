@@ -100,7 +100,7 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingHandler newSuplaCloudServerThingHandler(final Thing thing) {
         final CloudBridgeHandler bridgeHandler = new CloudBridgeHandler((Bridge) thing);
-        final CloudDiscovery cloudDiscovery = new CloudDiscovery(bridgeHandler);
+        final CloudDiscovery cloudDiscovery = new CloudDiscovery(bridgeHandler, ioDevicesCloudApiFactory);
         registerThingDiscovery(cloudDiscovery);
         return bridgeHandler;
     }

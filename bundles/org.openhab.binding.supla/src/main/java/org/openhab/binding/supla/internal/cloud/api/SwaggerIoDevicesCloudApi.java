@@ -18,4 +18,9 @@ class SwaggerIoDevicesCloudApi implements IoDevicesCloudApi {
     public Device getIoDevice(final Integer id, final List<String> include) throws ApiException {
         return ioDevicesApi.getIoDevice(id, include);
     }
+
+    @Override
+    public List<Device> getIoDevices(final List<String> include) throws ApiException {
+        return ioDevicesApi.getIoDevices(include);
+    }
 }

@@ -6,12 +6,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.supla.handler.CloudBridgeHandler;
-import org.openhab.binding.supla.internal.cloud.api.CloudApiClientFactory;
+import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApi;
+import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.api.IoDevicesApi;
 import pl.grzeslowski.jsupla.api.generated.model.Device;
 
 import java.util.Map;
@@ -31,10 +30,13 @@ import static org.openhab.binding.supla.SuplaBindingConstants.SUPPORTED_THING_TY
 public final class CloudDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CloudDiscovery.class);
     private final CloudBridgeHandler bridgeHandler;
+    private final IoDevicesCloudApiFactory ioDevicesCloudApiFactory;
 
-    public CloudDiscovery(final CloudBridgeHandler bridgeHandler) {
+    public CloudDiscovery(final CloudBridgeHandler bridgeHandler,
+                          final IoDevicesCloudApiFactory ioDevicesCloudApiFactory) {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
         this.bridgeHandler = requireNonNull(bridgeHandler);
+        this.ioDevicesCloudApiFactory = ioDevicesCloudApiFactory;
     }
 
     @Override
@@ -46,12 +48,11 @@ public final class CloudDiscovery extends AbstractDiscoveryService {
                     bridgeHandler.getThing().getUID());
             return;
         }
-        final ApiClient apiClient = CloudApiClientFactory.FACTORY.newApiClient(token.get(), logger);
-        final IoDevicesApi api = new IoDevicesApi(apiClient);
+        final IoDevicesCloudApi api = ioDevicesCloudApiFactory.newIoDevicesCloudApi(token.get());
         try {
             api.getIoDevices(singletonList("channels")).forEach(this::addThing);
         } catch (ApiException e) {
-            logger.error("Cannot get IO devices from Supla Cloud `{}`!", apiClient.getBasePath(), e);
+            logger.error("Cannot get IO devices from Supla Cloud!", e);
         }
         logger.debug("Finished Supla Cloud scan");
     }
