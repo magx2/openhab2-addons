@@ -11,11 +11,13 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.supla.internal.ReadWriteMonad;
+import org.openhab.binding.supla.internal.cloud.api.ServerCloudApi;
+import org.openhab.binding.supla.internal.cloud.api.ServerCloudApiFactory;
+import org.openhab.binding.supla.internal.cloud.api.SwaggerServerCloudApiFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiClient;
 import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.api.ServerApi;
 import pl.grzeslowski.jsupla.api.generated.model.ServerInfo;
 
 import java.math.BigDecimal;
@@ -36,19 +38,24 @@ import static org.openhab.binding.supla.SuplaBindingConstants.API_VERSION_CHANNE
 import static org.openhab.binding.supla.SuplaBindingConstants.CLOUD_VERSION_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.O_AUTH_TOKEN;
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
-import static org.openhab.binding.supla.internal.cloud.api.CloudApiClientFactory.FACTORY;
 
 public class CloudBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class);
     private final ReadWriteMonad<Set<CloudDeviceHandler>> cloudDeviceHandlers = new ReadWriteMonad<>(new HashSet<>());
+    private final ServerCloudApiFactory serverCloudApiFactory;
     private String oAuthToken;
     private String address;
     private String apiVersion;
     private String cloudVersion;
     private ScheduledFuture<?> scheduledFuture;
 
-    public CloudBridgeHandler(final Bridge bridge) {
+    CloudBridgeHandler(final Bridge bridge, final ServerCloudApiFactory serverCloudApiFactory) {
         super(bridge);
+        this.serverCloudApiFactory = serverCloudApiFactory;
+    }
+
+    public CloudBridgeHandler(final Bridge bridge) {
+        this(bridge, SwaggerServerCloudApiFactory.FACTORY);
     }
 
     @SuppressWarnings("deprecation")
@@ -66,14 +73,12 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         // init bridge api client
         final Configuration config = this.getConfig();
         this.oAuthToken = (String) config.get(O_AUTH_TOKEN);
-        final ApiClient bridgeApiClient = FACTORY.newApiClient(oAuthToken, logger);
 
         // get server info
-        ServerApi serverApi = new ServerApi(bridgeApiClient);
+        ServerCloudApi serverApi = serverCloudApiFactory.newServerCloudApi(oAuthToken);
         ServerInfo serverInfo = serverApi.getServerInfo();
         if (serverInfo == null) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "Cannot get server info from `" + bridgeApiClient.getBasePath() + "`!");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Cannot get server info from server!");
             return;
         }
         address = serverInfo.getAddress();
