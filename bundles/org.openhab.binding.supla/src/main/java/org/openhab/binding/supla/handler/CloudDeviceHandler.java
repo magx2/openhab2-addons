@@ -24,8 +24,6 @@ import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
-import org.openhab.binding.supla.internal.cloud.api.SwaggerChannelsCloudApiFactory;
-import org.openhab.binding.supla.internal.cloud.api.SwaggerIoDevicesCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutor;
 import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutorFactory;
 import org.openhab.binding.supla.internal.cloud.executors.SuplaLedCommandExecutorFactory;
@@ -107,8 +105,8 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     public CloudDeviceHandler(final Thing thing) {
         this(
                 thing,
-                SwaggerChannelsCloudApiFactory.FACTORY,
-                SwaggerIoDevicesCloudApiFactory.FACTORY,
+                ChannelsCloudApiFactory.getFactory(),
+                IoDevicesCloudApiFactory.getFactory(),
                 SuplaLedCommandExecutorFactory.FACTORY);
     }
 

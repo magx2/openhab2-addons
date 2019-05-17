@@ -13,7 +13,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.supla.internal.ReadWriteMonad;
 import org.openhab.binding.supla.internal.cloud.api.ServerCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ServerCloudApiFactory;
-import org.openhab.binding.supla.internal.cloud.api.SwaggerServerCloudApiFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.generated.ApiClient;
@@ -55,7 +54,7 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
     }
 
     public CloudBridgeHandler(final Bridge bridge) {
-        this(bridge, SwaggerServerCloudApiFactory.FACTORY);
+        this(bridge, ServerCloudApiFactory.getFactory());
     }
 
     @SuppressWarnings("deprecation")

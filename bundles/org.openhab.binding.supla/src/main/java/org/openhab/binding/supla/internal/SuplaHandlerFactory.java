@@ -24,6 +24,7 @@ import org.openhab.binding.supla.handler.CloudDeviceHandler;
 import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
 import org.openhab.binding.supla.handler.SuplaDeviceHandler;
 import org.openhab.binding.supla.internal.cloud.CloudDiscovery;
+import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,7 +49,16 @@ import static org.openhab.binding.supla.SuplaBindingConstants.SUPPORTED_THING_TY
 @NonNullByDefault
 public class SuplaHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SuplaHandlerFactory.class);
+    private final IoDevicesCloudApiFactory ioDevicesCloudApiFactory;
     private @Nullable SuplaDeviceRegistry suplaDeviceRegistry;
+
+    SuplaHandlerFactory(final IoDevicesCloudApiFactory ioDevicesCloudApiFactory) {
+        this.ioDevicesCloudApiFactory = ioDevicesCloudApiFactory;
+    }
+
+    public SuplaHandlerFactory() {
+        this(IoDevicesCloudApiFactory.getFactory());
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

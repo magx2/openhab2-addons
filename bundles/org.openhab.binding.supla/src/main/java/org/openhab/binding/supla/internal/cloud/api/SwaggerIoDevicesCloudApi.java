@@ -7,7 +7,7 @@ import pl.grzeslowski.jsupla.api.generated.model.Device;
 
 import java.util.List;
 
-class SwaggerIoDevicesCloudApi implements IoDevicesCloudApi {
+final class SwaggerIoDevicesCloudApi implements IoDevicesCloudApi {
     private final IoDevicesApi ioDevicesApi;
 
     SwaggerIoDevicesCloudApi(final ApiClient apiClient) {
@@ -15,7 +15,7 @@ class SwaggerIoDevicesCloudApi implements IoDevicesCloudApi {
     }
 
     @Override
-    public Device getIoDevice(final Integer id, final List<String> include) throws ApiException {
+    public Device getIoDevice(final int id, final List<String> include) throws ApiException {
         return ioDevicesApi.getIoDevice(id, include);
     }
 

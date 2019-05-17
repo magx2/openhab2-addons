@@ -8,7 +8,7 @@ import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
 
 import java.util.List;
 
-class SwaggerChannelsCloudApi implements ChannelsCloudApi {
+final class SwaggerChannelsCloudApi implements ChannelsCloudApi {
     private final ChannelsApi channelsApi;
 
     SwaggerChannelsCloudApi(final ApiClient apiClient) {

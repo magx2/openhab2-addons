@@ -3,12 +3,13 @@ package org.openhab.binding.supla.internal.cloud.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SwaggerChannelsCloudApiFactory implements ChannelsCloudApiFactory {
-    public static final SwaggerChannelsCloudApiFactory FACTORY = new SwaggerChannelsCloudApiFactory();
+final class SwaggerChannelsCloudApiFactory implements ChannelsCloudApiFactory {
+    static final SwaggerChannelsCloudApiFactory FACTORY = new SwaggerChannelsCloudApiFactory();
     private static final Logger swaggerChannelsCloudApiLogger = LoggerFactory.getLogger(SwaggerChannelsCloudApi.class);
     private final ApiClientFactory apiClientFactory;
 
-    public SwaggerChannelsCloudApiFactory(final ApiClientFactory apiClientFactory) {
+    @SuppressWarnings("WeakerAccess")
+    SwaggerChannelsCloudApiFactory(final ApiClientFactory apiClientFactory) {
         this.apiClientFactory = apiClientFactory;
     }
 
