@@ -576,6 +576,22 @@ class CloudDeviceHandlerTest {
         verify(callback, times(0)).stateUpdated(eq(channelUID), any());
     }
 
+    @Test
+    @DisplayName("should refresh roller shutter")
+    void reollerShutterRefresh() throws Exception {
+
+        // given
+        final ChannelUID channelUID = findRollerShutterChannelUID();
+        final int shut = 13;
+        given(rollerShutterChannel.getState()).willReturn(new ChannelState().setShut(shut));
+
+        // when
+        handler.handleRefreshCommand(channelUID);
+
+        // then
+        verifyUpdateState(channelUID, new PercentType(shut));
+    }
+
     ChannelUID buildChannelUID(int id) {
         return new ChannelUID(thingUID, valueOf(id));
     }
