@@ -525,6 +525,57 @@ class CloudDeviceHandlerTest {
         verifyUpdateState(channelUID, OFF);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"rgbChannelId", "dimmerAndRgbChannelId"})
+    @DisplayName("should refresh RGB lights")
+    @ExtendWith(RandomBeansExtension.class)
+    void refreshRgb(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+        final Channel channel = channelsCloudApi.getChannel(id, asList("supportedFunctions", "state"));
+
+        given(channel.getState()).willReturn(new ChannelState().setColor("0xFF0000").setColorBrightness(100));
+
+        // when
+        handler.handleRefreshCommand(channelUID);
+
+        // then
+        verifyUpdateState(channelUID, HSBType.RED);
+    }
+
+    @Test
+    @DisplayName("should refresh dimmer and RGB brightness channel")
+    void dimmerAndRgbRefresh() throws Exception {
+
+        // given
+        final ChannelUID channelUID = findDimmerAndRgbChannelUID(LED_BRIGHTNESS);
+        final int brightness = 57;
+        given(dimmerAndRgbChannel.getState()).willReturn(new ChannelState().setBrightness(brightness));
+
+        // when
+        handler.handleRefreshCommand(channelUID);
+
+        // then
+        verifyUpdateState(channelUID, new PercentType(brightness));
+    }
+
+    @Test
+    @DisplayName("should refresh dimmer and RGB brightness channel")
+    void dimmerAndRgbNotRefresh() throws Exception {
+
+        // given
+        final ChannelUID channelUID = findDimmerAndRgbChannelUID(EXTRA_LIGHT_ACTIONS);
+        given(dimmerAndRgbChannel.getState()).willReturn(new ChannelState().setBrightness(13));
+
+        // when
+        handler.handleRefreshCommand(channelUID);
+
+        // then
+        verify(callback, times(0)).stateUpdated(eq(channelUID), any());
+    }
+
     ChannelUID buildChannelUID(int id) {
         return new ChannelUID(thingUID, valueOf(id));
     }

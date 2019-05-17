@@ -6,6 +6,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.supla.internal.cloud.AdditionalChannelType;
 import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
 import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
@@ -23,6 +24,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 
 @SuppressWarnings("PackageAccessibility")
 public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<Optional<? extends State>> {
@@ -159,19 +161,23 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
     @Override
     public Optional<? extends State> onDimmerAndRgbLightning(Channel channel) {
         final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        if (channelInfo.getAdditionalChannelType() == null) {
+        AdditionalChannelType channelType = channelInfo.getAdditionalChannelType();
+        if (channelType == null) {
             final Optional<HSBType> state = of(channel)
                                                     .map(Channel::getState)
                                                     .map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness()));
             state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
             return state;
-        } else {
+        } else if (channelType == LED_BRIGHTNESS) {
             final Optional<PercentType> state = of(channel)
                                                         .map(Channel::getState)
                                                         .map(ChannelState::getBrightness)
                                                         .map(PercentType::new);
             state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
             return state;
+        } else {
+            logger.warn("Do not know how to support {} on dimmer and RGB", channelType);
+            return empty();
         }
     }
 
