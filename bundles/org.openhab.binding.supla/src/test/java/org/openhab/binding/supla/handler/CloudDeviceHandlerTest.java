@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
+import org.eclipse.smarthome.core.types.State;
 import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +43,8 @@ import pl.grzeslowski.jsupla.api.generated.ApiException;
 import pl.grzeslowski.jsupla.api.generated.model.Channel;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
 import pl.grzeslowski.jsupla.api.generated.model.ChannelFunction;
+import pl.grzeslowski.jsupla.api.generated.model.ChannelState;
+import pl.grzeslowski.jsupla.api.generated.model.ChannelType;
 import pl.grzeslowski.jsupla.api.generated.model.Device;
 
 import javax.validation.constraints.Max;
@@ -52,10 +55,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.valueOf;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList;
 import static org.apache.commons.lang3.reflect.FieldUtils.getField;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeField;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.smarthome.core.library.types.OnOffType.OFF;
+import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -83,6 +89,7 @@ import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.CONTROLLINGTHEROLLERSHUTTER;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.DIMMERANDRGBLIGHTING;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.LIGHTSWITCH;
+import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.POWERSWITCH;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionEnumNames.RGBLIGHTING;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
@@ -109,6 +116,9 @@ class CloudDeviceHandlerTest {
     @Mock Channel lightChannel;
     @Random
     @Min(1) @Max(100) int lightChannelId;
+    @Mock Channel powerSwitchChannel;
+    @Random
+    @Min(1) @Max(100) int powerSwitchChannelId;
     @Mock Channel rgbChannel;
     @Random
     @Min(1) @Max(100) int rgbChannelId;
@@ -150,6 +160,8 @@ class CloudDeviceHandlerTest {
                               .collect(Collectors.toList());
         allChannels.forEach(channel -> given(channel.isHidden()).willReturn(false));
         given(lightChannel.getFunction()).willReturn(new ChannelFunction().name(LIGHTSWITCH));
+        given(powerSwitchChannel.getFunction()).willReturn(new ChannelFunction().name(POWERSWITCH));
+        given(powerSwitchChannel.getType()).willReturn(new ChannelType().output(true));
         given(rgbChannel.getFunction()).willReturn(new ChannelFunction().name(RGBLIGHTING));
         given(dimmerAndRgbChannel.getFunction()).willReturn(new ChannelFunction().name(DIMMERANDRGBLIGHTING));
         given(rollerShutterChannel.getFunction()).willReturn(new ChannelFunction().name(CONTROLLINGTHEROLLERSHUTTER));
@@ -477,6 +489,42 @@ class CloudDeviceHandlerTest {
         verify(callback).stateUpdated(parentChannelUID, HSBType.BLACK);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"lightChannelId", "powerSwitchChannelId"})
+    @DisplayName("should refresh light and set ON")
+    void refreshLightOn(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+        final Channel channel = channelsCloudApi.getChannel(id, asList("supportedFunctions", "state"));
+        given(channel.getState()).willReturn(new ChannelState().setOn(true));
+
+        // when
+        handler.handleRefreshCommand(channelUID);
+
+        // then
+        verifyUpdateState(channelUID, ON);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"lightChannelId", "powerSwitchChannelId"})
+    @DisplayName("should refresh light and set OFF")
+    void refreshLightOff(String idFieldName) throws Exception {
+
+        // given
+        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
+        final ChannelUID channelUID = buildChannelUID(id);
+        final Channel channel = channelsCloudApi.getChannel(id, asList("supportedFunctions", "state"));
+        given(channel.getState()).willReturn(new ChannelState().setOn(false));
+
+        // when
+        handler.handleRefreshCommand(channelUID);
+
+        // then
+        verifyUpdateState(channelUID, OFF);
+    }
+
     ChannelUID buildChannelUID(int id) {
         return new ChannelUID(thingUID, valueOf(id));
     }
@@ -497,5 +545,9 @@ class CloudDeviceHandlerTest {
     @SuppressWarnings("SameParameterValue")
     ChannelUID findDimmerAndRgbChannelUID(AdditionalChannelType channelType) {
         return new ChannelUID(thingUID, dimmerAndRgbChannelId + channelType.getSuffix());
+    }
+
+    void verifyUpdateState(ChannelUID channelUID, State state) {
+        verify(callback).stateUpdated(channelUID, state);
     }
 }
