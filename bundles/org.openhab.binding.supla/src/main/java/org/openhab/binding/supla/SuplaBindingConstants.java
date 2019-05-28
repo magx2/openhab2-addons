@@ -67,7 +67,6 @@ public class SuplaBindingConstants {
         public static final String ROLLER_SHUTTER_CHANNEL_ID = "roller-shutter-channel";
         public static final String TEMPERATURE_CHANNEL_ID = "temperature-channel";
         public static final String HUMIDITY_CHANNEL_ID = "humidity-channel";
-        public static final String TEMPERATURE_AND_HUMIDITY_CHANNEL_ID = "temperature-and-humidity-channel";
         public static final String DIMMER_CHANNEL_ID = "dimmer-channel";
         public static final String TOGGLE_GAT_CHANNEL_ID = "toggle-gate-channel";
         public static final String EXTRA_LIGHT_ACTIONS_CHANNEL_ID = "extra-light-actions-channel";

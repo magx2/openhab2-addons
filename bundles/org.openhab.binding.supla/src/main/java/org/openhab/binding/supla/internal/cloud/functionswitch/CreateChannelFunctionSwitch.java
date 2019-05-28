@@ -27,10 +27,11 @@ import static org.openhab.binding.supla.SuplaBindingConstants.Channels.RGB_CHANN
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.ROLLER_SHUTTER_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.SWITCH_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.SWITCH_CHANNEL_RO_ID;
-import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_AND_HUMIDITY_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TOGGLE_GAT_CHANNEL_ID;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.EXTRA_LIGHT_ACTIONS;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.HUMIDITY;
+import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.TEMPERATURE;
 
 @SuppressWarnings("PackageAccessibility")
 public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<List<Channel>> {
@@ -73,7 +74,10 @@ public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.Fu
 
     @Override
     public List<Channel> onHumidityAndTemperature(pl.grzeslowski.jsupla.api.generated.model.Channel channel) {
-        return singletonList(createChannel(channel, TEMPERATURE_AND_HUMIDITY_CHANNEL_ID, "String"));
+        return asList(
+                createChannel(TEMPERATURE_CHANNEL_ID, "Number", channel.getId() + TEMPERATURE.getSuffix(), "Temperature"),
+                createChannel(HUMIDITY_CHANNEL_ID, "Number", channel.getId() + HUMIDITY.getSuffix(), "Humidity")
+        );
     }
 
     @Override

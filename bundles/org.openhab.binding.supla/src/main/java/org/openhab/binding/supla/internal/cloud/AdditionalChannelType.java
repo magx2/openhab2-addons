@@ -1,7 +1,10 @@
 package org.openhab.binding.supla.internal.cloud;
 
 public enum AdditionalChannelType {
-    LED_BRIGHTNESS("_brightness"), EXTRA_LIGHT_ACTIONS("_extra_light_actions");
+    LED_BRIGHTNESS("_brightness"),
+    EXTRA_LIGHT_ACTIONS("_extra_light_actions"),
+    TEMPERATURE("_temp"),
+    HUMIDITY("_humidity");
 
     private final String suffix;
 

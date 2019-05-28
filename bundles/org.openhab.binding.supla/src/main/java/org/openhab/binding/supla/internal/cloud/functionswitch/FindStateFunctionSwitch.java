@@ -3,7 +3,6 @@ package org.openhab.binding.supla.internal.cloud.functionswitch;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.AdditionalChannelType;
@@ -31,10 +30,16 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
     private final Logger logger = LoggerFactory.getLogger(FindStateFunctionSwitch.class);
     private final LedCommandExecutor ledCommandExecutor;
     private final ChannelUID channelUID;
+    private final ChannelInfoParser channelInfoParser;
 
-    public FindStateFunctionSwitch(LedCommandExecutor ledCommandExecutor, final ChannelUID channelUID) {
+    public FindStateFunctionSwitch(LedCommandExecutor ledCommandExecutor, final ChannelUID channelUID, ChannelInfoParser channelInfoParser) {
         this.ledCommandExecutor = ledCommandExecutor;
         this.channelUID = channelUID;
+        this.channelInfoParser = channelInfoParser;
+    }
+
+    public FindStateFunctionSwitch(LedCommandExecutor ledCommandExecutor, final ChannelUID channelUID) {
+        this(ledCommandExecutor, channelUID, ChannelInfoParser.PARSER);
     }
 
     @Override
@@ -69,7 +74,20 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
 
     @Override
     public Optional<? extends State> onHumidityAndTemperature(Channel channel) {
-        return of(channel).map(Channel::getState).map(s -> findTemperature(s, channel.getParam2()) + " °C" + findHumidity(s, channel.getParam3()) + "%").map(StringType::new);
+        final ChannelInfo channelInfo = channelInfoParser.parse(channelUID);
+        final AdditionalChannelType channelType = channelInfo.getAdditionalChannelType();
+        if (channelType == null) {
+            throw new NullPointerException("Additional type for channel " + channel + " cannot bt null!");
+        }
+        final Optional<ChannelState> state = of(channel).map(Channel::getState);
+        switch (channelType) {
+            case TEMPERATURE:
+                return state.map(s -> findTemperature(s, channel.getParam2())).map(DecimalType::new);
+            case HUMIDITY:
+                return state.map(s -> findHumidity(s, channel.getParam2())).map(DecimalType::new);
+            default:
+                throw new IllegalStateException("Additional type " + channelType + " is not supported for HumidityAndTemperature channel");
+        }
     }
 
     private BigDecimal findTemperature(ChannelState channelState, Integer param2) {
@@ -160,7 +178,7 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
 
     @Override
     public Optional<? extends State> onDimmerAndRgbLightning(Channel channel) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+        final ChannelInfo channelInfo = channelInfoParser.parse(channelUID);
         AdditionalChannelType channelType = channelInfo.getAdditionalChannelType();
         if (channelType == null) {
             final Optional<HSBType> state = of(channel)

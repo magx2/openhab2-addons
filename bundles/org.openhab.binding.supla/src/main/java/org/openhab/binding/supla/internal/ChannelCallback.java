@@ -31,7 +31,6 @@ import static org.openhab.binding.supla.SuplaBindingConstants.Channels.DECIMAL_C
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.RGB_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.ROLLER_SHUTTER_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.SWITCH_CHANNEL_ID;
-import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_AND_HUMIDITY_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.TEMPERATURE_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.Channels.UNKNOWN_CHANNEL_ID;
 
@@ -121,12 +120,13 @@ public class ChannelCallback implements ChannelValueSwitch.Callback<org.eclipse.
 
     @Override
     public Channel onTemperatureAndHumidityValue(final TemperatureAndHumidityValue temperatureAndHumidityValue) {
-        final ChannelUID channelUid = createChannelUid();
-        final ChannelTypeUID channelTypeUID = createChannelTypeUID(TEMPERATURE_AND_HUMIDITY_CHANNEL_ID);
-
-        return ChannelBuilder.create(channelUid, null) // TODO should it be null?
-                       .withType(channelTypeUID)
-                       .build();
+//        final ChannelUID channelUid = createChannelUid();
+//        final ChannelTypeUID channelTypeUID = createChannelTypeUID(TEMPERATURE_AND_HUMIDITY_CHANNEL_ID);
+//
+//        return ChannelBuilder.create(channelUid, null) // TODO should it be null?
+//                       .withType(channelTypeUID)
+//                       .build();
+        return null; // TODO support returning 2 channels: temp and humidity
     }
 
     @Override
