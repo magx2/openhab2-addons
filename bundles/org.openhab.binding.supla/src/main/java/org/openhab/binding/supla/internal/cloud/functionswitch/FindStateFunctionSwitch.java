@@ -162,9 +162,11 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
 
     @Override
     public Optional<? extends State> onDimmer(Channel channel) {
-        return of(channel).map(Channel::getState).map(ChannelState::getBrightness)
-                       .map(b -> b / 100.0)
-                       .map(DecimalType::new);
+        final Optional<PercentType> state = of(channel).map(Channel::getState)
+                                                    .map(ChannelState::getBrightness)
+                                                    .map(PercentType::new);
+        state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+        return state;
     }
 
     @Override

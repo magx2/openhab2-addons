@@ -75,33 +75,30 @@ final class SuplaLedCommandExecutor implements LedCommandExecutor {
     public void changeBrightness(final int channelId, final ChannelUID channelUID, final PercentType command) throws ApiException {
         final Optional<LedState> state = findLedState(channelUID);
         if (state.isPresent()) {
-            final LedState ledState = state.get();
-            sendNewLedValue(channelUID, channelId, ledState.hsb, command);
+            sendNewLedValue(channelUID, channelId, state.get().hsb, command);
         }
     }
 
     private void sendNewLedValue(
             final ChannelUID channelUID,
             final int channelId,
-            final HSBType hsbType,
+            @Nullable final HSBType hsbType,
             @Nullable final PercentType brightness) throws ApiException {
-        final int colorBrightness = hsbType.getBrightness().intValue();
-        final HSBType hsbToConvertToRgb = new HSBType(
-                hsbType.getHue(),
-                hsbType.getSaturation(),
-                PercentType.HUNDRED
-        );
-        final String rgb = HsbTypeConverter.INSTANCE.convert(hsbToConvertToRgb);
-        logger.trace("Changing RGB to {}, color brightness {}%, brightness {}%", rgb, colorBrightness, brightness);
-        final ChannelExecuteActionRequest actionWithoutBrightness = new ChannelExecuteActionRequest()
-                                                                            .action(SET_RGBW_PARAMETERS)
-                                                                            .color(rgb)
-                                                                            .colorBrightness(colorBrightness);
-        final ChannelExecuteActionRequest action;
+        ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(SET_RGBW_PARAMETERS);
+        if (hsbType != null) {
+            final int colorBrightness = hsbType.getBrightness().intValue();
+            final HSBType hsbToConvertToRgb = new HSBType(
+                    hsbType.getHue(),
+                    hsbType.getSaturation(),
+                    PercentType.HUNDRED
+            );
+            final String rgb = HsbTypeConverter.INSTANCE.convert(hsbToConvertToRgb);
+            logger.trace("Changing RGB to {}, color brightness {}%", rgb, colorBrightness);
+            action = action.color(rgb).colorBrightness(colorBrightness);
+        }
         if (brightness != null) {
-            action = actionWithoutBrightness.brightness(brightness.intValue());
-        } else {
-            action = actionWithoutBrightness;
+            logger.trace("Changing brightness {}%", brightness);
+            action = action.brightness(brightness.intValue());
         }
 
         channelsApi.executeAction(action, channelId);
