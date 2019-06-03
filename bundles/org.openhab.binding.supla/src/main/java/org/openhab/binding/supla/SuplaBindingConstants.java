@@ -69,13 +69,6 @@ public class SuplaBindingConstants {
         public static final String HUMIDITY_CHANNEL_ID = "humidity-channel";
         public static final String DIMMER_CHANNEL_ID = "dimmer-channel";
         public static final String TOGGLE_GAT_CHANNEL_ID = "toggle-gate-channel";
-        public static final String EXTRA_LIGHT_ACTIONS_CHANNEL_ID = "extra-light-actions-channel";
         public static final String UNKNOWN_CHANNEL_ID = "unknown-channel";
-    }
-
-    public static class Commands {
-        public static final String OPEN_CLOSE_GATE_COMMAND = "open-close";
-        public static final String WHITE_LIGHT_COMMAND = "light-white";
-        public static final String OFF_LIGHT_COMMAND = "light-off";
     }
 }

@@ -9,7 +9,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -69,15 +68,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.supla.SuplaBindingConstants.Commands.OFF_LIGHT_COMMAND;
-import static org.openhab.binding.supla.SuplaBindingConstants.Commands.OPEN_CLOSE_GATE_COMMAND;
-import static org.openhab.binding.supla.SuplaBindingConstants.Commands.WHITE_LIGHT_COMMAND;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.EXTRA_LIGHT_ACTIONS;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN;
-import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.OPEN_CLOSE;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.REVEAL_PARTIALLY;
 import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SHUT;
@@ -433,60 +428,6 @@ class CloudDeviceHandlerTest {
 
         // then
         verify(channelsCloudApi, times(0)).executeAction(channelExecuteActionRequestCaptor.capture(), eq(rollerShutterChannelId));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"gateChannelId", "garageDoorChannelId"})
-    @DisplayName("show send request to Supla CLoud to OPEN/CLOSE gate or garage door")
-    void openCloseGateAndGarage(String idFieldName) throws Exception {
-
-        // given
-        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
-        final ChannelUID channelUID = buildChannelUID(id);
-
-        // when
-        handler.handleStringCommand(channelUID, new StringType(OPEN_CLOSE_GATE_COMMAND));
-
-        // then
-        verify(channelsCloudApi).executeAction(channelExecuteActionRequestCaptor.capture(), eq(id));
-        ChannelExecuteActionRequest value = channelExecuteActionRequestCaptor.getValue();
-        assertThat(value.getAction()).isEqualTo(OPEN_CLOSE);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"rgbChannelId", "dimmerAndRgbChannelId"})
-    @DisplayName("should send request to LedExecutor to change color to white")
-    void setLightColorToWhite(String idFieldName) throws Exception {
-
-        // given
-        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
-        final ChannelUID channelUID = buildChannelUID(id, EXTRA_LIGHT_ACTIONS);
-        final ChannelUID parentChannelUID = buildChannelUID(id);
-
-        // when
-        handler.handleStringCommand(channelUID, new StringType(WHITE_LIGHT_COMMAND));
-
-        // then
-        verify(ledCommandExecutor).changeColor(id, parentChannelUID, HSBType.WHITE);
-        verify(callback).stateUpdated(parentChannelUID, HSBType.WHITE);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"rgbChannelId", "dimmerAndRgbChannelId"})
-    @DisplayName("should send request to LedExecutor to change color to black")
-    void turnOffRgbLights(String idFieldName) throws Exception {
-
-        // given
-        final int id = (int) FieldUtils.readDeclaredField(this, idFieldName, true);
-        final ChannelUID channelUID = buildChannelUID(id, EXTRA_LIGHT_ACTIONS);
-        final ChannelUID parentChannelUID = buildChannelUID(id);
-
-        // when
-        handler.handleStringCommand(channelUID, new StringType(OFF_LIGHT_COMMAND));
-
-        // then
-        verify(ledCommandExecutor).changeColor(id, parentChannelUID, HSBType.BLACK);
-        verify(callback).stateUpdated(parentChannelUID, HSBType.BLACK);
     }
 
     @ParameterizedTest
