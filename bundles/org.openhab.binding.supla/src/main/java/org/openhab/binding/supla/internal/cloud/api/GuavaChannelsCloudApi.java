@@ -24,6 +24,7 @@ final class GuavaChannelsCloudApi implements ChannelsCloudApi {
                                   .build(new CacheLoader<GetChannelKey, Channel>() {
                                       @Override
                                       public Channel load(@SuppressWarnings("NullableProblems") final GetChannelKey key) throws Exception {
+                                          GuavaCache.LOGGER.trace("Missed cache for `getChannel`");
                                           return channelsCloudApi.getChannel(key.id, key.include);
                                       }
                                   });

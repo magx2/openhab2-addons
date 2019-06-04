@@ -18,6 +18,7 @@ final class GuavaServerCloudApi implements ServerCloudApi {
                                          @SuppressWarnings("NullableProblems")
                                          @Override
                                          public ServerInfo load(final String __) throws Exception {
+                                             GuavaCache.LOGGER.trace("Missed cache for `getServerInfo`");
                                              return serverCloudApi.getServerInfo();
                                          }
                                      });

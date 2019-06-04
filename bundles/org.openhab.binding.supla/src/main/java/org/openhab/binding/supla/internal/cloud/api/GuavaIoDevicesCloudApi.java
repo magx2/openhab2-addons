@@ -21,6 +21,7 @@ final class GuavaIoDevicesCloudApi implements IoDevicesCloudApi {
                                    .build(new CacheLoader<GetIoDeviceKey, Device>() {
                                        @Override
                                        public Device load(@SuppressWarnings("NullableProblems") final GetIoDeviceKey key) throws Exception {
+                                           GuavaCache.LOGGER.trace("Missed cache for ``getIoDevice");
                                            return ioDevicesCloudApi.getIoDevice(key.id, key.include);
                                        }
                                    });
@@ -29,6 +30,7 @@ final class GuavaIoDevicesCloudApi implements IoDevicesCloudApi {
                                     .build(new CacheLoader<List<String>, List<Device>>() {
                                         @Override
                                         public List<Device> load(@SuppressWarnings("NullableProblems") final List<String> key) throws Exception {
+                                            GuavaCache.LOGGER.trace("Missed cache for `getIoDevices`");
                                             return ioDevicesCloudApi.getIoDevices(key);
                                         }
                                     });
