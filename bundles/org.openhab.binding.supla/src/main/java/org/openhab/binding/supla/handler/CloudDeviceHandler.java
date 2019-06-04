@@ -309,6 +309,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                 return;
             case DIMMER:
                 ledCommandExecutor.changeBrightness(channelId, channelUID, command);
+                break;
             default:
                 logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
         }
