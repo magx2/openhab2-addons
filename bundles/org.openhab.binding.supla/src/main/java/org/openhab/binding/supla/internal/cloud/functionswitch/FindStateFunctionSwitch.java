@@ -138,7 +138,11 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
 
     @Override
     public Optional<? extends State> onControllingTheRollerShutter(Channel channel) {
-        return of(channel).map(Channel::getState).map(ChannelState::getShut).map(PercentType::new);
+        return of(channel)
+                       .map(Channel::getState)
+                       .map(ChannelState::getShut)
+                       .map(shut -> 100 - shut)
+                       .map(PercentType::new);
     }
 
     @Override

@@ -257,6 +257,9 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         switch (channel.getFunction().getName()) {
             case CONTROLLINGTHEROLLERSHUTTER:
                 handleOneZeroCommand(channelId, command == UP, REVEAL, SHUT);
+                final int value = command == UP ? 100 : 0;
+                updateState(channelUID, new PercentType(value));
+                break;
         }
     }
 
@@ -300,7 +303,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
         switch (channel.getFunction().getName()) {
             case CONTROLLINGTHEROLLERSHUTTER:
-                final int shut = command.intValue();
+                final int shut = 100 - command.intValue();
                 logger.debug("Channel `{}` is roller shutter; setting shut={}%", channelUID, shut);
                 final ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(REVEAL_PARTIALLY).percentage(shut);
                 channelsApi.executeAction(action, channelId);
