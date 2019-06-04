@@ -268,7 +268,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         switch (channel.getFunction().getName()) {
             case RGBLIGHTING:
             case DIMMERANDRGBLIGHTING:
-                ledCommandExecutor.changeColor(channelId, channelUID, command);
+                ledCommandExecutor.changeColor(channelId, command);
                 return;
             default:
                 logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
@@ -302,13 +302,13 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
             case RGBLIGHTING:
             case DIMMERANDRGBLIGHTING:
                 if (channelInfo.getAdditionalChannelType() == null) {
-                    ledCommandExecutor.changeColorBrightness(channelId, channelUID, command);
+                    ledCommandExecutor.changeColorBrightness(channelId, command);
                 } else if (channelInfo.getAdditionalChannelType() == LED_BRIGHTNESS) {
-                    ledCommandExecutor.changeBrightness(channelId, channelUID, command);
+                    ledCommandExecutor.changeBrightness(channelId, command);
                 }
                 return;
             case DIMMER:
-                ledCommandExecutor.changeBrightness(channelId, channelUID, command);
+                ledCommandExecutor.changeBrightness(channelId, command);
                 break;
             default:
                 logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);

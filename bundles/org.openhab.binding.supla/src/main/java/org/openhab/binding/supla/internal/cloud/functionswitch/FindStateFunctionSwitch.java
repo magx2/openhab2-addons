@@ -165,7 +165,7 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
         final Optional<PercentType> state = of(channel).map(Channel::getState)
                                                     .map(ChannelState::getBrightness)
                                                     .map(PercentType::new);
-        state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+        state.ifPresent(s -> ledCommandExecutor.setLedState(channel.getId(), s));
         return state;
     }
 
@@ -174,7 +174,7 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
         final Optional<HSBType> state = of(channel)
                                                 .map(Channel::getState)
                                                 .map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness()));
-        state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+        state.ifPresent(s -> ledCommandExecutor.setLedState(channel.getId(), s));
         return state;
     }
 
@@ -186,14 +186,14 @@ public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.Functi
             final Optional<HSBType> state = of(channel)
                                                     .map(Channel::getState)
                                                     .map(s -> HsbTypeConverter.INSTANCE.toHsbType(s.getColor(), s.getColorBrightness()));
-            state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+            state.ifPresent(s -> ledCommandExecutor.setLedState(channel.getId(), s));
             return state;
         } else if (channelType == LED_BRIGHTNESS) {
             final Optional<PercentType> state = of(channel)
                                                         .map(Channel::getState)
                                                         .map(ChannelState::getBrightness)
                                                         .map(PercentType::new);
-            state.ifPresent(s -> ledCommandExecutor.setLedState(channelUID, s));
+            state.ifPresent(s -> ledCommandExecutor.setLedState(channel.getId(), s));
             return state;
         } else {
             logger.warn("Do not know how to support {} on dimmer and RGB", channelType);

@@ -387,7 +387,7 @@ class CloudDeviceHandlerTest {
         handler.handlePercentCommand(channelUID, command);
 
         // then
-        verify(ledCommandExecutor).changeColorBrightness(id, channelUID, command);
+        verify(ledCommandExecutor).changeColorBrightness(id, command);
     }
 
     @Test
@@ -402,7 +402,7 @@ class CloudDeviceHandlerTest {
         handler.handlePercentCommand(dimmerAndRgbChannelUID, command);
 
         // then
-        verify(ledCommandExecutor).changeBrightness(dimmerAndRgbChannelId, dimmerAndRgbChannelUID, command);
+        verify(ledCommandExecutor).changeBrightness(dimmerAndRgbChannelId, command);
     }
 
     @Test
@@ -467,7 +467,7 @@ class CloudDeviceHandlerTest {
         handler.handleStringCommand(channelUID, new StringType(WHITE_LIGHT_COMMAND));
 
         // then
-        verify(ledCommandExecutor).changeColor(id, parentChannelUID, HSBType.WHITE);
+        verify(ledCommandExecutor).changeColor(id, HSBType.WHITE);
         verify(callback).stateUpdated(parentChannelUID, HSBType.WHITE);
     }
 
@@ -485,7 +485,7 @@ class CloudDeviceHandlerTest {
         handler.handleStringCommand(channelUID, new StringType(OFF_LIGHT_COMMAND));
 
         // then
-        verify(ledCommandExecutor).changeColor(id, parentChannelUID, HSBType.BLACK);
+        verify(ledCommandExecutor).changeColor(id, HSBType.BLACK);
         verify(callback).stateUpdated(parentChannelUID, HSBType.BLACK);
     }
 
