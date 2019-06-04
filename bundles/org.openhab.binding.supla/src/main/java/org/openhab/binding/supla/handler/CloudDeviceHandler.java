@@ -265,10 +265,16 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.generated.model.Channel channel = queryForChannel(channelId);
+        handleHsbCommand(channel, channelUID, command);
+    }
+
+    private void handleHsbCommand(final pl.grzeslowski.jsupla.api.generated.model.Channel channel,
+                                  final ChannelUID channelUID,
+                                  final HSBType command) throws ApiException {
         switch (channel.getFunction().getName()) {
             case RGBLIGHTING:
             case DIMMERANDRGBLIGHTING:
-                ledCommandExecutor.changeColor(channelId, command);
+                ledCommandExecutor.changeColor(channel.getId(), command);
                 return;
             default:
                 logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
@@ -378,9 +384,9 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
                 if (EXTRA_LIGHT_ACTIONS.equals(channelInfo.getAdditionalChannelType())) {
                     final ChannelUID mainLightChannel = new ChannelUID(channelUID.getThingUID(), String.valueOf(channelId));
                     if (command.toFullString().equals(WHITE_LIGHT_COMMAND)) {
-                        changeColorOfRgb(HSBType.WHITE, mainLightChannel);
+                        changeColorOfRgb(channel, HSBType.WHITE, mainLightChannel);
                     } else if (command.toFullString().equals(OFF_LIGHT_COMMAND)) {
-                        changeColorOfRgb(HSBType.BLACK, mainLightChannel);
+                        changeColorOfRgb(channel, HSBType.BLACK, mainLightChannel);
                     }
                 }
                 break;
@@ -389,11 +395,12 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         }
     }
 
-    private void changeColorOfRgb(HSBType hsbType, ChannelUID rgbChannelUid) throws ApiException {
+    private void changeColorOfRgb(final pl.grzeslowski.jsupla.api.generated.model.Channel channel,
+                                  final HSBType hsbType,
+                                  final ChannelUID rgbChannelUid) throws ApiException {
         logger.trace("Setting color to `{}` for channel `{}`", hsbType, rgbChannelUid);
-        handleHsbCommand(rgbChannelUid, hsbType);
+        handleHsbCommand(channel, rgbChannelUid, hsbType);
         updateState(rgbChannelUid, hsbType);
-        handleCommand(rgbChannelUid, REFRESH);
     }
 
     void refresh() {
