@@ -1,6 +1,23 @@
-# supla Binding
+# Supla Binding
+
+<sub><sup>_This binding was tested with ZAMEL 
+[ROW-01](http://www.zamel.pl/produkty/supla-sterowanie-wifi/supla--odbiorniki-dopuszkowe/row01) and 
+[ROW-02](http://www.zamel.pl/produkty/supla-sterowanie-wifi/supla--odbiorniki-dopuszkowe/row02) devices. Big thanks 
+to **Zamel** for providing free testing devices._</sup></sub>
 
 This binding support Supla devices. To use it you don't need 
+
+## Supla Cloud
+
+### Generating Token
+
+First login to your [Supla Cloud](https://cloud.supla.org/), click `Integrations` and add new token (select all toggles).
+
+![Generate Token](doc/cloud/token-01.PNG "Generate Token")
+![Generate Token](doc/cloud/token-03.PNG "Generate Token")
+![Generate Token](doc/cloud/token-04.PNG "Generate Token")
+
+### Adding 
 
 ## Supported Things
 
@@ -10,10 +27,6 @@ Supported things:
 * RGB controllers
 * Temperature & humidity devices
 
-This binding was tested with ZAMEL 
-[ROW-01](http://www.zamel.pl/produkty/supla-sterowanie-wifi/supla--odbiorniki-dopuszkowe/row01) and 
-[ROW-02](http://www.zamel.pl/produkty/supla-sterowanie-wifi/supla--odbiorniki-dopuszkowe/row02) devices. Big thanks 
-to **Zamel** for providing free testing devices.
 
 ## Discovery
 
