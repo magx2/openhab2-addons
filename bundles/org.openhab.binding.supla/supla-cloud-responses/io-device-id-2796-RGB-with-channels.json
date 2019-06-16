@@ -1,0 +1,88 @@
+{
+  "id": 2796,
+  "name": "ZAMEL SLW-01",
+  "channels": [
+	{
+	  "id": 6961,
+	  "channelNumber": 0,
+	  "caption": "LED",
+	  "type": {
+		"id": 4010,
+		"name": "RGBLEDCONTROLLER",
+		"caption": "RGB led controller",
+		"output": true
+	  },
+	  "function": {
+		"id": 190,
+		"name": "RGBLIGHTING",
+		"caption": "RGB lighting",
+		"possibleActions": [
+		  {
+			"id": 80,
+			"name": "SET_RGBW_PARAMETERS",
+			"nameSlug": "set-rgbw-parameters",
+			"caption": "Adjust parameters"
+		  },
+		  {
+			"id": 60,
+			"name": "TURN_ON",
+			"nameSlug": "turn-on",
+			"caption": "On"
+		  },
+		  {
+			"id": 70,
+			"name": "TURN_OFF",
+			"nameSlug": "turn-off",
+			"caption": "Off"
+		  },
+		  {
+			"id": 110,
+			"name": "TOGGLE",
+			"nameSlug": "toggle",
+			"caption": "Toggle"
+		  }
+		],
+		"possibleVisualStates": [
+		  "off",
+		  "on"
+		],
+		"maxAlternativeIconIndex": 0
+	  },
+	  "param1": 0,
+	  "param2": 0,
+	  "param3": 0,
+	  "textParam1": null,
+	  "textParam2": null,
+	  "textParam3": null,
+	  "altIcon": 0,
+	  "hidden": false,
+	  "flags": 0,
+	  "inheritedLocation": false,
+	  "iodeviceId": 2796,
+	  "locationId": 2397,
+	  "functionId": 190,
+	  "userIconId": null,
+	  "typeId": 4010
+	}
+  ],
+  "enabled": true,
+  "comment": "LED Marcin",
+  "regDate": "2019-03-15T16:44:30+00:00",
+  "regIpv4": 3231857669,
+  "lastConnected": "2019-04-09T18:38:39+00:00",
+  "lastIpv4": 3231858343,
+  "softwareVersion": "2.5.5",
+  "flags": 0,
+  "manufacturer": {
+	"id": 4,
+	"name": "ZAMEL",
+	"caption": "Zamel sp. z o.o."
+  },
+  "productId": 0,
+  "gUIDString": "6D0A56D5-258B-6F18-92CB-906C5E7596BD",
+  "locationId": 2397,
+  "originalLocationId": null,
+  "channelsIds": [
+	6961
+  ]
+}

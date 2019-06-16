@@ -1,0 +1,158 @@
+{
+  "id": 2832,
+  "name": "ZAMEL SBW-01",
+  "channels": [
+	{
+	  "id": 7035,
+	  "channelNumber": 0,
+	  "caption": "Brama",
+	  "type": {
+		"id": 2900,
+		"name": "RELAY",
+		"caption": "Relay",
+		"output": true
+	  },
+	  "function": {
+		"id": 30,
+		"name": "CONTROLLINGTHEGARAGEDOOR",
+		"caption": "Garage door operation",
+		"possibleActions": [
+		  {
+			"id": 10,
+			"name": "OPEN",
+			"nameSlug": "open",
+			"caption": "Open"
+		  },
+		  {
+			"id": 20,
+			"name": "CLOSE",
+			"nameSlug": "close",
+			"caption": "Close"
+		  },
+		  {
+			"id": 90,
+			"name": "OPEN_CLOSE",
+			"nameSlug": "open-close",
+			"caption": "Open \/ close"
+		  }
+		],
+		"possibleVisualStates": [
+		  "opened",
+		  "closed"
+		],
+		"maxAlternativeIconIndex": 0
+	  },
+	  "param1": 500,
+	  "param2": 7036,
+	  "param3": 0,
+	  "textParam1": null,
+	  "textParam2": null,
+	  "textParam3": null,
+	  "altIcon": 0,
+	  "hidden": false,
+	  "flags": 0,
+	  "inheritedLocation": true,
+	  "iodeviceId": 2832,
+	  "locationId": 2520,
+	  "functionId": 30,
+	  "userIconId": null,
+	  "typeId": 2900
+	},
+	{
+	  "id": 7036,
+	  "channelNumber": 1,
+	  "caption": "Czujnik pe\u0142nego zamkni\u0119cia bramy",
+	  "type": {
+		"id": 1000,
+		"name": "SENSORNO",
+		"caption": "Sensor (normal open)",
+		"output": false
+	  },
+	  "function": {
+		"id": 70,
+		"name": "OPENINGSENSOR_GARAGEDOOR",
+		"caption": "Garage door opening sensor",
+		"possibleActions": [],
+		"possibleVisualStates": [
+		  "opened",
+		  "closed"
+		],
+		"maxAlternativeIconIndex": 0
+	  },
+	  "param1": 7035,
+	  "param2": 0,
+	  "param3": 0,
+	  "textParam1": null,
+	  "textParam2": null,
+	  "textParam3": null,
+	  "altIcon": 0,
+	  "hidden": false,
+	  "flags": 0,
+	  "inheritedLocation": true,
+	  "iodeviceId": 2832,
+	  "locationId": 2520,
+	  "functionId": 70,
+	  "userIconId": null,
+	  "typeId": 1000
+	},
+	{
+	  "id": 7037,
+	  "channelNumber": 2,
+	  "caption": "Czujnik pe\u0142nego otwarcia bramy",
+	  "type": {
+		"id": 1000,
+		"name": "SENSORNO",
+		"caption": "Sensor (normal open)",
+		"output": false
+	  },
+	  "function": {
+		"id": 70,
+		"name": "OPENINGSENSOR_GARAGEDOOR",
+		"caption": "Garage door opening sensor",
+		"possibleActions": [],
+		"possibleVisualStates": [
+		  "opened",
+		  "closed"
+		],
+		"maxAlternativeIconIndex": 0
+	  },
+	  "param1": 0,
+	  "param2": 0,
+	  "param3": 1,
+	  "textParam1": null,
+	  "textParam2": null,
+	  "textParam3": null,
+	  "altIcon": 0,
+	  "hidden": false,
+	  "flags": 0,
+	  "inheritedLocation": true,
+	  "iodeviceId": 2832,
+	  "locationId": 2520,
+	  "functionId": 70,
+	  "userIconId": null,
+	  "typeId": 1000
+	}
+  ],
+  "enabled": true,
+  "comment": "Brama Gara\u017c dom",
+  "regDate": "2019-03-17T16:13:02+00:00",
+  "regIpv4": 3231857669,
+  "lastConnected": "2019-04-09T18:39:38+00:00",
+  "lastIpv4": 3231858343,
+  "softwareVersion": "2.7.0",
+  "flags": 0,
+  "manufacturer": {
+	"id": 4,
+	"name": "ZAMEL",
+	"caption": "Zamel sp. z o.o."
+  },
+  "productId": 0,
+  "gUIDString": "7E7D5CD7-AD3F-EFE7-A9DD-8CB8DBCA3A9F",
+  "locationId": 2520,
+  "originalLocationId": null,
+  "channelsIds": [
+	7035,
+	7036,
+	7037
+  ]
+}
