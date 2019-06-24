@@ -31,7 +31,16 @@ First login to your [Supla Cloud](https://cloud.supla.org/), click `Integrations
 
 ## Adding 
 
-Go to ... and add `Supla Cloud Bridge`. After this you can go to discovery your devices that are added to Supla Cloud.
+Go to `Configuration` > `Things` and add **manually** `Supla Cloud`. 
+
+
+![Supla Cloud](doc/cloud/adding-01.png "Supla Cloud")
+
+After this you can go to `Inbox` and discovery your devices that are added to Supla Cloud.
+
+![Discovery](doc/cloud/adding-04.png "Discovery")
+![Scan For Things](doc/cloud/adding-02.png "Scan For Things")
+![Scan For Things](doc/cloud/adding-03.png "Scan For Things")
 
 ## (Not) Supported Things
 
@@ -48,7 +57,7 @@ Not supported things:
 
 # Native Supla Server
 
-Native Supla server is a way to create own server  
+Native Supla server is a way to create own Supla server. This is another way to hva local server without docker.  
 
 ## Discovery
 
