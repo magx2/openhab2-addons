@@ -55,6 +55,17 @@ Supported things:
 Not supported things:
 * Meters
 
+![Thermometer](doc/cloud/thing-01.png "Thermometer")
+![Humidity](doc/cloud/thing-02.png "Humidity")
+![RGB](doc/cloud/thing-02.png "RGB")
+![Thermometer & Humidity](doc/cloud/thing-04.png "Thermometer & Humidity")
+![RGB & Dimmer](doc/cloud/thing-05.png "RGB & Dimmer")
+![Dimmer](doc/cloud/thing-06.png "Dimmer")
+![Power](doc/cloud/thing-07.png "Power")
+![Roller Shutter](doc/cloud/thing-08.png "Roller Shutter")
+![Gate / SBW](doc/cloud/thing-09.png "Gate / SBW")
+![Supla Cloud](doc/cloud/thing-10.png "Supla Cloud")
+
 # Native Supla Server
 
 Native Supla server is a way to create own Supla server. This is another way to hva local server without docker.  
