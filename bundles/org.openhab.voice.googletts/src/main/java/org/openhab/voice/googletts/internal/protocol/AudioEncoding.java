@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,5 +40,5 @@ public enum AudioEncoding {
      * Android, and in browsers (at least Chrome and Firefox). The quality of the encoding is considerably higher than
      * MP3 while using approximately the same bitrate.
      */
-    OGG_OPUS;
+    OGG_OPUS
 }
