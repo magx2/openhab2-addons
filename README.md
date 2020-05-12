@@ -1,85 +1,156 @@
-# openHAB Add-ons
+# Official Supla Binding
 
-<img align="right" width="220" src="./logo.png" />
+<sub><sup>_This binding was tested with ZAMEL 
+[ROW-01](http://www.zamel.pl/produkty/supla-sterowanie-wifi/supla--odbiorniki-dopuszkowe/row01) and 
+[ROW-02](http://www.zamel.pl/produkty/supla-sterowanie-wifi/supla--odbiorniki-dopuszkowe/row02) devices. Big thanks 
+to **Zamel** for providing free testing devices._</sup></sub>
 
-[![Build Status](https://travis-ci.org/openhab/openhab-addons.svg)](https://travis-ci.org/openhab/openhab-addons)
-[![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
-[![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2164344)](https://www.bountysource.com/teams/openhab/issues?tracker_ids=2164344)
+Building automation systems available on the market are usually very complex, closed and expensive. In many cases they 
+must be installed on the very early stages of house construction. SUPLA is simple, open and free of charge. It gives an 
+opportunity to build elements based on RaspberryPI, Arduino or ESP8266 platforms and then join them either through LAN 
+or WiFi. Through SUPLA you can, among others, control the lighting, switch on and off household appliances and media, 
+open and shut gates and doors, or control room temperature. All the above can be done with just touch of a finger. SUPLA 
+is available from any place on Earth if you just have a smartphone or tables available as well as Internet access. SUPLA 
+is developed based on an Open Software and Open Hardware . This way, you can also develop this project! - [supla.org](https://www.supla.org/en/) 
 
-This repository contains the official set of add-ons that are implemented on top of openHAB Core APIs.
-Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)
-by the [openHAB Add-on maintainers](https://github.com/orgs/openhab/teams/add-ons-maintainers).
+# Supla Cloud
 
-To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer.
+SUPLA-CLOUD is a central point joining the executive devices for indirect and direct operation of your household or 
+office appliances and other elements with client applications which you can install on your tablets and smartphones. 
+This software allows to operate, from one spot, the whole system infrastructure using any modern Internet browser. Server 
+access is free of charge. You can also set up your own independent server working within the Internet or home network 
+using system sources which you can download from GITHUB. - [supla.org](https://www.supla.org/en/) 
 
-If you are interested in openHAB Core development, we invite you to come by on https://github.com/openhab/openhab-core.
+## Generating Token
 
-## Add-ons in other repositories
+First login to your [Supla Cloud](https://cloud.supla.org/), click `Integrations` and add new token (select all toggles).
 
-Some add-ons are not in this repository, but still part of the official [openHAB distribution](https://github.com/openhab/openhab-distro).
-An incomplete list of other repositories follows below:
+![Generate Token](doc/cloud/token-01.PNG "Generate Token")
+![Generate Token](doc/cloud/token-03.PNG "Generate Token")
+![Generate Token](doc/cloud/token-04.PNG "Generate Token")
 
-* https://github.com/openhab/org.openhab.binding.zwave
-* https://github.com/openhab/org.openhab.binding.zigbee
-* https://github.com/openhab/openhab-webui
+## Adding 
 
-## Development / Repository Organization
+Go to `Configuration` > `Things` and add **manually** `Supla Cloud`. 
 
-openHAB add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
 
-The openHAB build system is based on [Maven](https://maven.apache.org/what-is-maven.html).
-The official IDE (Integrated development environment) is Eclipse.
+![Supla Cloud](doc/cloud/adding-01.png "Supla Cloud")
 
-You find the following repository structure:
+After this you can go to `Inbox` and discovery your devices that are added to Supla Cloud.
+
+![Discovery](doc/cloud/adding-04.png "Discovery")
+![Scan For Things](doc/cloud/adding-02.png "Scan For Things")
+![Scan For Things](doc/cloud/adding-03.png "Scan For Things")
+
+## (Not) Supported Things
+
+Supported things:
+
+* Switches & lights
+* RGB and dimmer controllers
+* Temperature & humidity devices
+* Gates (and sensors)
+* Roller shutter controllers
+
+Not supported things:
+* Meters
+
+![Thermometer](doc/cloud/thing-01.png "Thermometer")
+![Humidity](doc/cloud/thing-02.png "Humidity")
+![RGB](doc/cloud/thing-02.png "RGB")
+![Thermometer & Humidity](doc/cloud/thing-04.png "Thermometer & Humidity")
+![RGB & Dimmer](doc/cloud/thing-05.png "RGB & Dimmer")
+![Dimmer](doc/cloud/thing-06.png "Dimmer")
+![Power](doc/cloud/thing-07.png "Power")
+![Roller Shutter](doc/cloud/thing-08.png "Roller Shutter")
+![Gate / SBW](doc/cloud/thing-09.png "Gate / SBW")
+![Supla Cloud](doc/cloud/thing-10.png "Supla Cloud")
+
+# Native Supla Server
+
+Native Supla server is a way to create own Supla server. This is another way to hva local server without docker.  
+
+## Discovery
+
+Using auto discovery is recommended way of adding devices and server. After creating Supla server from inbox all 
+devices will be added into the openHAB inbox page.
+
+## Full Example
+
+### Add Supla Server
+
+After adding Supla binding go to inbox and add _Supla Server_. By default it will work on port ```2016```.
+
+![Discover Supla server](doc/discover-server.PNG "Discover Supla server")
+
+![Add Supla server](doc/add-server.PNG "Add Supla server")
+ 
+On configuration page you need to choose ```Server Access ID``` and ```Server Access ID Password```. Write this things down 
+because you will need them later to configure your devices.
+ 
+![Configure Supla server](doc/configure-server.PNG "Configure Supla server")
+ 
+### Configure Supla devices
+
+To configure device follow instructions provided by manufacturer. 
+
+```Location ID``` and ```Location Password``` should be filled up with values from ```Server Access ID``` and 
+```Server Access ID Password```.
+
+![Configure Supla device](doc/configure-supla-device.PNG "Configure Supla device")
+
+After restarting device wait up to 30 sec. and check OpenHAB inbox. You should find there a thing that has the same 
+_GUID_ as device you configured. 
+
+![Discovery device](doc/discovery-device.PNG "Discovery device")
+
+![Add device](doc/add-device.PNG "Add device")
+
+Last thing to do is open previously added thing and link channels by clicking o them. 
+
+![Link channel](doc/link-channel.PNG "Link channel")
+
+# Bugs, problems, ect.
+
+If you find any bugs you can submit them [on Github issue page](https://github.com/SUPLA/openhab2-addons/issues). Before
+doing this it would be great if you would provide details logs. To do this add this lines in `org.ops4j.pax.logging.cfg` 
+(you should find this file in `userdata/etc` or `/var/lib/openhab2/etc`):
 
 ```
-.
-+-- bom       Maven buildsystem: Bill of materials
-|   +-- openhab-addons  Lists all extensions for other repos to reference them
-|   +-- ...             Other boms
-|
-+-- bundles   Official openHAB extensions
-|   +-- org.openhab.binding.airquality
-|   +-- org.openhab.binding.astro
-|   +-- ...
-|
-+-- features  Part of the runtime dependency resolver ("Karaf features")
-|
-+-- itests    Integration tests. Those tests require parts of the framework to run.
-|   +-- org.openhab.binding.astro.tests
-|   +-- org.openhab.binding.avmfritz.tests
-|   +-- ...
-|
-+-- src/etc   Auxilary buildsystem files: The license header for automatic checks for example
-+-- tools     Static code analyser instructions
-|
-+-- CODEOWNERS  This file assigns people to directories so that they are informed if a pull-request
-                would modify their add-ons.
+log4j2.logger.supla1.name = org.openhab.binding.supla
+log4j2.logger.supla1.level = TRACE
+log4j2.logger.supla1.additivity = true
+log4j2.logger.supla1.appenderRefs = supla
+log4j2.logger.supla1.appenderRef.supla.ref = SUPLA
+
+log4j2.logger.supla2.name = pl.grzeslowski
+log4j2.logger.supla2.level = TRACE
+log4j2.logger.supla2.additivity = true
+log4j2.logger.supla2.appenderRefs = supla
+log4j2.logger.supla2.appenderRef.supla.ref = SUPLA
+
+# Supla appender
+log4j2.appender.supla.name = SUPLA
+log4j2.appender.supla.type = RollingRandomAccessFile
+log4j2.appender.supla.fileName = ${openhab.logdir}/supla.log
+log4j2.appender.supla.filePattern = ${openhab.logdir}/supla.log.%i
+log4j2.appender.supla.immediateFlush = true
+log4j2.appender.supla.append = true
+log4j2.appender.supla.layout.type = PatternLayout
+log4j2.appender.supla.layout.pattern = %d{yyyy-MM-dd HH:mm:ss.SSS} [%-5.5p] [%-36.36c] - %m%n
+log4j2.appender.supla.policies.type = Policies
+log4j2.appender.supla.policies.size.type = SizeBasedTriggeringPolicy
+log4j2.appender.supla.policies.size.size = 10MB
+log4j2.appender.supla.strategy.type = DefaultRolloverStrategy
+log4j2.appender.supla.strategy.max = 10
 ```
 
-### Command line build
+The log file should be in the same directory as  `org.ops4j.pax.logging.cfg` and named `supla.log`.
 
-To build all add-ons from the command-line, type in:
+# Links
 
-`mvn clean install`
-
-Optionally you can skip tests (`-DskipTests`) or skip some static analysis (`-DskipChecks`).
-This does improve the build time but could hide problems in your code.
-For binding development you want to run that command without skipping checks and tests.
-To check if your code is following the [code style](https://www.openhab.org/docs/developer/guidelines.html#b-code-formatting-rules-style) run `mvn spotless:check`.
-If Maven prints `[INFO] Spotless check skipped` then run `mvn spotless:check -Dspotless.check.skip=false` instead as the check is not mandatory yet.
-To reformat you code run `mvn spotless:apply`.
-
-Subsequent calls can include the `-o` for offline as in: `mvn clean install -DskipChecks -o` which will be a bit faster.
-
-For integration tests you might need to run: `mvn clean install -DwithResolver -DskipChecks`
-
-You find a generated `.jar` file per bundle in the respective bundle `/target` directory.
-
-### How to develop via an Integrated Development Environment (IDE)
-
-We have assembled some step-by-step guides for different IDEs on our developer documentation website:
-
-https://www.openhab.org/docs/developer/#setup-the-development-environment
-
-Happy coding!
+* [supla.org](http://www.supla.org) - link to official page
+* [forum.supla.org](https://forum.supla.org/) - official forum page
+* [e-sklep.zamel.pl](https://e-sklep.zamel.pl/kategoria-produktu/supla/) - shop where you can buy certified Supla devices
+* [origin repo with this binding](https://github.com/SUPLA/openhab2-addons/)
+* Person responsible for creating this binding [Martin Grześlowski](https://github.com/magx2)
