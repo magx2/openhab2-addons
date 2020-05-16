@@ -1,27 +1,24 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.api.ChannelsApi;
-import pl.grzeslowski.jsupla.api.generated.model.Channel;
-import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
-
-import java.util.List;
+import pl.grzeslowski.jsupla.api.Api;
+import pl.grzeslowski.jsupla.api.ChannelApi;
+import pl.grzeslowski.jsupla.api.channel.Channel;
+import pl.grzeslowski.jsupla.api.channel.action.Action;
 
 final class SwaggerChannelsCloudApi implements ChannelsCloudApi {
-    private final ChannelsApi channelsApi;
+    private final ChannelApi channelsApi;
 
-    SwaggerChannelsCloudApi(final ApiClient apiClient) {
-        channelsApi = new ChannelsApi(apiClient);
+    SwaggerChannelsCloudApi(final Api api) {
+        channelsApi = api.getChannelApi();
     }
 
     @Override
-    public void executeAction(final ChannelExecuteActionRequest body, final Integer id) throws ApiException {
-        channelsApi.executeAction(body, id);
+    public void executeAction(final Channel channel, final Action action) {
+        channelsApi.updateState(channel, action);
     }
 
     @Override
-    public Channel getChannel(final int id, final List<String> include) throws ApiException {
-        return channelsApi.getChannel(id, include);
+    public Channel getChannel(final int id) {
+        return channelsApi.findChannel(id);
     }
 }

@@ -1,8 +1,7 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
-import org.slf4j.Logger;
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
+import pl.grzeslowski.jsupla.api.Api;
 
 public interface ApiClientFactory {
-    ApiClient newApiClient(String token, Logger logger);
+    Api newApiClient(String token);
 }

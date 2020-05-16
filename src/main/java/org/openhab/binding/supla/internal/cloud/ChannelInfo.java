@@ -1,14 +1,12 @@
 package org.openhab.binding.supla.internal.cloud;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import java.util.Objects;
 
 public final class ChannelInfo {
     private final int channelId;
-    @Nullable private final AdditionalChannelType additionalChannelType;
+    private final AdditionalChannelType additionalChannelType;
 
-    public ChannelInfo(final int channelId, final @Nullable AdditionalChannelType additionalChannelType) {
+    public ChannelInfo(final int channelId, final AdditionalChannelType additionalChannelType) {
         this.channelId = channelId;
         this.additionalChannelType = additionalChannelType;
     }

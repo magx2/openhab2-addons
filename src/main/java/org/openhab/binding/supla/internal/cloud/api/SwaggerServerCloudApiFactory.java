@@ -1,11 +1,7 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 final class SwaggerServerCloudApiFactory implements ServerCloudApiFactory {
     static final SwaggerServerCloudApiFactory FACTORY = new SwaggerServerCloudApiFactory();
-    private static final Logger swaggerServerCloudApiLogger = LoggerFactory.getLogger(SwaggerServerCloudApi.class);
     private final ApiClientFactory apiClientFactory;
 
     @SuppressWarnings("WeakerAccess")
@@ -19,6 +15,6 @@ final class SwaggerServerCloudApiFactory implements ServerCloudApiFactory {
 
     @Override
     public ServerCloudApi newServerCloudApi(final String token) {
-        return new SwaggerServerCloudApi(apiClientFactory.newApiClient(token, swaggerServerCloudApiLogger));
+        return new SwaggerServerCloudApi(apiClientFactory.newApiClient(token));
     }
 }

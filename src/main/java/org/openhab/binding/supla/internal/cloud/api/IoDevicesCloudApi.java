@@ -1,12 +1,12 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.model.Device;
 
-import java.util.List;
+import pl.grzeslowski.jsupla.api.device.Device;
+
+import java.util.SortedSet;
 
 public interface IoDevicesCloudApi {
-    Device getIoDevice(int id, List<String> include) throws ApiException;
+    Device getIoDevice(int id);
 
-    List<Device> getIoDevices(List<String> include) throws ApiException;
+    SortedSet<Device> getIoDevices();
 }

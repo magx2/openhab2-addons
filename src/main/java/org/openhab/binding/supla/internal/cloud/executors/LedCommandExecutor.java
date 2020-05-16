@@ -2,16 +2,16 @@ package org.openhab.binding.supla.internal.cloud.executors;
 
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
+import pl.grzeslowski.jsupla.api.channel.Channel;
 
 public interface LedCommandExecutor {
-    void setLedState(final int channelId, final PercentType brightness);
+    void setLedState(final Channel channel, final PercentType brightness);
 
-    void setLedState(final int channelId, final HSBType hsb);
+    void setLedState(final Channel channel, final HSBType hsb);
 
-    void changeColor(final int channelId, final HSBType command) throws ApiException;
+    void changeColor(final Channel channel, final HSBType command);
 
-    void changeColorBrightness(final int channelId, final PercentType command) throws ApiException;
+    void changeColorBrightness(final Channel channel, final PercentType command);
 
-    void changeBrightness(final int channelId, final PercentType command) throws ApiException;
+    void changeBrightness(final Channel channel, final PercentType command);
 }

@@ -9,7 +9,6 @@
 package org.openhab.binding.supla;
 
 import com.google.common.collect.ImmutableSet;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import java.util.Set;
@@ -20,7 +19,6 @@ import java.util.Set;
  *
  * @author Grzeslowski - Initial contribution
  */
-@NonNullByDefault
 public class SuplaBindingConstants {
 
     public static final String BINDING_ID = "supla";

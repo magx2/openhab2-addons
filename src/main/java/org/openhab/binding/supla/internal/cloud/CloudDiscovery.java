@@ -10,14 +10,12 @@ import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.model.Device;
+import pl.grzeslowski.jsupla.api.device.Device;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_GUID;
@@ -50,15 +48,15 @@ public final class CloudDiscovery extends AbstractDiscoveryService {
         }
         final IoDevicesCloudApi api = ioDevicesCloudApiFactory.newIoDevicesCloudApi(token.get());
         try {
-            api.getIoDevices(singletonList("channels")).forEach(this::addThing);
-        } catch (ApiException e) {
+            api.getIoDevices().forEach(this::addThing);
+        } catch (Exception e) {
             logger.error("Cannot get IO devices from Supla Cloud!", e);
         }
         logger.debug("Finished Supla Cloud scan");
     }
 
     private void addThing(Device device) {
-        final ThingUID thingUID = new ThingUID(SUPLA_DEVICE_TYPE, findBridgeUID(), device.getGUIDString());
+        final ThingUID thingUID = new ThingUID(SUPLA_DEVICE_TYPE, findBridgeUID(), device.getGuid());
         final DiscoveryResult discoveryResult = createDiscoveryResult(thingUID, buildThingLabel(device), buildThingProperties(device));
         thingDiscovered(discoveryResult);
     }
@@ -95,13 +93,13 @@ public final class CloudDiscovery extends AbstractDiscoveryService {
         if (!isNullOrEmpty(primaryLabel)) {
             return primaryLabel;
         } else {
-            return device.getGUIDString();
+            return device.getGuid();
         }
     }
 
     private Map<String, Object> buildThingProperties(Device device) {
         return ImmutableMap.<String, Object>builder()
-                       .put(SUPLA_DEVICE_GUID, device.getGUIDString())
+                       .put(SUPLA_DEVICE_GUID, device.getGuid())
                        .put(SUPLA_DEVICE_CLOUD_ID, device.getId())
                        .build();
     }

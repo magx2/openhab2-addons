@@ -1,7 +1,6 @@
 package org.openhab.binding.supla.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
-
+import javax.validation.constraints.NotNull;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
@@ -12,7 +11,7 @@ public final class ReadWriteMonad<T> {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final T t;
 
-    public ReadWriteMonad(@NonNull final T t) {
+    public ReadWriteMonad(@NotNull final T t) {
         this.t = requireNonNull(t);
     }
 

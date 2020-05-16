@@ -3,8 +3,7 @@ package org.openhab.binding.supla.internal.cloud.api;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.model.ServerInfo;
+import pl.grzeslowski.jsupla.api.serverinfo.ServerInfo;
 
 import java.util.concurrent.ExecutionException;
 
@@ -15,9 +14,8 @@ final class GuavaServerCloudApi implements ServerCloudApi {
         getServerInfoCache = CacheBuilder.newBuilder()
                                      .expireAfterWrite(GuavaCache.cacheEvictTime, GuavaCache.cacheEvictUnit)
                                      .build(new CacheLoader<String, ServerInfo>() {
-                                         @SuppressWarnings("NullableProblems")
                                          @Override
-                                         public ServerInfo load(final String __) throws Exception {
+                                         public ServerInfo load(final String __) {
                                              GuavaCache.LOGGER.trace("Missed cache for `getServerInfo`");
                                              return serverCloudApi.getServerInfo();
                                          }
@@ -25,11 +23,11 @@ final class GuavaServerCloudApi implements ServerCloudApi {
     }
 
     @Override
-    public ServerInfo getServerInfo() throws ApiException {
+    public ServerInfo getServerInfo() {
         try {
             return getServerInfoCache.get("getServerInfo()");
         } catch (ExecutionException e) {
-            throw new ApiException(e);
+            throw new RuntimeException("Cannot get server info", e);
         }
     }
 }

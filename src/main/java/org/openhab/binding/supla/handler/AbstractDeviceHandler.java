@@ -1,6 +1,5 @@
 package org.openhab.binding.supla.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -16,6 +15,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.NotNull;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
@@ -72,21 +73,21 @@ abstract class AbstractDeviceHandler extends BaseThingHandler {
         }
     }
 
-    protected abstract void handleRefreshCommand(@NonNull final ChannelUID channelUID) throws Exception;
+    protected abstract void handleRefreshCommand(@NotNull final ChannelUID channelUID) throws Exception;
 
-    protected abstract void handleOnOffCommand(@NonNull final ChannelUID channelUID, @NonNull final OnOffType command) throws Exception;
+    protected abstract void handleOnOffCommand(@NotNull final ChannelUID channelUID, @NotNull final OnOffType command) throws Exception;
 
-    protected abstract void handleUpDownCommand(@NonNull final ChannelUID channelUID, @NonNull final UpDownType command) throws Exception;
+    protected abstract void handleUpDownCommand(@NotNull final ChannelUID channelUID, @NotNull final UpDownType command) throws Exception;
 
-    protected abstract void handleHsbCommand(@NonNull final ChannelUID channelUID, @NonNull final HSBType command) throws Exception;
+    protected abstract void handleHsbCommand(@NotNull final ChannelUID channelUID, @NotNull final HSBType command) throws Exception;
 
-    protected abstract void handleOpenClosedCommand(@NonNull final ChannelUID channelUID, @NonNull final OpenClosedType command) throws Exception;
+    protected abstract void handleOpenClosedCommand(@NotNull final ChannelUID channelUID, @NotNull final OpenClosedType command) throws Exception;
 
-    protected abstract void handlePercentCommand(@NonNull final ChannelUID channelUID, @NonNull final PercentType command) throws Exception;
+    protected abstract void handlePercentCommand(@NotNull final ChannelUID channelUID, @NotNull final PercentType command) throws Exception;
 
-    protected abstract void handleDecimalCommand(@NonNull final ChannelUID channelUID, @NonNull final DecimalType command) throws Exception;
+    protected abstract void handleDecimalCommand(@NotNull final ChannelUID channelUID, @NotNull final DecimalType command) throws Exception;
 
-    protected abstract void handleStopMoveTypeCommand(@NonNull final ChannelUID channelUID, @NonNull final StopMoveType command) throws Exception;
+    protected abstract void handleStopMoveTypeCommand(@NotNull final ChannelUID channelUID, @NotNull final StopMoveType command) throws Exception;
 
-    protected abstract void handleStringCommand(@NonNull final ChannelUID channelUID, @NonNull final StringType command) throws Exception;
+    protected abstract void handleStringCommand(@NotNull final ChannelUID channelUID, @NotNull final StringType command) throws Exception;
 }

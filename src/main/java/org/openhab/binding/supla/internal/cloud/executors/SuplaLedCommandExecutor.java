@@ -1,14 +1,15 @@
 package org.openhab.binding.supla.internal.cloud.executors;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.openhab.binding.supla.internal.cloud.HsbTypeConverter;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
+import pl.grzeslowski.jsupla.api.Color;
+import pl.grzeslowski.jsupla.api.channel.Channel;
+import pl.grzeslowski.jsupla.api.channel.action.Action;
+import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAction;
+import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAndColor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
-import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SET_RGBW_PARAMETERS;
 
 @SuppressWarnings("PackageAccessibility")
 final class SuplaLedCommandExecutor implements LedCommandExecutor {
@@ -29,36 +29,34 @@ final class SuplaLedCommandExecutor implements LedCommandExecutor {
     }
 
     @Override
-    public void setLedState(int channelId, PercentType brightness) {
-        final Optional<LedState> ledState = findLedState(channelId);
+    public void setLedState(final Channel channel, PercentType brightness) {
+        final Optional<LedState> ledState = findLedState(channel);
         if (ledState.isPresent()) {
-            ledStates.put(channelId, new LedState(ledState.get().hsb, brightness));
+            ledStates.put(channel.getId(), new LedState(ledState.get().hsb, brightness));
         } else {
-            ledStates.put(channelId, new LedState(null, brightness));
+            ledStates.put(channel.getId(), new LedState(null, brightness));
         }
     }
 
     @Override
-    public void setLedState(int channelId, HSBType hsb) {
-        final Optional<LedState> ledState = findLedState(channelId);
+    public void setLedState(final Channel channel, HSBType hsb) {
+        final Optional<LedState> ledState = findLedState(channel);
         if (ledState.isPresent()) {
-            ledStates.put(channelId, new LedState(hsb, ledState.get().brightness));
+            ledStates.put(channel.getId(), new LedState(hsb, ledState.get().brightness));
         } else {
-            ledStates.put(channelId, new LedState(hsb, null));
+            ledStates.put(channel.getId(), new LedState(hsb, null));
         }
     }
 
     @Override
-    public void changeColor(final int channelId, final HSBType command) throws ApiException {
-        final Optional<LedState> state = findLedState(channelId);
-        if (state.isPresent()) {
-            sendNewLedValue(channelId, command, state.get().brightness);
-        }
+    public void changeColor(final Channel channel, final HSBType command) {
+        final Optional<LedState> state = findLedState(channel);
+        state.ifPresent(ledState -> sendNewLedValue(channel, command, ledState.brightness));
     }
 
     @Override
-    public void changeColorBrightness(final int channelId, final PercentType command) throws ApiException {
-        final Optional<LedState> state = findLedState(channelId);
+    public void changeColorBrightness(final Channel channel, final PercentType command) {
+        final Optional<LedState> state = findLedState(channel);
         if (state.isPresent()) {
             final LedState ledState = state.get();
             final HSBType newHsbType = new HSBType(
@@ -66,56 +64,53 @@ final class SuplaLedCommandExecutor implements LedCommandExecutor {
                     ledState.hsb.getSaturation(),
                     command
             );
-            sendNewLedValue(channelId, newHsbType, ledState.brightness);
+            sendNewLedValue(channel, newHsbType, ledState.brightness);
         }
     }
 
     @Override
-    public void changeBrightness(final int channelId, final PercentType command) throws ApiException {
-        final Optional<LedState> state = findLedState(channelId);
-        if (state.isPresent()) {
-            sendNewLedValue(channelId, state.get().hsb, command);
-        }
+    public void changeBrightness(final Channel channel, final PercentType command) {
+        final Optional<LedState> state = findLedState(channel);
+        state.ifPresent(ledState -> sendNewLedValue(channel, ledState.hsb, command));
     }
 
     private void sendNewLedValue(
-            final int channelId,
-            @Nullable final HSBType hsbType,
-            @Nullable final PercentType brightness) throws ApiException {
-        ChannelExecuteActionRequest action = new ChannelExecuteActionRequest().action(SET_RGBW_PARAMETERS);
+            final Channel channel,
+            final HSBType hsbType,
+            final PercentType brightness) {
+        final Action action;
         if (hsbType != null) {
             final int colorBrightness = hsbType.getBrightness().intValue();
-            final HSBType hsbToConvertToRgb = new HSBType(
-                    hsbType.getHue(),
-                    hsbType.getSaturation(),
-                    PercentType.HUNDRED
-            );
-            final String rgb = HsbTypeConverter.INSTANCE.convert(hsbToConvertToRgb);
-            logger.trace("Changing RGB to {}, color brightness {}%", rgb, colorBrightness);
-            action = action.color(rgb).colorBrightness(colorBrightness);
-        }
-        if (brightness != null) {
+            final Color.Hsv hsv = new Color.Hsv(
+                    hsbType.getHue().doubleValue(),
+                    hsbType.getSaturation().doubleValue(),
+                    100.0);
+            logger.trace("Changing HSV to {}, color brightness {}%", hsv, colorBrightness);
+            action = new SetBrightnessAndColor(colorBrightness, hsv);
+        } else if (brightness != null) {
             logger.trace("Changing brightness {}%", brightness);
-            action = action.brightness(brightness.intValue());
+            action = new SetBrightnessAction(brightness.intValue());
+        } else {
+            throw new IllegalStateException("Cannot `sendNewLedValue` for channel with ID `" + channel.getId() + "`");
         }
 
-        channelsApi.executeAction(action, channelId);
-        ledStates.put(channelId, new LedState(hsbType, brightness));
+        channelsApi.executeAction(channel, action);
+        ledStates.put(channel.getId(), new LedState(hsbType, brightness));
     }
 
-    private Optional<LedState> findLedState(final int channelId) {
-        final Optional<LedState> ledState = ofNullable(ledStates.get(channelId));
+    private Optional<LedState> findLedState(final Channel channel) {
+        final Optional<LedState> ledState = ofNullable(ledStates.get(channel.getId()));
         if (!ledState.isPresent()) {
-            logger.warn("There is no LED state for channel `{}`!", channelId);
+            logger.warn("There is no LED state for channel `{}`!", channel.getId());
         }
         return ledState;
     }
 
     private static class LedState {
-        @Nullable private final HSBType hsb;
-        @Nullable private final PercentType brightness;
+        private final HSBType hsb;
+        private final PercentType brightness;
 
-        private LedState(@Nullable final HSBType hsb, final @Nullable PercentType brightness) {
+        private LedState(final HSBType hsb, final PercentType brightness) {
             this.hsb = hsb;
             this.brightness = brightness;
         }

@@ -3,76 +3,39 @@ package org.openhab.binding.supla.internal.cloud.api;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.model.Channel;
-import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
+import pl.grzeslowski.jsupla.api.channel.Channel;
+import pl.grzeslowski.jsupla.api.channel.action.Action;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-
-import static java.util.Collections.unmodifiableList;
 
 final class GuavaChannelsCloudApi implements ChannelsCloudApi {
     private final ChannelsCloudApi channelsCloudApi;
-    private final LoadingCache<GetChannelKey, Channel> getChannelCache;
+    private final LoadingCache<Integer, Channel> getChannelCache;
 
     GuavaChannelsCloudApi(final ChannelsCloudApi channelsCloudApi) {
         this.channelsCloudApi = channelsCloudApi;
         getChannelCache = CacheBuilder.newBuilder()
                                   .expireAfterWrite(GuavaCache.cacheEvictTime, GuavaCache.cacheEvictUnit)
-                                  .build(new CacheLoader<GetChannelKey, Channel>() {
+                                  .build(new CacheLoader<Integer, Channel>() {
                                       @Override
-                                      public Channel load(@SuppressWarnings("NullableProblems") final GetChannelKey key) throws Exception {
+                                      public Channel load(final Integer id) {
                                           GuavaCache.LOGGER.trace("Missed cache for `getChannel`");
-                                          return channelsCloudApi.getChannel(key.id, key.include);
+                                          return channelsCloudApi.getChannel(id);
                                       }
                                   });
     }
 
     @Override
-    public void executeAction(final ChannelExecuteActionRequest body, final Integer id) throws ApiException {
-        channelsCloudApi.executeAction(body, id);
+    public void executeAction(final Channel channel, final Action action) {
+        channelsCloudApi.executeAction(channel, action);
     }
 
     @Override
-    public Channel getChannel(final int id, final List<String> include) throws ApiException {
+    public Channel getChannel(final int id) {
         try {
-            return getChannelCache.get(new GetChannelKey(id, include));
+            return getChannelCache.get(id);
         } catch (ExecutionException e) {
-            throw new ApiException(e);
-        }
-    }
-
-    private static final class GetChannelKey {
-        final int id;
-        final List<String> include;
-
-        private GetChannelKey(final int id, final List<String> include) {
-            this.id = id;
-            this.include = unmodifiableList(include);
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (!(o instanceof GetChannelKey)) return false;
-            final GetChannelKey that = (GetChannelKey) o;
-            return id == that.id &&
-                           Objects.equals(include, that.include);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(id);
-        }
-
-        @Override
-        public String toString() {
-            return "GetChannelKey{" +
-                           "id=" + id +
-                           ", include=" + include +
-                           '}';
+            throw new RuntimeException("Cannot get channel for key=" + id, e);
         }
     }
 }

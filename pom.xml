@@ -4,23 +4,89 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.openhab.addons.bundles</groupId>
-		<artifactId>org.openhab.addons.reactor.bundles</artifactId>
-		<version>2.5.0-SNAPSHOT</version>
-	</parent>
-
+	<groupId>org.openhab.addons</groupId>
 	<artifactId>org.openhab.binding.supla</artifactId>
+	<version>${openhab.version}</version>
 
 	<name>openHAB Add-ons :: Bundles :: Supla Binding</name>
 
 	<properties>
+		<openhab.version>2.5.0</openhab.version>
 		<bnd.importpackage>
 			!android.net,!android.util,!com.android.org.conscrypt,!org.apache.harmony.xnet.provider.jsse,!sun.misc,!com.barchart.udt,!com.barchart.udt.nio,!com.fasterxml.aalto,!com.fasterxml.aalto.stax,!com.google.protobuf,!com.google.protobuf.nano,!com.jcraft.jzlib,!com.ning.compress,!com.ning.compress.lzf,!com.ning.compress.lzf.util,!gnu.io,!io.netty.internal.tcnative,!javax.annotation.meta,!kotlin.*,!lzma.sdk,!lzma.sdk.lzma,!net.jpountz.lz4,!net.jpountz.xxhash,!org.bouncycastle.asn1.x500,!org.bouncycastle.cert,!org.bouncycastle.cert.jcajce,!org.bouncycastle.jce.provider,!org.bouncycastle.operator,!org.bouncycastle.operator.jcajce,!org.conscrypt,!org.eclipse.jetty.alpn,!org.eclipse.jetty.npn,!org.jboss.marshalling,,!sun.net.dns,!sun.security.*,!com.sun.nio.sctp,!org.apache.logging.log4j
 		</bnd.importpackage>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>
+		<!-- OpenHAB -->
+		<!-- https://mvnrepository.com/artifact/org.openhab.addons/org.openhab.addons.reactor -->
+		<dependency>
+			<groupId>org.openhab.addons</groupId>
+			<artifactId>org.openhab.addons.reactor</artifactId>
+			<version>${openhab.version}</version>
+			<type>pom</type>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core -->
+		<dependency>
+			<groupId>org.openhab.core.bundles</groupId>
+			<artifactId>org.openhab.core</artifactId>
+			<version>${openhab.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core.config.discovery -->
+		<dependency>
+			<groupId>org.openhab.core.bundles</groupId>
+			<artifactId>org.openhab.core.config.discovery</artifactId>
+			<version>${openhab.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core.config.core -->
+		<dependency>
+			<groupId>org.openhab.core.bundles</groupId>
+			<artifactId>org.openhab.core.config.core</artifactId>
+			<version>${openhab.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core.thing -->
+		<dependency>
+			<groupId>org.openhab.core.bundles</groupId>
+			<artifactId>org.openhab.core.thing</artifactId>
+			<version>${openhab.version}</version>
+		</dependency>
+
+		<!-- OSGi -->
+		<!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.component.annotations -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.component.annotations</artifactId>
+			<version>1.4.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.framework -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.framework</artifactId>
+			<version>1.9.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- jSupla -->
+		<dependency>
+			<groupId>pl.grzeslowski.jSupla</groupId>
+			<artifactId>nettyServer</artifactId>
+			<version>0.9.14</version>
+		</dependency>
+		<dependency>
+			<groupId>pl.grzeslowski.jsupla.api</groupId>
+			<artifactId>jsupla-api</artifactId>
+			<version>3.7.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.30</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -77,4 +143,82 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>https://repo.maven.apache.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>open-hab</id>
+			<name>Open HAB</name>
+			<url>https://dl.bintray.com/openhab/mvn/</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>bintray-big-boy-bigboy</id>
+			<name>bintray</name>
+			<url>https://dl.bintray.com/big-boy/bigboy</url>
+		</repository>
+	</repositories>
+
+	<!--	<repositories>-->
+	<!--		<repository>-->
+	<!--			<id>jcenter</id>-->
+	<!--			<name>JCenter Repository</name>-->
+	<!--			<url>https://jcenter.bintray.com</url>-->
+	<!--			<releases>-->
+	<!--				<enabled>true</enabled>-->
+	<!--&lt;!&ndash;				<updatePolicy>never</updatePolicy>&ndash;&gt;-->
+	<!--			</releases>-->
+	<!--			<snapshots>-->
+	<!--&lt;!&ndash;				<enabled>false</enabled>&ndash;&gt;-->
+	<!--			</snapshots>-->
+	<!--		</repository>-->
+	<!--		<repository>-->
+	<!--			<id>openhab-artifactory-release</id>-->
+	<!--			<name>JFrog Artifactory Repository</name>-->
+	<!--			<url>https://openhab.jfrog.io/openhab/libs-release</url>-->
+	<!--			<releases>-->
+	<!--				<enabled>true</enabled>-->
+	<!--&lt;!&ndash;				<updatePolicy>never</updatePolicy>&ndash;&gt;-->
+	<!--			</releases>-->
+	<!--			<snapshots>-->
+	<!--&lt;!&ndash;				<enabled>false</enabled>&ndash;&gt;-->
+	<!--			</snapshots>-->
+	<!--		</repository>-->
+	<!--		<repository>-->
+	<!--			<id>openhab-snapshots-release</id>-->
+	<!--			<name>JFrog Artifactory Repository</name>-->
+	<!--			<url>https://openhab.jfrog.io/openhab/libs-snapshot-local</url>-->
+	<!--			<releases>-->
+	<!--				<enabled>false</enabled>-->
+	<!--				<updatePolicy>never</updatePolicy>-->
+	<!--			</releases>-->
+	<!--			<snapshots>-->
+	<!--				<enabled>true</enabled>-->
+	<!--			</snapshots>-->
+	<!--		</repository>-->
+	<!--	</repositories>-->
+
+	<!--	<pluginRepositories>-->
+	<!--		<pluginRepository>-->
+	<!--			<id>jcenter</id>-->
+	<!--			<url>https://jcenter.bintray.com</url>-->
+	<!--		</pluginRepository>-->
+	<!--		<pluginRepository>-->
+	<!--			<id>openhab-artifactory-release</id>-->
+	<!--			<url>https://openhab.jfrog.io/openhab/libs-release</url>-->
+	<!--		</pluginRepository>-->
+	<!--	</pluginRepositories>-->
 </project>

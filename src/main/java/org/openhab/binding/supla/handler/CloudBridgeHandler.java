@@ -15,9 +15,7 @@ import org.openhab.binding.supla.internal.cloud.api.ServerCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ServerCloudApiFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.model.ServerInfo;
+import pl.grzeslowski.jsupla.api.serverinfo.ServerInfo;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -68,7 +66,7 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void internalInitialize() throws ApiException {
+    private void internalInitialize() {
         // init bridge api client
         final Configuration config = this.getConfig();
         this.oAuthToken = (String) config.get(O_AUTH_TOKEN);
@@ -95,8 +93,8 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         updateState(CLOUD_VERSION_CHANNEL_ID, new StringType(cloudVersion));
 
         // check if current api is supported
-        String apiVersion = ApiClient.API_VERSION;
-        List<String> supportedApiVersions = serverInfo.getSupportedApiVersions();
+        String apiVersion = "2.3";
+        List<String> supportedApiVersions = serverInfo.getSupportedVersions();
         if (!supportedApiVersions.contains(apiVersion)) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "This API version `" + apiVersion
                                                                + "` is not supported! Supported api versions: [" + String.join(", ", supportedApiVersions) + "].");

@@ -1,19 +1,18 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.api.ServerApi;
-import pl.grzeslowski.jsupla.api.generated.model.ServerInfo;
+import pl.grzeslowski.jsupla.api.Api;
+import pl.grzeslowski.jsupla.api.ServerInfoApi;
+import pl.grzeslowski.jsupla.api.serverinfo.ServerInfo;
 
 final class SwaggerServerCloudApi implements ServerCloudApi {
-    private final ServerApi serverApi;
+    private final ServerInfoApi serverInfoApi;
 
-    SwaggerServerCloudApi(final ApiClient apiClient) {
-        serverApi = new ServerApi(apiClient);
+    SwaggerServerCloudApi(final Api api) {
+        serverInfoApi = api.getServerInfoApi();
     }
 
     @Override
-    public ServerInfo getServerInfo() throws ApiException {
-        return serverApi.getServerInfo();
+    public ServerInfo getServerInfo() {
+        return serverInfoApi.findServerInfo();
     }
 }

@@ -1,11 +1,7 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 final class SwaggerChannelsCloudApiFactory implements ChannelsCloudApiFactory {
     static final SwaggerChannelsCloudApiFactory FACTORY = new SwaggerChannelsCloudApiFactory();
-    private static final Logger swaggerChannelsCloudApiLogger = LoggerFactory.getLogger(SwaggerChannelsCloudApi.class);
     private final ApiClientFactory apiClientFactory;
 
     @SuppressWarnings("WeakerAccess")
@@ -19,6 +15,6 @@ final class SwaggerChannelsCloudApiFactory implements ChannelsCloudApiFactory {
 
     @Override
     public ChannelsCloudApi newChannelsCloudApi(String token) {
-        return new SwaggerChannelsCloudApi(apiClientFactory.newApiClient(token, swaggerChannelsCloudApiLogger));
+        return new SwaggerChannelsCloudApi(apiClientFactory.newApiClient(token));
     }
 }

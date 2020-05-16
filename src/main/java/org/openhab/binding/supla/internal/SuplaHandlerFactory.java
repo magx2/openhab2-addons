@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.supla.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,6 +28,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.util.Hashtable;
 
 import static java.util.Objects.requireNonNull;
@@ -46,11 +44,10 @@ import static org.openhab.binding.supla.SuplaBindingConstants.SUPPORTED_THING_TY
  * @author Grzeslowski - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.supla")
-@NonNullByDefault
 public class SuplaHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SuplaHandlerFactory.class);
     private final IoDevicesCloudApiFactory ioDevicesCloudApiFactory;
-    private @Nullable SuplaDeviceRegistry suplaDeviceRegistry;
+    private SuplaDeviceRegistry suplaDeviceRegistry;
 
     SuplaHandlerFactory(final IoDevicesCloudApiFactory ioDevicesCloudApiFactory) {
         this.ioDevicesCloudApiFactory = ioDevicesCloudApiFactory;
@@ -66,11 +63,11 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         // it's done cause tycho-compile raises possible null error
-        final @Nullable SuplaDeviceRegistry suplaDeviceRegistryNonNull = suplaDeviceRegistry;
+        final SuplaDeviceRegistry suplaDeviceRegistryNonNull = suplaDeviceRegistry;
         if (SUPLA_DEVICE_TYPE.equals(thingTypeUID)) {
             final ThingUID bridgeUID = requireNonNull(thing.getBridgeUID(), "No bridge for " + thing);
             @SuppressWarnings("deprecation") final ThingTypeUID bridgeTypeUID = bridgeUID.getThingTypeUID();
@@ -88,8 +85,8 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @NonNull
-    private ThingHandler newSuplaDeviceHandler(final Thing thing, final @Nullable SuplaDeviceRegistry suplaDeviceRegistryNonNull) {
+    @NotNull
+    private ThingHandler newSuplaDeviceHandler(final Thing thing, final SuplaDeviceRegistry suplaDeviceRegistryNonNull) {
         final SuplaDeviceHandler suplaDeviceHandler = new SuplaDeviceHandler(thing);
         if (suplaDeviceRegistryNonNull != null) {
             suplaDeviceRegistryNonNull.addSuplaDevice(suplaDeviceHandler);
@@ -99,7 +96,7 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
         return suplaDeviceHandler;
     }
 
-    @NonNull
+    @NotNull
     private ThingHandler newSuplaCloudBridgeHandler(final Bridge thing) {
         SuplaCloudBridgeHandler bridgeHandler = new SuplaCloudBridgeHandler(thing, suplaDeviceRegistry);
         final SuplaDiscoveryService discovery = new SuplaDiscoveryService(bridgeHandler);
@@ -115,7 +112,7 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
         return bridgeHandler;
     }
 
-    @NonNull
+    @NotNull
     private ThingHandler newCloudDevice(final Thing thing) {
         return new CloudDeviceHandler(thing);
     }

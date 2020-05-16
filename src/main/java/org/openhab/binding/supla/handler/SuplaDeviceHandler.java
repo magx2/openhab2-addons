@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.supla.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -42,6 +39,7 @@ import pl.grzeslowski.jsupla.protocoljava.api.entities.ds.DeviceChannel;
 import pl.grzeslowski.jsupla.protocoljava.api.entities.ds.DeviceChannels;
 import pl.grzeslowski.jsupla.protocoljava.api.entities.sd.ChannelNewValue;
 
+import javax.validation.constraints.NotNull;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -61,11 +59,10 @@ import static reactor.core.publisher.Flux.just;
  *
  * @author Grzeslowski - Initial contribution
  */
-@NonNullByDefault
 public class SuplaDeviceHandler extends AbstractDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(SuplaDeviceHandler.class);
 
-    private pl.grzeslowski.jsupla.server.api.@Nullable Channel suplaChannel;
+    private pl.grzeslowski.jsupla.server.api.Channel suplaChannel;
     private final Object channelLock = new Object();
 
     private final Map<ChannelUID, Integer> channelUIDS = new HashMap<>();
@@ -149,12 +146,12 @@ public class SuplaDeviceHandler extends AbstractDeviceHandler {
     }
 
     @Override
-    protected void handleStopMoveTypeCommand(final @NonNull ChannelUID channelUID, final @NonNull StopMoveType command) throws Exception {
+    protected void handleStopMoveTypeCommand(final @NotNull ChannelUID channelUID, final @NotNull StopMoveType command) {
         logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
     }
 
     @Override
-    protected void handleStringCommand(final ChannelUID channelUID, final StringType command) throws Exception {
+    protected void handleStringCommand(final ChannelUID channelUID, final StringType command) {
         logger.warn("Not handling `{}` ({}) on channel `{}`", command, command.getClass().getSimpleName(), channelUID);
     }
 
@@ -240,7 +237,7 @@ public class SuplaDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     public void updateStatus(final ThingStatus status, final ThingStatusDetail statusDetail,
-                             @Nullable final String description) {
+                             final String description) {
         super.updateStatus(status, statusDetail, description);
     }
 }

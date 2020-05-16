@@ -1,26 +1,26 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
-import pl.grzeslowski.jsupla.api.generated.ApiClient;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.api.IoDevicesApi;
-import pl.grzeslowski.jsupla.api.generated.model.Device;
 
-import java.util.List;
+import pl.grzeslowski.jsupla.api.Api;
+import pl.grzeslowski.jsupla.api.DeviceApi;
+import pl.grzeslowski.jsupla.api.device.Device;
+
+import java.util.SortedSet;
 
 final class SwaggerIoDevicesCloudApi implements IoDevicesCloudApi {
-    private final IoDevicesApi ioDevicesApi;
+    private final DeviceApi ioDevicesApi;
 
-    SwaggerIoDevicesCloudApi(final ApiClient apiClient) {
-        ioDevicesApi = new IoDevicesApi(apiClient);
+    SwaggerIoDevicesCloudApi(final Api api) {
+        ioDevicesApi = api.getDeviceApi();
     }
 
     @Override
-    public Device getIoDevice(final int id, final List<String> include) throws ApiException {
-        return ioDevicesApi.getIoDevice(id, include);
+    public Device getIoDevice(final int id) {
+        return ioDevicesApi.findDevice(id);
     }
 
     @Override
-    public List<Device> getIoDevices(final List<String> include) throws ApiException {
-        return ioDevicesApi.getIoDevices(include);
+    public SortedSet<Device> getIoDevices() {
+        return ioDevicesApi.findDevices();
     }
 }
