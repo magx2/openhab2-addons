@@ -27,30 +27,35 @@
 			<artifactId>org.openhab.addons.reactor</artifactId>
 			<version>${openhab.version}</version>
 			<type>pom</type>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core -->
 		<dependency>
 			<groupId>org.openhab.core.bundles</groupId>
 			<artifactId>org.openhab.core</artifactId>
 			<version>${openhab.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core.config.discovery -->
 		<dependency>
 			<groupId>org.openhab.core.bundles</groupId>
 			<artifactId>org.openhab.core.config.discovery</artifactId>
 			<version>${openhab.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core.config.core -->
 		<dependency>
 			<groupId>org.openhab.core.bundles</groupId>
 			<artifactId>org.openhab.core.config.core</artifactId>
 			<version>${openhab.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core.thing -->
 		<dependency>
 			<groupId>org.openhab.core.bundles</groupId>
 			<artifactId>org.openhab.core.thing</artifactId>
 			<version>${openhab.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- OSGi -->
