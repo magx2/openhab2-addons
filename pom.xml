@@ -6,7 +6,7 @@
 
 	<groupId>org.openhab.addons</groupId>
 	<artifactId>org.openhab.binding.supla</artifactId>
-	<version>${openhab.version}</version>
+	<version>1.0.0</version>
 
 	<name>openHAB Add-ons :: Bundles :: Supla Binding</name>
 
@@ -78,13 +78,13 @@
 		<!-- jSupla -->
 		<dependency>
 			<groupId>pl.grzeslowski.jSupla</groupId>
-			<artifactId>nettyServer</artifactId>
-			<version>0.9.14</version>
+			<artifactId>nettyServerFat</artifactId>
+			<version>0.9.15</version>
 		</dependency>
 		<dependency>
 			<groupId>pl.grzeslowski.jsupla.api</groupId>
-			<artifactId>jsupla-api</artifactId>
-			<version>3.7.1</version>
+			<artifactId>jsupla-api-fat</artifactId>
+			<version>3.8.5</version>
 		</dependency>
 
 		<dependency>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>21.0</version>
+			<version>18.0</version>
 		</dependency>
 
 		<!-- TEST -->
@@ -182,25 +182,25 @@
 		<finalName>supla-binding</finalName>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.1</version>
-
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>5.0.1</version>
 				<executions>
 					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>bnd-process</goal>
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+					</archive>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
