@@ -4,4 +4,6 @@ import pl.grzeslowski.jsupla.api.serverinfo.ServerInfo;
 
 public interface ServerCloudApi {
     ServerInfo getServerInfo();
+
+    String getApiVersion();
 }

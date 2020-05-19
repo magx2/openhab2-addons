@@ -9,8 +9,10 @@ import java.util.concurrent.ExecutionException;
 
 final class GuavaServerCloudApi implements ServerCloudApi {
     private final LoadingCache<String, ServerInfo> getServerInfoCache;
+    private final String apiVersion;
 
     public GuavaServerCloudApi(final ServerCloudApi serverCloudApi) {
+        apiVersion = serverCloudApi.getApiVersion();
         getServerInfoCache = CacheBuilder.newBuilder()
                                      .expireAfterWrite(GuavaCache.cacheEvictTime, GuavaCache.cacheEvictUnit)
                                      .build(new CacheLoader<String, ServerInfo>() {
@@ -29,5 +31,10 @@ final class GuavaServerCloudApi implements ServerCloudApi {
         } catch (ExecutionException e) {
             throw new RuntimeException("Cannot get server info", e);
         }
+    }
+
+    @Override
+    public String getApiVersion() {
+        return apiVersion;
     }
 }

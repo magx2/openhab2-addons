@@ -93,7 +93,7 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         updateState(CLOUD_VERSION_CHANNEL_ID, new StringType(cloudVersion));
 
         // check if current api is supported
-        String apiVersion = "2.3";
+        String apiVersion = serverApi.getApiVersion();
         List<String> supportedApiVersions = serverInfo.getSupportedVersions();
         if (!supportedApiVersions.contains(apiVersion)) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "This API version `" + apiVersion
