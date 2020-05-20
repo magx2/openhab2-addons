@@ -6,13 +6,13 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.AdditionalChannelType;
-import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
 import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
 import org.openhab.binding.supla.internal.cloud.executors.LedCommandExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.channel.Channel;
+import pl.grzeslowski.jsupla.api.channel.ChannelDispatcher;
 import pl.grzeslowski.jsupla.api.channel.ControllingChannel;
 import pl.grzeslowski.jsupla.api.channel.DepthChannel;
 import pl.grzeslowski.jsupla.api.channel.DimmerAndRgbLightningChannel;
@@ -48,7 +48,7 @@ import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
 
 @SuppressWarnings("PackageAccessibility")
-public class FindStateFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<Optional<? extends State>> {
+public class FindStateFunctionSwitch implements ChannelDispatcher.FunctionSwitch<Optional<? extends State>> {
     private final Logger logger = LoggerFactory.getLogger(FindStateFunctionSwitch.class);
     private final LedCommandExecutor ledCommandExecutor;
     private final ChannelUID channelUID;

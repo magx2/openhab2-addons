@@ -16,7 +16,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.openhab.binding.supla.internal.cloud.ChannelInfo;
 import org.openhab.binding.supla.internal.cloud.ChannelInfoParser;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
@@ -65,7 +64,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.Commands.WHITE_LIG
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.EXTRA_LIGHT_ACTIONS;
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.LED_BRIGHTNESS;
-import static org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher.DISPATCHER;
+import static pl.grzeslowski.jsupla.api.channel.ChannelDispatcher.DISPATCHER;
 
 /**
  * This is handler for all Supla devices.
@@ -220,7 +219,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         logger.trace("Refreshing channel `{}`", channelUID);
         final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
         final FindStateFunctionSwitch findStateFunctionSwitch = new FindStateFunctionSwitch(ledCommandExecutor, channelUID);
-        Optional<? extends State> foundState = ChannelFunctionDispatcher.DISPATCHER.dispatch(channel, findStateFunctionSwitch);
+        Optional<? extends State> foundState = DISPATCHER.dispatch(channel, findStateFunctionSwitch);
         if (foundState.isPresent()) {
             final State state = foundState.get();
             logger.trace("Updating state `{}` to `{}`", channelUID, state);

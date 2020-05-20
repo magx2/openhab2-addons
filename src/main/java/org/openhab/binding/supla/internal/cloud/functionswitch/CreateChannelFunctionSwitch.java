@@ -6,9 +6,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.supla.SuplaBindingConstants;
-import org.openhab.binding.supla.internal.cloud.ChannelFunctionDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.grzeslowski.jsupla.api.channel.ChannelDispatcher;
 import pl.grzeslowski.jsupla.api.channel.ControllingChannel;
 import pl.grzeslowski.jsupla.api.channel.DepthChannel;
 import pl.grzeslowski.jsupla.api.channel.DimmerAndRgbLightningChannel;
@@ -46,7 +46,7 @@ import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.HUM
 import static org.openhab.binding.supla.internal.cloud.AdditionalChannelType.TEMPERATURE;
 
 @SuppressWarnings("PackageAccessibility")
-public class CreateChannelFunctionSwitch implements ChannelFunctionDispatcher.FunctionSwitch<List<Channel>> {
+public class CreateChannelFunctionSwitch implements ChannelDispatcher.FunctionSwitch<List<Channel>> {
     private final Logger logger = LoggerFactory.getLogger(CreateChannelFunctionSwitch.class);
     private final ThingUID thingUID;
 
