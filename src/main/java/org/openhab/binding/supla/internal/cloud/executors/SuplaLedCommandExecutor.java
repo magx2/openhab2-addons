@@ -11,15 +11,18 @@ import pl.grzeslowski.jsupla.api.channel.action.Action;
 import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAction;
 import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAndColor;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.math.MathContext.UNLIMITED;
 import static java.util.Optional.ofNullable;
 
 @SuppressWarnings("PackageAccessibility")
 final class SuplaLedCommandExecutor implements LedCommandExecutor {
+    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
     private final Logger logger = LoggerFactory.getLogger(SuplaLedCommandExecutor.class);
     private final Map<Integer, LedState> ledStates = new HashMap<>();
     private final ChannelsCloudApi channelsApi;
@@ -83,9 +86,9 @@ final class SuplaLedCommandExecutor implements LedCommandExecutor {
             final int colorBrightness = hsbType.getBrightness().intValue();
             final Color.Hsv hsv = new Color.Hsv(
                     hsbType.getHue().doubleValue(),
-                    hsbType.getSaturation().doubleValue(),
-                    100.0);
-            logger.trace("Changing HSV to {}, color brightness {}%", hsv, colorBrightness);
+                    hsbType.getSaturation().toBigDecimal().divide(ONE_HUNDRED, UNLIMITED).doubleValue(),
+                    1.0);
+            logger.trace("Changing HSV to `{}` (command `{}`), color brightness {}%", hsv, hsbType, colorBrightness);
             action = new SetBrightnessAndColor(colorBrightness, hsv);
         } else if (brightness != null) {
             logger.trace("Changing brightness {}%", brightness);

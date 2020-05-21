@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 import static org.eclipse.smarthome.core.library.types.UpDownType.UP;
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
@@ -93,9 +94,9 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
             final IoDevicesCloudApiFactory ioDevicesCloudApiFactory,
             final LedCommandExecutorFactory ledCommandExecutorFactory) {
         super(thing);
-        this.channelsCloudApiFactory = channelsCloudApiFactory;
-        this.ioDevicesCloudApiFactory = ioDevicesCloudApiFactory;
-        this.ledCommandExecutorFactory = ledCommandExecutorFactory;
+        this.channelsCloudApiFactory = requireNonNull(channelsCloudApiFactory, "channelsCloudApiFactory");
+        this.ioDevicesCloudApiFactory = requireNonNull(ioDevicesCloudApiFactory, "ioDevicesCloudApiFactory");
+        this.ledCommandExecutorFactory = requireNonNull(ledCommandExecutorFactory, "ledCommandExecutorFactory");
     }
 
     public CloudDeviceHandler(final Thing thing) {
@@ -301,8 +302,10 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
             channelsApi.executeAction(channel, action);
         } else if (channel instanceof RgbLightningChannel || channel instanceof DimmerAndRgbLightningChannel) {
             if (channelInfo.getAdditionalChannelType() == null) {
+                logger.debug("Channel `{}` is LED controller; setting color={}%", channelUID, command);
                 ledCommandExecutor.changeColorBrightness(channel, command);
             } else if (channelInfo.getAdditionalChannelType() == LED_BRIGHTNESS) {
+                logger.debug("Channel `{}` is brightness controller; setting brightness={}%", channelUID, command);
                 ledCommandExecutor.changeBrightness(channel, command);
             }
         } else if (channel instanceof DimmerChannel) {

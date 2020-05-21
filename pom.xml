@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>pl.grzeslowski.jsupla.api</groupId>
 			<artifactId>jsupla-api-fat</artifactId>
-			<version>3.8.5</version>
+			<version>3.8.6</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
