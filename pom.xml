@@ -80,11 +80,23 @@
 			<groupId>pl.grzeslowski.jSupla</groupId>
 			<artifactId>nettyServerFat</artifactId>
 			<version>0.9.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>pl.grzeslowski.jsupla.api</groupId>
 			<artifactId>jsupla-api-fat</artifactId>
 			<version>3.8.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
