@@ -55,9 +55,9 @@ public class FindStateFunctionSwitch implements ChannelDispatcher.FunctionSwitch
     private final ChannelInfoParser channelInfoParser;
 
     public FindStateFunctionSwitch(LedCommandExecutor ledCommandExecutor, final ChannelUID channelUID, ChannelInfoParser channelInfoParser) {
-        this.ledCommandExecutor = ledCommandExecutor;
-        this.channelUID = channelUID;
-        this.channelInfoParser = channelInfoParser;
+        this.ledCommandExecutor = requireNonNull(ledCommandExecutor, "ledCommandExecutor");
+        this.channelUID = requireNonNull(channelUID, "channelUID");
+        this.channelInfoParser = requireNonNull(channelInfoParser, "channelInfoParser");
     }
 
     public FindStateFunctionSwitch(LedCommandExecutor ledCommandExecutor, final ChannelUID channelUID) {
