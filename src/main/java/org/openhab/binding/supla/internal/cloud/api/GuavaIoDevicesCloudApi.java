@@ -8,8 +8,8 @@ import pl.grzeslowski.jsupla.api.device.Device;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 
+@SuppressWarnings("UnstableApiUsage")
 final class GuavaIoDevicesCloudApi implements IoDevicesCloudApi {
-    private final LoadingCache<Integer, Device> getIoDeviceCache;
     private final LoadingCache<Singleton, SortedSet<Device>> getIoDevicesCache;
 
     private enum Singleton {
@@ -17,15 +17,6 @@ final class GuavaIoDevicesCloudApi implements IoDevicesCloudApi {
     }
 
     GuavaIoDevicesCloudApi(final IoDevicesCloudApi ioDevicesCloudApi) {
-        getIoDeviceCache = CacheBuilder.newBuilder()
-                                   .expireAfterWrite(GuavaCache.cacheEvictTime, GuavaCache.cacheEvictUnit)
-                                   .build(new CacheLoader<Integer, Device>() {
-                                       @Override
-                                       public Device load(final Integer id) {
-                                           GuavaCache.LOGGER.trace("Missed cache for `getIoDevice`");
-                                           return ioDevicesCloudApi.getIoDevice(id);
-                                       }
-                                   });
         getIoDevicesCache = CacheBuilder.newBuilder()
                                     .expireAfterWrite(GuavaCache.cacheEvictTime, GuavaCache.cacheEvictUnit)
                                     .build(new CacheLoader<Singleton, SortedSet<Device>>() {
@@ -39,11 +30,11 @@ final class GuavaIoDevicesCloudApi implements IoDevicesCloudApi {
 
     @Override
     public Device getIoDevice(final int id) {
-        try {
-            return getIoDeviceCache.get(id);
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Cannot get device with id=" + id, e);
-        }
+        return getIoDevices()
+                       .stream()
+                       .filter(device -> device.getId() == id)
+                       .findAny()
+                       .orElseThrow(() -> new IllegalArgumentException("There is no IO Device with ID=" + id));
     }
 
     @Override
