@@ -45,6 +45,7 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
     private String apiVersion;
     private String cloudVersion;
     private ScheduledFuture<?> scheduledFuture;
+    private Long refreshInterval;
 
     CloudBridgeHandler(final Bridge bridge, final ServerCloudApiFactory serverCloudApiFactory) {
         super(bridge);
@@ -70,11 +71,12 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         // init bridge api client
         final Configuration config = this.getConfig();
         this.oAuthToken = (String) config.get(O_AUTH_TOKEN);
+        this.refreshInterval = ((BigDecimal) config.get("refreshInterval")).longValue();
 
         // get server info
         ServerCloudApi serverApi;
         try {
-            serverApi = serverCloudApiFactory.newServerCloudApi(oAuthToken);
+            serverApi = serverCloudApiFactory.newServerCloudApi(oAuthToken, refreshInterval, SECONDS);
         } catch (Exception e) {
             logger.error("Cannot create client to Supla Cloud! Probably oAuth token is incorrect!", e);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "Cannot create client to Supla Cloud! Probably oAuth token is incorrect! " + e.getMessage());
@@ -102,7 +104,6 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         }
 
         final ScheduledExecutorService scheduledPool = ThreadPoolManager.getScheduledPool(THREAD_POOL_NAME);
-        final int refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValue();
         this.scheduledFuture = scheduledPool.scheduleAtFixedRate(
                 this::refreshCloudDevices,
                 refreshInterval * 2,
@@ -138,6 +139,10 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
 
     public Optional<String> getOAuthToken() {
         return ofNullable(oAuthToken);
+    }
+
+    public Optional<Long> getRefreshInterval() {
+        return ofNullable(refreshInterval);
     }
 
     @Override

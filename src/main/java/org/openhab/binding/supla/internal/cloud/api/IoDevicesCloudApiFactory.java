@@ -1,10 +1,12 @@
 package org.openhab.binding.supla.internal.cloud.api;
 
+import java.util.concurrent.TimeUnit;
+
 @FunctionalInterface
 public interface IoDevicesCloudApiFactory {
     static IoDevicesCloudApiFactory getFactory() {
-        return new GuavaIoDevicesCloudApiFactory(SwaggerIoDevicesCloudApiFactory.FACTORY);
+        return DevicesAndChannelsCloudApiFactory.FACTORY;
     }
 
-    IoDevicesCloudApi newIoDevicesCloudApi(String token);
+    IoDevicesCloudApi newIoDevicesCloudApi(String token, long cacheEvictionTime, TimeUnit timeUnit);
 }

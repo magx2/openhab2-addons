@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_CLOUD_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_GUID;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_DEVICE_TYPE;
@@ -46,7 +47,16 @@ public final class CloudDiscovery extends AbstractDiscoveryService {
                     bridgeHandler.getThing().getUID());
             return;
         }
-        final IoDevicesCloudApi api = ioDevicesCloudApiFactory.newIoDevicesCloudApi(token.get());
+        final Optional<Long> refreshInterval = bridgeHandler.getRefreshInterval();
+        if (!refreshInterval.isPresent()) {
+            logger.warn("There is no refresh interval for bridge {}! Discovery was cancel.",
+                    bridgeHandler.getThing().getUID());
+            return;
+        }
+        final IoDevicesCloudApi api = ioDevicesCloudApiFactory.newIoDevicesCloudApi(
+                token.get(),
+                refreshInterval.get(),
+                SECONDS);
         try {
             api.getIoDevices().forEach(this::addThing);
         } catch (Exception e) {

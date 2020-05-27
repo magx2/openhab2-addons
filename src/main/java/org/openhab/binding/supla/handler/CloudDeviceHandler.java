@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 import static org.eclipse.smarthome.core.library.types.UpDownType.UP;
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
@@ -129,7 +130,12 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "There is no OAuth token in bridge!");
             return;
         }
-        initApi(token.get());
+        final Optional<Long> refreshInterval = handler.getRefreshInterval();
+        if (!refreshInterval.isPresent()) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "There is no refresh interval set in bridge!");
+            return;
+        }
+        initApi(token.get(), refreshInterval.get());
 
         if (!initCloudApi()) {
             return;
@@ -162,9 +168,9 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         }
     }
 
-    private void initApi(final String token) {
-        ioDevicesApi = ioDevicesCloudApiFactory.newIoDevicesCloudApi(token);
-        channelsApi = channelsCloudApiFactory.newChannelsCloudApi(token);
+    private void initApi(final String token, final long refreshInterval) {
+        ioDevicesApi = ioDevicesCloudApiFactory.newIoDevicesCloudApi(token, refreshInterval, SECONDS);
+        channelsApi = channelsCloudApiFactory.newChannelsCloudApi(token, refreshInterval, SECONDS);
     }
 
     private boolean checkIfIsOnline() {
