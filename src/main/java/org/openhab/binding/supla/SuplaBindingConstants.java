@@ -54,6 +54,10 @@ public class SuplaBindingConstants {
     public static final String ADDRESS_CHANNEL_ID = "address";
     public static final String API_VERSION_CHANNEL_ID = "api-version";
     public static final String CLOUD_VERSION_CHANNEL_ID = "cloud-version";
+    public static final String API_LIMIT_ID = "api-limit";
+    public static final String API_REMAINING_LIMIT_ID = "api-remaining-limit";
+    public static final String API_RESET_DATE_ID = "api-reset-date";
+    public static final String API_LAST_UPDATE_DATE_ID = "api-last-update-date";
     public static final String REFRESH_CHANNEL_ID = "refresh";
 
     public static class Channels {

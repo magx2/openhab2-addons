@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="supla"
 						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
-						  org.eclipse.smarthome.thing-description.xsd">
+						  xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="supla-cloud-bridge">
 		<label>Supla Cloud</label>
@@ -16,6 +15,10 @@
 			<channel id="address" typeId="address"/>
 			<channel id="api-version" typeId="api-version"/>
 			<channel id="cloud-version" typeId="cloud-version"/>
+			<channel id="api-limit" typeId="api-limit"/>
+			<channel id="api-remaining-limit" typeId="api-remaining-limit"/>
+			<channel id="api-reset-date" typeId="api-reset-date"/>
+			<channel id="api-last-update-date" typeId="api-last-update-date"/>
 		</channels>
 
 		<representation-property>oAuthToken</representation-property>
@@ -50,6 +53,26 @@
 	<channel-type id="cloud-version">
 		<item-type>String</item-type>
 		<label>Cloud Version</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="api-limit">
+		<item-type>Number</item-type>
+		<label>API Limit</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="api-remaining-limit">
+		<item-type>Number</item-type>
+		<label>API Remaining Limit</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="api-reset-date">
+		<item-type>DateTime</item-type>
+		<label>API Reset Date</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="api-last-update-date">
+		<item-type>DateTime</item-type>
+		<label>API Last Update Date</label>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

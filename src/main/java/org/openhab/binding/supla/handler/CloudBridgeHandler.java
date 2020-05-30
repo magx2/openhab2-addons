@@ -2,8 +2,11 @@ package org.openhab.binding.supla.handler;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -11,13 +14,17 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.supla.internal.ReadWriteMonad;
+import org.openhab.binding.supla.internal.cloud.api.ApiClientFactory;
 import org.openhab.binding.supla.internal.cloud.api.ServerCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ServerCloudApiFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.grzeslowski.jsupla.api.Api;
 import pl.grzeslowski.jsupla.api.serverinfo.ServerInfo;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +37,12 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.supla.SuplaBindingConstants.ADDRESS_CHANNEL_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.API_LAST_UPDATE_DATE_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.API_LIMIT_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.API_REMAINING_LIMIT_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.API_RESET_DATE_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.API_VERSION_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.CLOUD_VERSION_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.O_AUTH_TOKEN;
@@ -46,6 +58,7 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
     private String cloudVersion;
     private ScheduledFuture<?> scheduledFuture;
     private Long refreshInterval;
+    private Api api;
 
     CloudBridgeHandler(final Bridge bridge, final ServerCloudApiFactory serverCloudApiFactory) {
         super(bridge);
@@ -94,6 +107,9 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         updateState(API_VERSION_CHANNEL_ID, new StringType(apiVersion));
         updateState(CLOUD_VERSION_CHANNEL_ID, new StringType(cloudVersion));
 
+        api = ApiClientFactory.getInstance().newApiClient(oAuthToken);
+        updateApiUsageStatisticsChannels();
+
         // check if current api is supported
         String apiVersion = serverApi.getApiVersion();
         List<String> supportedApiVersions = serverInfo.getSupportedVersions();
@@ -114,6 +130,32 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         updateStatus(ONLINE);
     }
 
+    private void updateApiUsageStatisticsChannels() {
+        final Optional<Api.ApiUsageStatistics> apiUsageStatistics = api.getApiUsageStatistics();
+        final long limit;
+        final long remainingLimit;
+        final ZonedDateTime resetDate;
+        final ZonedDateTime lastUpdateDate;
+        if (apiUsageStatistics.isPresent()) {
+            logger.trace("Updating api usage statistics for {}#{}", CloudBridgeHandler.class.getSimpleName(), thing.getUID());
+            final Api.ApiUsageStatistics statistics = apiUsageStatistics.get();
+            limit = statistics.getLimit();
+            remainingLimit = statistics.getRemainingLimit();
+            resetDate = statistics.getResetDate();
+            lastUpdateDate = statistics.getLastUpdateDate();
+        } else {
+            logger.trace("No api usage statistics for {}#{}", CloudBridgeHandler.class.getSimpleName(), thing.getUID());
+            limit = 0;
+            remainingLimit = 0;
+            resetDate = ZonedDateTime.now();
+            lastUpdateDate = ZonedDateTime.now();
+        }
+        updateState(API_LIMIT_ID, new DecimalType(limit));
+        updateState(API_REMAINING_LIMIT_ID, new DecimalType(remainingLimit));
+        updateState(API_RESET_DATE_ID, new DateTimeType(computeZonedDateTimeForCurrentSystem(resetDate)));
+        updateState(API_LAST_UPDATE_DATE_ID, new DateTimeType(computeZonedDateTimeForCurrentSystem(lastUpdateDate)));
+    }
+
     @Override
     public void dispose() {
         super.dispose();
@@ -127,14 +169,24 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         final String channelId = channelUID.getId();
         if (command instanceof RefreshType) {
+            logger.trace("Refreshing channel `{}` in {}", channelUID, CloudBridgeHandler.class.getSimpleName());
             if (ADDRESS_CHANNEL_ID.equals(channelId)) {
                 updateState(ADDRESS_CHANNEL_ID, new StringType(address));
             } else if (API_VERSION_CHANNEL_ID.equals(channelId)) {
                 updateState(API_VERSION_CHANNEL_ID, new StringType(apiVersion));
             } else if (CLOUD_VERSION_CHANNEL_ID.equals(channelId)) {
                 updateState(CLOUD_VERSION_CHANNEL_ID, new StringType(cloudVersion));
+            } else if (API_LIMIT_ID.equals(channelId)
+                               || API_REMAINING_LIMIT_ID.equals(channelId)
+                               || API_RESET_DATE_ID.equals(channelId)
+                               || API_LAST_UPDATE_DATE_ID.equals(channelId)) {
+                updateApiUsageStatisticsChannels();
             }
         }
+    }
+
+    private ZonedDateTime computeZonedDateTimeForCurrentSystem(ZonedDateTime dateTime) {
+        return dateTime.withZoneSameInstant(ZoneId.systemDefault());
     }
 
     public Optional<String> getOAuthToken() {
@@ -168,5 +220,13 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
         logger.info("Starting to refresh cloud devices");
         cloudDeviceHandlers.doInReadLock(
                 cloudDeviceHandlers -> cloudDeviceHandlers.forEach(CloudDeviceHandler::refresh));
+        this.refresh();
+    }
+
+    private void refresh() {
+        thing.getChannels()
+                .stream()
+                .map(Channel::getUID)
+                .forEach(id -> handleCommand(id, REFRESH));
     }
 }
