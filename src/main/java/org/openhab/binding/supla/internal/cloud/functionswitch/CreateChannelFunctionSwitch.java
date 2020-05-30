@@ -164,14 +164,14 @@ public class CreateChannelFunctionSwitch implements ChannelDispatcher.FunctionSw
     private List<Channel> createChannelsForPhase(final ElectricityMeterChannel channel) {
         return asList(
                 createChannel(NUMBER_OF_PHASES_ID, "Number", channel, PHASE_NUMBER, "Number of Phases"),
-                createChannel(FREQUENCY_ID, "Number", channel, PHASE_FREQUENCY, "Frequency Phase"),
-                createChannel(POWER_ACTIVE_ID, "Number", channel, PHASE_POWER_ACTIVE, "Power Active Phase"),
-                createChannel(POWER_REACTIVE_ID, "Number", channel, PHASE_POWER_REACTIVE, "Power Reactive Phase"),
-                createChannel(POWER_APPARENT_ID, "Number", channel, PHASE_POWER_APPARENT, "Power Apparent Phase"),
-                createChannel(TOTAL_FORWARD_ACTIVE_ENERGY_ID, "Number", channel, PHASE_TOTAL_FORWARD_ACTIVE_ENERGY, "Total Forward Active Phase Energy"),
-                createChannel(TOTAL_REVERSE_ACTIVE_ENERGY_ID, "Number", channel, PHASE_TOTAL_REVERSE_ACTIVE_ENERGY, "Total Reverse Active Phase Energy"),
-                createChannel(TOTAL_FORWARD_REACTIVE_ENERGY_ID, "Number", channel, PHASE_TOTAL_FORWARD_REACTIVE_ENERGY, "Total Forward Reactive Energy"),
-                createChannel(TOTAL_REVERSE_REACTIVE_ENERGY_ID, "Number", channel, PHASE_TOTAL_REVERSE_REACTIVE_ENERGY, "Total Reverse Reactive Energy")
+                createChannel(FREQUENCY_ID, "Number:ElectricPotential", channel, PHASE_FREQUENCY, "Frequency Phase"),
+                createChannel(POWER_ACTIVE_ID, "Number:Power", channel, PHASE_POWER_ACTIVE, "Power Active Phase"),
+                createChannel(POWER_REACTIVE_ID, "Number:Power", channel, PHASE_POWER_REACTIVE, "Power Reactive Phase"),
+                createChannel(POWER_APPARENT_ID, "Number:Power", channel, PHASE_POWER_APPARENT, "Power Apparent Phase"),
+                createChannel(TOTAL_FORWARD_ACTIVE_ENERGY_ID, "Number:Energy", channel, PHASE_TOTAL_FORWARD_ACTIVE_ENERGY, "Total Forward Active Phase Energy"),
+                createChannel(TOTAL_REVERSE_ACTIVE_ENERGY_ID, "Number:Energy", channel, PHASE_TOTAL_REVERSE_ACTIVE_ENERGY, "Total Reverse Active Phase Energy"),
+                createChannel(TOTAL_FORWARD_REACTIVE_ENERGY_ID, "Number:Energy", channel, PHASE_TOTAL_FORWARD_REACTIVE_ENERGY, "Total Forward Reactive Energy"),
+                createChannel(TOTAL_REVERSE_REACTIVE_ENERGY_ID, "Number:Energy", channel, PHASE_TOTAL_REVERSE_REACTIVE_ENERGY, "Total Reverse Reactive Energy")
         );
     }
 

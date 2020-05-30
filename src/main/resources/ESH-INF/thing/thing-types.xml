@@ -129,44 +129,51 @@
 	</channel-type>
 
 	<channel-type id="frequency-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Frequency Phase</label>
 		<state readOnly="true" pattern="%.1f Hz"/>
 	</channel-type>
 
 	<channel-type id="power-active-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power Active Phase</label>
+		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
 
 	<channel-type id="power-reactive-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power Reactive Phase</label>
+		<state readOnly="true" pattern="%.1f var"/>
 	</channel-type>
 
 	<channel-type id="power-apparent-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power Apparent Phase</label>
+		<state readOnly="true" pattern="%.1f VA"/>
 	</channel-type>
 
 	<channel-type id="total-forward-active-energy-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Forward Active Phase Energy</label>
+		<state readOnly="true" pattern="%.1f kWh"/>
 	</channel-type>
 
 	<channel-type id="total-reverse-active-energy-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Reverse Active Phase Energy</label>
+		<state readOnly="true" pattern="%.1f kWh"/>
 	</channel-type>
 
 	<channel-type id="total-forward-reactive-energy-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Forward Reactive Energy</label>
+		<state readOnly="true" pattern="%.1f kvarh"/>
 	</channel-type>
 
 	<channel-type id="total-reverse-reactive-energy-phase-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Reverse Reactive Energy</label>
+		<state readOnly="true" pattern="%.1f kvarh"/>
 	</channel-type>
 	<!-- END PHASES -->
 
