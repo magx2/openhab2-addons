@@ -76,6 +76,7 @@
 		</dependency>
 
 		<!-- jSupla -->
+		<!--suppress NonOsgiMavenDependency -->
 		<dependency>
 			<groupId>pl.grzeslowski.jSupla</groupId>
 			<artifactId>nettyServerFat</artifactId>
@@ -87,6 +88,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!--suppress NonOsgiMavenDependency -->
 		<dependency>
 			<groupId>pl.grzeslowski.jsupla.api</groupId>
 			<artifactId>jsupla-api-fat</artifactId>
