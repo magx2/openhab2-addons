@@ -15,6 +15,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.supla.internal.ReadWriteMonad;
 import org.openhab.binding.supla.internal.cloud.api.ApiClientFactory;
+import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApiFactory;
+import org.openhab.binding.supla.internal.cloud.api.IoDevicesCloudApiFactory;
 import org.openhab.binding.supla.internal.cloud.api.ServerCloudApi;
 import org.openhab.binding.supla.internal.cloud.api.ServerCloudApiFactory;
 import org.slf4j.Logger;
@@ -45,7 +47,10 @@ import static org.openhab.binding.supla.SuplaBindingConstants.API_REMAINING_LIMI
 import static org.openhab.binding.supla.SuplaBindingConstants.API_RESET_DATE_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.API_VERSION_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.CLOUD_VERSION_CHANNEL_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.Commands.CLEAR_CACHES_COMMAND;
+import static org.openhab.binding.supla.SuplaBindingConstants.Commands.REFRESH_COMMAND;
 import static org.openhab.binding.supla.SuplaBindingConstants.O_AUTH_TOKEN;
+import static org.openhab.binding.supla.SuplaBindingConstants.REFRESH_CHANNEL_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
 public class CloudBridgeHandler extends BaseBridgeHandler {
@@ -182,7 +187,25 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
                                || API_LAST_UPDATE_DATE_ID.equals(channelId)) {
                 updateApiUsageStatisticsChannels();
             }
+        } else if (command instanceof StringType) {
+            if (command.toFullString().equals(REFRESH_COMMAND)) {
+                if (REFRESH_CHANNEL_ID.equals(channelId)) {
+                    logger.debug("Refreshing all devices in {}", CloudBridgeHandler.class.getSimpleName());
+                    clearCaches();
+                    ThreadPoolManager.getPool(THREAD_POOL_NAME).submit(this::refreshCloudDevices);
+                }
+            } else if (command.toFullString().equals(CLEAR_CACHES_COMMAND)) {
+                if (REFRESH_CHANNEL_ID.equals(channelId)) {
+                    logger.debug("Clearing caches in {}", CloudBridgeHandler.class.getSimpleName());
+                    clearCaches();
+                }
+            }
         }
+    }
+
+    private void clearCaches() {
+        ChannelsCloudApiFactory.getFactory().clearCaches(oAuthToken);
+        IoDevicesCloudApiFactory.getFactory().clearCaches(oAuthToken);
     }
 
     private ZonedDateTime computeZonedDateTimeForCurrentSystem(ZonedDateTime dateTime) {

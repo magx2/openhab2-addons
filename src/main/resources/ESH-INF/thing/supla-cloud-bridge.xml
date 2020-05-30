@@ -14,6 +14,7 @@
 		<channel-groups>
 			<channel-group id="supla-cloud-info" typeId="supla-cloud-info"/>
 			<channel-group id="supla-cloud-api-statistics-usage" typeId="supla-cloud-api-statistics-usage"/>
+			<channel-group id="supla-cloud-actions" typeId="supla-cloud-actions"/>
 		</channel-groups>
 
 		<representation-property>oAuthToken</representation-property>
@@ -53,6 +54,24 @@
 			<channel id="api-last-update-date" typeId="api-last-update-date"/>
 		</channels>
 	</channel-group-type>
+
+	<channel-group-type id="supla-cloud-actions">
+		<label>Extra Actions</label>
+		<channels>
+			<channel id="refresh-supla-cloud-actions" typeId="refresh-supla-cloud-actions"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="refresh-supla-cloud-actions">
+		<item-type>String</item-type>
+		<label>Refresh Actions</label>
+		<command>
+			<options>
+				<option value="refresh">Refresh All Devices</option>
+				<option value="clear-caches">Clear Caches</option>
+			</options>
+		</command>
+	</channel-type>
 
 	<channel-type id="address">
 		<item-type>String</item-type>

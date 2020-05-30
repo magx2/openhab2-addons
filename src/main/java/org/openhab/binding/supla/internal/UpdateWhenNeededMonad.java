@@ -26,7 +26,7 @@ public final class UpdateWhenNeededMonad<T> {
 
     public T get() {
         synchronized (lock) {
-            if (findActualTime() >= lastUpdateTime + cacheEvictionTimeInMilliseconds) {
+            if (instance == null || findActualTime() >= lastUpdateTime + cacheEvictionTimeInMilliseconds) {
                 instance = instanceSupplier.get();
                 lastUpdateTime = findActualTime();
             }
@@ -36,5 +36,11 @@ public final class UpdateWhenNeededMonad<T> {
 
     private long findActualTime() {
         return new Date().getTime();
+    }
+
+    public void clearCaches() {
+        synchronized (lock) {
+            instance = null;
+        }
     }
 }

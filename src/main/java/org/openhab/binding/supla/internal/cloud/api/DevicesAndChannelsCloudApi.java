@@ -66,4 +66,8 @@ final class DevicesAndChannelsCloudApi implements ChannelsCloudApi, IoDevicesClo
     public SortedSet<Device> getIoDevices() {
         return devicesMonad.get();
     }
+
+    public void clearCaches() {
+        devicesMonad.clearCaches();
+    }
 }

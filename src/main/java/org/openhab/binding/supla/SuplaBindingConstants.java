@@ -58,7 +58,7 @@ public class SuplaBindingConstants {
     public static final String API_REMAINING_LIMIT_ID = "supla-cloud-api-statistics-usage#api-remaining-limit";
     public static final String API_RESET_DATE_ID = "supla-cloud-api-statistics-usage#api-reset-date";
     public static final String API_LAST_UPDATE_DATE_ID = "supla-cloud-api-statistics-usage#api-last-update-date";
-    public static final String REFRESH_CHANNEL_ID = "refresh";
+    public static final String REFRESH_CHANNEL_ID = "supla-cloud-actions#refresh-supla-cloud-actions";
 
     public static class Channels {
         public static final String LIGHT_CHANNEL_ID = "light-channel";
@@ -93,5 +93,7 @@ public class SuplaBindingConstants {
         public static final String OPEN_CLOSE_GATE_COMMAND = "open-close";
         public static final String WHITE_LIGHT_COMMAND = "light-white";
         public static final String OFF_LIGHT_COMMAND = "light-off";
+        public static final String REFRESH_COMMAND = "refresh";
+        public static final String CLEAR_CACHES_COMMAND = "clear-caches";
     }
 }
