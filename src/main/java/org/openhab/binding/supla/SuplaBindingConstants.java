@@ -51,13 +51,13 @@ public class SuplaBindingConstants {
     // CloudBridgeHandler
     public static final String O_AUTH_TOKEN = "oAuthToken";
     public static final String REFRESH_INTERVAL = "refreshInterval";
-    public static final String ADDRESS_CHANNEL_ID = "address";
-    public static final String API_VERSION_CHANNEL_ID = "api-version";
-    public static final String CLOUD_VERSION_CHANNEL_ID = "cloud-version";
-    public static final String API_LIMIT_ID = "api-limit";
-    public static final String API_REMAINING_LIMIT_ID = "api-remaining-limit";
-    public static final String API_RESET_DATE_ID = "api-reset-date";
-    public static final String API_LAST_UPDATE_DATE_ID = "api-last-update-date";
+    public static final String ADDRESS_CHANNEL_ID = "supla-cloud-info#address";
+    public static final String API_VERSION_CHANNEL_ID = "supla-cloud-info#api-version";
+    public static final String CLOUD_VERSION_CHANNEL_ID = "supla-cloud-info#cloud-version";
+    public static final String API_LIMIT_ID = "supla-cloud-api-statistics-usage#api-limit";
+    public static final String API_REMAINING_LIMIT_ID = "supla-cloud-api-statistics-usage#api-remaining-limit";
+    public static final String API_RESET_DATE_ID = "supla-cloud-api-statistics-usage#api-reset-date";
+    public static final String API_LAST_UPDATE_DATE_ID = "supla-cloud-api-statistics-usage#api-last-update-date";
     public static final String REFRESH_CHANNEL_ID = "refresh";
 
     public static class Channels {
