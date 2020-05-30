@@ -68,7 +68,21 @@ public class SuplaBindingConstants {
         public static final String DIMMER_CHANNEL_ID = "dimmer-channel";
         public static final String TOGGLE_GAT_CHANNEL_ID = "toggle-gate-channel";
         public static final String EXTRA_LIGHT_ACTIONS_CHANNEL_ID = "extra-light-actions-channel";
+        public static final String TOTAL_COST_CHANNEL_ID = "total-cost-channel";
+        public static final String PRICE_PER_UNIT_CHANNEL_ID = "price-per-unit-channel";
         public static final String UNKNOWN_CHANNEL_ID = "unknown-channel";
+
+        public static class Phase {
+            public static final String NUMBER_OF_PHASES_ID = "number-of-phases-channel";
+            public static final String FREQUENCY_ID = "frequency-phase-channel";
+            public static final String POWER_ACTIVE_ID = "power-active-phase-channel";
+            public static final String POWER_REACTIVE_ID = "power-reactive-phase-channel";
+            public static final String POWER_APPARENT_ID = "power-apparent-phase-channel";
+            public static final String TOTAL_FORWARD_ACTIVE_ENERGY_ID = "total-forward-active-energy-phase-channel";
+            public static final String TOTAL_REVERSE_ACTIVE_ENERGY_ID = "total-reverse-active-energy-phase-channel";
+            public static final String TOTAL_FORWARD_REACTIVE_ENERGY_ID = "total-forward-reactive-energy-phase-channel";
+            public static final String TOTAL_REVERSE_REACTIVE_ENERGY_ID = "total-reverse-reactive-energy-phase-channel";
+        }
     }
 
     public static class Commands {

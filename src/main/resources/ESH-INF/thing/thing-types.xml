@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="supla"
 						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+						  xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
 	<thing-type id="device">
@@ -111,6 +111,64 @@
 			</options>
 		</command>
 	</channel-type>
+
+	<channel-type id="total-cost-channel">
+		<item-type>String</item-type>
+		<label>Total Cost</label>
+	</channel-type>
+
+	<channel-type id="price-per-unit-channel">
+		<item-type>String</item-type>
+		<label>Price per Unit</label>
+	</channel-type>
+
+	<!-- PHASES -->
+	<channel-type id="number-of-phases-channel">
+		<item-type>Number</item-type>
+		<label>Number</label>
+	</channel-type>
+
+	<channel-type id="frequency-phase-channel">
+		<item-type>Number</item-type>
+		<label>Frequency Phase</label>
+		<state readOnly="true" pattern="%.1f Hz"/>
+	</channel-type>
+
+	<channel-type id="power-active-phase-channel">
+		<item-type>Number</item-type>
+		<label>Power Active Phase</label>
+	</channel-type>
+
+	<channel-type id="power-reactive-phase-channel">
+		<item-type>Number</item-type>
+		<label>Power Reactive Phase</label>
+	</channel-type>
+
+	<channel-type id="power-apparent-phase-channel">
+		<item-type>Number</item-type>
+		<label>Power Apparent Phase</label>
+	</channel-type>
+
+	<channel-type id="total-forward-active-energy-phase-channel">
+		<item-type>Number</item-type>
+		<label>Total Forward Active Phase Energy</label>
+	</channel-type>
+
+	<channel-type id="total-reverse-active-energy-phase-channel">
+		<item-type>Number</item-type>
+		<label>Total Reverse Active Phase Energy</label>
+	</channel-type>
+
+	<channel-type id="total-forward-reactive-energy-phase-channel">
+		<item-type>Number</item-type>
+		<label>Total Forward Reactive Energy</label>
+	</channel-type>
+
+	<channel-type id="total-reverse-reactive-energy-phase-channel">
+		<item-type>Number</item-type>
+		<label>Total Reverse Reactive Energy</label>
+	</channel-type>
+	<!-- END PHASES -->
 
 	<channel-type id="unknown-channel">
 		<item-type>String</item-type>

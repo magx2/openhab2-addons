@@ -3,6 +3,7 @@ package org.openhab.binding.supla.internal.cloud.functionswitch;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.cloud.AdditionalChannelType;
@@ -18,6 +19,7 @@ import pl.grzeslowski.jsupla.api.channel.DepthChannel;
 import pl.grzeslowski.jsupla.api.channel.DimmerAndRgbLightningChannel;
 import pl.grzeslowski.jsupla.api.channel.DimmerChannel;
 import pl.grzeslowski.jsupla.api.channel.DistanceChannel;
+import pl.grzeslowski.jsupla.api.channel.ElectricityMeterChannel;
 import pl.grzeslowski.jsupla.api.channel.GateChannel;
 import pl.grzeslowski.jsupla.api.channel.HumidityChannel;
 import pl.grzeslowski.jsupla.api.channel.NoneChannel;
@@ -30,6 +32,7 @@ import pl.grzeslowski.jsupla.api.channel.state.BrightnessState;
 import pl.grzeslowski.jsupla.api.channel.state.ColorState;
 import pl.grzeslowski.jsupla.api.channel.state.DepthState;
 import pl.grzeslowski.jsupla.api.channel.state.DistanceState;
+import pl.grzeslowski.jsupla.api.channel.state.ElectricityMeterState;
 import pl.grzeslowski.jsupla.api.channel.state.GateState;
 import pl.grzeslowski.jsupla.api.channel.state.HumidityState;
 import pl.grzeslowski.jsupla.api.channel.state.OnOffState;
@@ -37,6 +40,7 @@ import pl.grzeslowski.jsupla.api.channel.state.Percentage;
 import pl.grzeslowski.jsupla.api.channel.state.RollerShutterState;
 import pl.grzeslowski.jsupla.api.channel.state.TemperatureState;
 
+import java.math.RoundingMode;
 import java.util.Optional;
 
 import static java.lang.Math.round;
@@ -185,6 +189,48 @@ public class FindStateFunctionSwitch implements ChannelDispatcher.FunctionSwitch
         return channel.findState()
                        .map(DistanceState::getDistanceState)
                        .map(DecimalType::new);
+    }
+
+    @Override
+    public Optional<? extends State> onElectricityMeterChannel(final ElectricityMeterChannel channel) {
+        final ChannelInfo channelInfo = channelInfoParser.parse(channelUID);
+        AdditionalChannelType channelType = channelInfo.getAdditionalChannelType();
+        final Optional<ElectricityMeterState> state = channel.findState();
+        switch (channelType) {
+            case TOTAL_COST:
+                return state.map(s -> new StringType(s.getTotalCost().setScale(2, RoundingMode.CEILING) + " " + s.getCurrency()));
+            case PRICE_PER_UNIT:
+                return state.map(s -> new StringType(s.getPricePerUnit() + " " + s.getCurrency() + "/kWh"));
+            case PHASE_NUMBER:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getNumberOfPhases()));
+            case PHASE_FREQUENCY:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getFrequency()));
+            case PHASE_POWER_ACTIVE:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getPowerActive()));
+            case PHASE_POWER_REACTIVE:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getPowerReactive()));
+            case PHASE_POWER_APPARENT:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getPowerApparent()));
+            case PHASE_TOTAL_FORWARD_ACTIVE_ENERGY:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getTotalForwardActiveEnergy()));
+            case PHASE_TOTAL_REVERSE_ACTIVE_ENERGY:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getTotalReverseActiveEnergy()));
+            case PHASE_TOTAL_FORWARD_REACTIVE_ENERGY:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getTotalForwardReactiveEnergy()));
+            case PHASE_TOTAL_REVERSE_REACTIVE_ENERGY:
+                return state.map(ElectricityMeterState::getPhasesSummary)
+                               .map(s -> new DecimalType(s.getTotalReverseReactiveEnergy()));
+            default:
+                throw new IllegalStateException("Additional type " + channelType + " is not supported for ElectricityMeterChannel channel");
+        }
     }
 
     @Override
