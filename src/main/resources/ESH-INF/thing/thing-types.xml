@@ -123,12 +123,12 @@
 	</channel-type>
 
 	<!-- PHASES -->
-	<channel-type id="number-of-phases-channel">
+	<channel-type id="number-of-phases-channel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Number</label>
 	</channel-type>
 
-	<channel-type id="frequency-phase-channel">
+	<channel-type id="frequency-phase-channel" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Frequency Phase</label>
 		<state readOnly="true" pattern="%.1f Hz"/>
@@ -140,13 +140,13 @@
 		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
 
-	<channel-type id="power-reactive-phase-channel">
+	<channel-type id="power-reactive-phase-channel" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Power Reactive Phase</label>
 		<state readOnly="true" pattern="%.1f var"/>
 	</channel-type>
 
-	<channel-type id="power-apparent-phase-channel">
+	<channel-type id="power-apparent-phase-channel" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Power Apparent Phase</label>
 		<state readOnly="true" pattern="%.1f VA"/>
@@ -158,19 +158,19 @@
 		<state readOnly="true" pattern="%.1f kWh"/>
 	</channel-type>
 
-	<channel-type id="total-reverse-active-energy-phase-channel">
+	<channel-type id="total-reverse-active-energy-phase-channel" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Total Reverse Active Phase Energy</label>
 		<state readOnly="true" pattern="%.1f kWh"/>
 	</channel-type>
 
-	<channel-type id="total-forward-reactive-energy-phase-channel">
+	<channel-type id="total-forward-reactive-energy-phase-channel" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Total Forward Reactive Energy</label>
 		<state readOnly="true" pattern="%.1f kvarh"/>
 	</channel-type>
 
-	<channel-type id="total-reverse-reactive-energy-phase-channel">
+	<channel-type id="total-reverse-reactive-energy-phase-channel" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Total Reverse Reactive Energy</label>
 		<state readOnly="true" pattern="%.1f kvarh"/>
