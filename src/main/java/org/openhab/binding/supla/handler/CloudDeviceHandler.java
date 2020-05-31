@@ -86,6 +86,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
     private ChannelsCloudApi channelsApi;
     private int cloudId;
     private IoDevicesCloudApi ioDevicesApi;
+    private boolean initializing;
 
     // CommandExecutors
     private LedCommandExecutor ledCommandExecutor;
@@ -111,50 +112,58 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void internalInitialize() {
-        final Bridge bridge = getBridge();
-        if (bridge == null) {
-            logger.debug("No bridge for thing with UID {}", thing.getUID());
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
-                    "There is no bridge for this thing. Remove it and add it again.");
-            return;
-        }
-        final BridgeHandler bridgeHandler = bridge.getHandler();
-        if (!(bridgeHandler instanceof CloudBridgeHandler)) {
-            logger.debug("Bridge is not instance of {}! Current bridge class {}, Thing UID {}",
-                    CloudBridgeHandler.class.getSimpleName(), bridgeHandler.getClass().getSimpleName(), thing.getUID());
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
-            return;
-        }
-        CloudBridgeHandler handler = (CloudBridgeHandler) bridgeHandler;
-        final Optional<String> token = handler.getOAuthToken();
-        if (!token.isPresent()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "There is no OAuth token in bridge!");
-            return;
-        }
-        final Optional<Long> refreshInterval = handler.getRefreshInterval();
-        if (!refreshInterval.isPresent()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "There is no refresh interval set in bridge!");
-            return;
-        }
-        initApi(token.get(), refreshInterval.get());
+        try {
+            initializing = true;
+            logger.debug("Starting `internalInitialize` of {}", thing.getUID());
+            final Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("No bridge for thing with UID {}", thing.getUID());
+                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
+                        "There is no bridge for this thing. Remove it and add it again.");
+                return;
+            }
+            final BridgeHandler bridgeHandler = bridge.getHandler();
+            if (!(bridgeHandler instanceof CloudBridgeHandler)) {
+                logger.debug("Bridge is not instance of {}! Current bridge class {}, Thing UID {}",
+                        CloudBridgeHandler.class.getSimpleName(), bridgeHandler.getClass().getSimpleName(), thing.getUID());
+                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
+                return;
+            }
+            CloudBridgeHandler handler = (CloudBridgeHandler) bridgeHandler;
+            final Optional<String> token = handler.getOAuthToken();
+            if (!token.isPresent()) {
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "There is no OAuth token in bridge!");
+                return;
+            }
+            final Optional<Long> refreshInterval = handler.getRefreshInterval();
+            if (!refreshInterval.isPresent()) {
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "There is no refresh interval set in bridge!");
+                return;
+            }
+            initApi(token.get(), refreshInterval.get());
 
-        if (!initCloudApi()) {
-            return;
+            if (!initCloudApi()) {
+                return;
+            }
+
+            if (!checkIfIsOnline()) {
+                return;
+            }
+
+            if (!checkIfIsEnabled()) {
+                return;
+            }
+
+            initChannels();
+            initCommandExecutors();
+
+            // done
+            updateStatus(ONLINE);
+        } finally {
+            initializing = false;
+            logger.debug("`internalInitialize` of {} was completed", thing.getUID());
         }
-
-        if (!checkIfIsOnline()) {
-            return;
-        }
-
-        if (!checkIfIsEnabled()) {
-            return;
-        }
-
-        initChannels();
-        initCommandExecutors();
-
-        // done
-        updateStatus(ONLINE);
+        refresh();
     }
 
     private boolean initCloudApi() {
@@ -222,6 +231,10 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleRefreshCommand(final ChannelUID channelUID) {
+        if (initializing) {
+            logger.debug("CloudDeviceHandler is initializing, cannot refresh!");
+            return;
+        }
         final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         logger.trace("Refreshing channel `{}`", channelUID);
