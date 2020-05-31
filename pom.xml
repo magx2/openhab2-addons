@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>pl.grzeslowski.jSupla</groupId>
 			<artifactId>nettyServerFat</artifactId>
-			<version>0.9.15</version>
+			<version>0.9.17</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
