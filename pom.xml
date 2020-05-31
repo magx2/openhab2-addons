@@ -6,15 +6,12 @@
 
 	<groupId>org.openhab.addons</groupId>
 	<artifactId>org.openhab.binding.supla</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.0-oh.2.5.0</version>
 
 	<name>openHAB Add-ons :: Bundles :: Supla Binding</name>
 
 	<properties>
 		<openhab.version>2.5.0</openhab.version>
-		<bnd.importpackage>
-			!android.net,!android.util,!com.android.org.conscrypt,!org.apache.harmony.xnet.provider.jsse,!sun.misc,!com.barchart.udt,!com.barchart.udt.nio,!com.fasterxml.aalto,!com.fasterxml.aalto.stax,!com.google.protobuf,!com.google.protobuf.nano,!com.jcraft.jzlib,!com.ning.compress,!com.ning.compress.lzf,!com.ning.compress.lzf.util,!gnu.io,!io.netty.internal.tcnative,!javax.annotation.meta,!kotlin.*,!lzma.sdk,!lzma.sdk.lzma,!net.jpountz.lz4,!net.jpountz.xxhash,!org.bouncycastle.asn1.x500,!org.bouncycastle.cert,!org.bouncycastle.cert.jcajce,!org.bouncycastle.jce.provider,!org.bouncycastle.operator,!org.bouncycastle.operator.jcajce,!org.conscrypt,!org.eclipse.jetty.alpn,!org.eclipse.jetty.npn,!org.jboss.marshalling,,!sun.net.dns,!sun.security.*,!com.sun.nio.sctp,!org.apache.logging.log4j
-		</bnd.importpackage>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
