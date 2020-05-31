@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.Color;
 import pl.grzeslowski.jsupla.api.channel.Channel;
+import pl.grzeslowski.jsupla.api.channel.DimmerAndRgbLightningChannel;
 import pl.grzeslowski.jsupla.api.channel.action.Action;
 import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAction;
 import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAndColor;
+import pl.grzeslowski.jsupla.api.channel.action.SetColorAction;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -88,8 +90,13 @@ final class SuplaLedCommandExecutor implements LedCommandExecutor {
                     hsbType.getHue().doubleValue(),
                     hsbType.getSaturation().toBigDecimal().divide(ONE_HUNDRED, UNLIMITED).doubleValue(),
                     1.0);
-            logger.trace("Changing HSV to `{}` (command `{}`), color brightness {}%", hsv, hsbType, colorBrightness);
-            action = new SetBrightnessAndColor(colorBrightness, hsv);
+            if (channel instanceof DimmerAndRgbLightningChannel) {
+                logger.trace("Changing HSV to `{}` (command `{}`), color brightness {}%", hsv, hsbType, colorBrightness);
+                action = new SetBrightnessAndColor(colorBrightness, hsv);
+            } else {
+                logger.trace("Changing HSV to `{}` (command `{}`)", hsv, hsbType);
+                action = SetColorAction.setHsv(hsv);
+            }
         } else if (brightness != null) {
             logger.trace("Changing brightness {}%", brightness);
             action = new SetBrightnessAction(brightness.intValue());
