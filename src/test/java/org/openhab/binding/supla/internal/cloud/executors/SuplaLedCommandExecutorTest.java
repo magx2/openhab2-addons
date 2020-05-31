@@ -11,11 +11,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.supla.internal.cloud.api.ChannelsCloudApi;
-import pl.grzeslowski.jsupla.api.generated.ApiException;
-import pl.grzeslowski.jsupla.api.generated.model.ChannelExecuteActionRequest;
+import pl.grzeslowski.jsupla.api.Color;
+import pl.grzeslowski.jsupla.api.channel.Channel;
+import pl.grzeslowski.jsupla.api.channel.action.Action;
+import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAction;
+import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAndColor;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static pl.grzeslowski.jsupla.api.generated.model.ChannelFunctionActionEnum.SET_RGBW_PARAMETERS;
 
 @SuppressWarnings("WeakerAccess")
 @ExtendWith(MockitoExtension.class)
@@ -28,63 +32,64 @@ class SuplaLedCommandExecutorTest {
 
     @Test
     @DisplayName("should send update about change of brightness for dimmer")
-    void dimmer(@Random int channelId) throws ApiException {
+    void dimmer(@Random int channelId) {
 
         // given
         final int brightnessValue = 55;
         final PercentType brightness = new PercentType(brightnessValue);
-        executor.setLedState(channelId, PercentType.ZERO);
+        final Channel channel = mock(Channel.class);
+        given(channel.getId()).willReturn(channelId);
+
+        executor.setLedState(channel, PercentType.ZERO);
+        final Action expectedAction = new SetBrightnessAction(brightnessValue);
 
         // when
-        executor.changeBrightness(channelId, brightness);
+        executor.changeBrightness(channel, brightness);
 
         // then
-        final ChannelExecuteActionRequest expectedAction = new ChannelExecuteActionRequest()
-                                                                   .action(SET_RGBW_PARAMETERS)
-                                                                   .brightness(brightnessValue);
-        verify(channelsApi).executeAction(expectedAction, channelId);
+        verify(channelsApi).executeAction(channel, expectedAction);
     }
 
     @Test
     @DisplayName("should send update about change of brightness for dimmer and rgb")
-    void dimmerAndRgbChangeOfBrightness() throws ApiException {
+    void dimmerAndRgbChangeOfBrightness() {
 
         // given
         final int brightnessValue = 55;
         final PercentType brightness = new PercentType(brightnessValue);
-        executor.setLedState(channelId, PercentType.ZERO);
-        executor.setLedState(channelId, HSBType.BLUE);
+        final Channel channel = mock(Channel.class);
+        given(channel.getId()).willReturn(channelId);
+
+        executor.setLedState(channel, PercentType.ZERO);
+        executor.setLedState(channel, HSBType.BLUE);
+
+        final Action expectedAction = new SetBrightnessAndColor(100, new Color.Rgb(0, 0, 255));
 
         // when
-        executor.changeBrightness(channelId, brightness);
+        executor.changeBrightness(channel, brightness);
 
         // then
-        final ChannelExecuteActionRequest expectedAction = new ChannelExecuteActionRequest()
-                                                                   .action(SET_RGBW_PARAMETERS)
-                                                                   .color("0x0000FF")
-                                                                   .colorBrightness(100)
-                                                                   .brightness(brightnessValue);
-        verify(channelsApi).executeAction(expectedAction, channelId);
+        verify(channelsApi).executeAction(channel, expectedAction);
     }
 
     @Test
     @DisplayName("should send update about change of color for dimmer and rgb")
-    void dimmerAndRgbChangeOfColor() throws ApiException {
+    void dimmerAndRgbChangeOfColor() {
 
         // given
         final int brightnessValue = 55;
-        executor.setLedState(channelId, new PercentType(brightnessValue));
-        executor.setLedState(channelId, HSBType.BLUE);
+        final Channel channel = mock(Channel.class);
+
+        given(channel.getId()).willReturn(channelId);
+        executor.setLedState(channel, new PercentType(brightnessValue));
+        executor.setLedState(channel, HSBType.BLUE);
+
+        final Action expectedAction = new SetBrightnessAndColor(100, new Color.Rgb(255, 0, 0));
 
         // when
-        executor.changeColor(channelId, HSBType.RED);
+        executor.changeColor(channel, HSBType.RED);
 
         // then
-        final ChannelExecuteActionRequest expectedAction = new ChannelExecuteActionRequest()
-                                                                   .action(SET_RGBW_PARAMETERS)
-                                                                   .color("0xFF0000")
-                                                                   .colorBrightness(100)
-                                                                   .brightness(brightnessValue);
-        verify(channelsApi).executeAction(expectedAction, channelId);
+        verify(channelsApi).executeAction(channel, expectedAction);
     }
 }

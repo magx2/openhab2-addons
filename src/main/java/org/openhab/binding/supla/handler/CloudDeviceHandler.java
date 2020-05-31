@@ -29,6 +29,7 @@ import org.openhab.binding.supla.internal.cloud.functionswitch.CreateChannelFunc
 import org.openhab.binding.supla.internal.cloud.functionswitch.FindStateFunctionSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.grzeslowski.jsupla.api.channel.ControllingChannel;
 import pl.grzeslowski.jsupla.api.channel.DimmerAndRgbLightningChannel;
 import pl.grzeslowski.jsupla.api.channel.DimmerChannel;
 import pl.grzeslowski.jsupla.api.channel.GateChannel;
@@ -368,7 +369,7 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
         final int channelId = channelInfo.getChannelId();
         final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
-        if (channel instanceof GateChannel) {
+        if (channel instanceof GateChannel || channel instanceof ControllingChannel) {
             if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
                 channelsApi.executeAction(channel, ToggleAction.OPEN_CLOSE);
             }
