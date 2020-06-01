@@ -6,7 +6,7 @@
 
 	<groupId>org.openhab.addons</groupId>
 	<artifactId>org.openhab.binding.supla</artifactId>
-	<version>1.0.0-oh.2.5.0</version>
+	<version>1.0.0-oh.2.5.0-beta.1</version>
 
 	<name>openHAB Add-ons :: Bundles :: Supla Binding</name>
 
@@ -212,6 +212,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.2.0</version>
 				<configuration>
+					<finalName>supla-binding-${version}</finalName>
 					<archive>
 						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
 					</archive>
