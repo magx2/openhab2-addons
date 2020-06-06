@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jsupla.api.Color;
 import pl.grzeslowski.jsupla.api.channel.Channel;
-import pl.grzeslowski.jsupla.api.channel.DimmerAndRgbLightningChannel;
 import pl.grzeslowski.jsupla.api.channel.action.Action;
 import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAction;
 import pl.grzeslowski.jsupla.api.channel.action.SetBrightnessAndColor;
@@ -85,14 +84,13 @@ final class SuplaLedCommandExecutor implements LedCommandExecutor {
             final PercentType brightness) {
         final Action action;
         if (hsbType != null) {
-            final int colorBrightness = hsbType.getBrightness().intValue();
             final Color.Hsv hsv = new Color.Hsv(
                     hsbType.getHue().doubleValue(),
-                    hsbType.getSaturation().toBigDecimal().divide(ONE_HUNDRED, UNLIMITED).doubleValue(),
-                    1.0);
-            if (channel instanceof DimmerAndRgbLightningChannel) {
-                logger.trace("Changing HSV to `{}` (command `{}`), color brightness {}%", hsv, hsbType, colorBrightness);
-                action = new SetBrightnessAndColor(colorBrightness, hsv);
+                    toHsvDouble(hsbType.getSaturation()),
+                    toHsvDouble(hsbType.getBrightness()));
+            if (brightness != null) {
+                logger.trace("Changing HSV to `{}` (command `{}`), brightness {}%", hsv, hsbType, brightness.intValue());
+                action = new SetBrightnessAndColor(brightness.intValue(), hsv);
             } else {
                 logger.trace("Changing HSV to `{}` (command `{}`)", hsv, hsbType);
                 action = SetColorAction.setHsv(hsv);
@@ -106,6 +104,10 @@ final class SuplaLedCommandExecutor implements LedCommandExecutor {
 
         channelsApi.executeAction(channel, action);
         ledStates.put(channel.getId(), new LedState(hsbType, brightness));
+    }
+
+    private double toHsvDouble(final PercentType brightness) {
+        return brightness.toBigDecimal().divide(ONE_HUNDRED, UNLIMITED).doubleValue();
     }
 
     private Optional<LedState> findLedState(final Channel channel) {

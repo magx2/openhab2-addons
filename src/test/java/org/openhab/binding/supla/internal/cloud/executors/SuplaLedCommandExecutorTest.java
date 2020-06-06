@@ -66,7 +66,7 @@ class SuplaLedCommandExecutorTest {
         executor.setLedState(channel, PercentType.ZERO);
         executor.setLedState(channel, HSBType.BLUE);
 
-        final Action expectedAction = new SetBrightnessAndColor(100, new Color.Rgb(0, 0, 255));
+        final Action expectedAction = new SetBrightnessAndColor(55, new Color.Rgb(0, 0, 255));
 
         // when
         executor.changeBrightness(channel, brightness);
@@ -87,7 +87,7 @@ class SuplaLedCommandExecutorTest {
         executor.setLedState(channel, new PercentType(brightnessValue));
         executor.setLedState(channel, HSBType.BLUE);
 
-        final Action expectedAction = new SetBrightnessAndColor(100, new Color.Rgb(255, 0, 0));
+        final Action expectedAction = new SetBrightnessAndColor(55, new Color.Rgb(255, 0, 0));
 
         // when
         executor.changeColor(channel, HSBType.RED);
@@ -112,7 +112,7 @@ class SuplaLedCommandExecutorTest {
         final Action expectedAction = SetColorAction.setRgb(new Color.Rgb(0, 0, 255));
 
         // when
-        executor.changeBrightness(channel, brightness);
+        executor.changeBrightness(channel, null);
 
         // then
         verify(channelsApi).executeAction(channel, expectedAction);
@@ -123,11 +123,10 @@ class SuplaLedCommandExecutorTest {
     void rgbChangeOfColor() {
 
         // given
-        final int brightnessValue = 55;
         final Channel channel = mock(RgbLightningChannel.class);
 
         given(channel.getId()).willReturn(channelId);
-        executor.setLedState(channel, new PercentType(brightnessValue));
+        executor.setLedState(channel, null);
         executor.setLedState(channel, HSBType.BLUE);
 
         final Action expectedAction = SetColorAction.setRgb(new Color.Rgb(255, 0, 0));
