@@ -231,57 +231,61 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleRefreshCommand(final ChannelUID channelUID) {
-        if (initializing) {
-            logger.debug("CloudDeviceHandler is initializing, cannot refresh!");
-            return;
-        }
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        logger.trace("Refreshing channel `{}`", channelUID);
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
-        final FindStateFunctionSwitch findStateFunctionSwitch = new FindStateFunctionSwitch(ledCommandExecutor, channelUID);
-        Optional<? extends State> foundState = DISPATCHER.dispatch(channel, findStateFunctionSwitch);
-        if (foundState.isPresent()) {
-            final State state = foundState.get();
-            logger.trace("Updating state `{}` to `{}`", channelUID, state);
-            updateState(channelUID, state);
-        } else {
-            logger.warn("There was no found state for channel `{}` channelState={}, function={}",
-                    channelUID, channel.findState(), channel.getClass().getSimpleName());
-        }
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            logger.trace("Refreshing channel `{}`", channelUID);
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+            final FindStateFunctionSwitch findStateFunctionSwitch = new FindStateFunctionSwitch(ledCommandExecutor, channelUID);
+            Optional<? extends State> foundState = DISPATCHER.dispatch(channel, findStateFunctionSwitch);
+            if (foundState.isPresent()) {
+                final State state = foundState.get();
+                logger.trace("Updating state `{}` to `{}`", channelUID, state);
+                updateState(channelUID, state);
+            } else {
+                logger.warn("There was no found state for channel `{}` channelState={}, function={}",
+                        channelUID, channel.findState(), channel.getClass().getSimpleName());
+            }
+        });
     }
 
     @Override
     protected void handleOnOffCommand(final ChannelUID channelUID, final OnOffType command) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
-        if (channel instanceof GateChannel) {
-            handleOneZeroCommand(channel, command == ON, OpenCloseAction.OPEN, OpenCloseAction.CLOSE);
-        } else {
-            handleOneZeroCommand(channel, command == ON, TurnOnOffAction.ON, TurnOnOffAction.OFF);
-        }
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+            if (channel instanceof GateChannel) {
+                handleOneZeroCommand(channel, command == ON, OpenCloseAction.OPEN, OpenCloseAction.CLOSE);
+            } else {
+                handleOneZeroCommand(channel, command == ON, TurnOnOffAction.ON, TurnOnOffAction.OFF);
+            }
+        });
     }
 
     @Override
     protected void handleUpDownCommand(final ChannelUID channelUID, final UpDownType command) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
 
-        if (channel instanceof RollerShutterChannel) {
-            handleOneZeroCommand(channel, command == UP, ShutRevealAction.reveal(), ShutRevealAction.shut());
-        } else {
-            logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
-        }
+            if (channel instanceof RollerShutterChannel) {
+                handleOneZeroCommand(channel, command == UP, ShutRevealAction.reveal(), ShutRevealAction.shut());
+            } else {
+                logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
+            }
+        });
     }
 
     @Override
     protected void handleHsbCommand(final ChannelUID channelUID, final HSBType command) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
-        handleHsbCommand(channel, channelUID, command);
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+            handleHsbCommand(channel, channelUID, command);
+        });
     }
 
     private void handleHsbCommand(final pl.grzeslowski.jsupla.api.channel.Channel channel,
@@ -296,49 +300,55 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleOpenClosedCommand(final ChannelUID channelUID, final OpenClosedType command) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
 
-        if (channel instanceof GateChannel) {
-            handleOneZeroCommand(channel,
-                    command == OpenClosedType.OPEN,
-                    OpenCloseAction.OPEN,
-                    OpenCloseAction.CLOSE);
-        } else {
-            logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
-        }
+            if (channel instanceof GateChannel) {
+                handleOneZeroCommand(channel,
+                        command == OpenClosedType.OPEN,
+                        OpenCloseAction.OPEN,
+                        OpenCloseAction.CLOSE);
+            } else {
+                logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
+            }
+        });
     }
 
     @Override
     protected void handlePercentCommand(final ChannelUID channelUID, final PercentType command) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
-        if (channel instanceof RollerShutterChannel) {
-            final int shut = 100 - command.intValue();
-            logger.debug("Channel `{}` is roller shutter; setting shut={}%", channelUID, shut);
-            final Action action = ShutRevealAction.shut(shut);
-            channelsApi.executeAction(channel, action);
-        } else if (channel instanceof RgbLightningChannel || channel instanceof DimmerAndRgbLightningChannel) {
-            if (channelInfo.getAdditionalChannelType() == null) {
-                logger.debug("Channel `{}` is LED controller; setting color={}%", channelUID, command);
-                ledCommandExecutor.changeColorBrightness(channel, command);
-            } else if (channelInfo.getAdditionalChannelType() == LED_BRIGHTNESS) {
-                logger.debug("Channel `{}` is brightness controller; setting brightness={}%", channelUID, command);
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+            if (channel instanceof RollerShutterChannel) {
+                final int shut = 100 - command.intValue();
+                logger.debug("Channel `{}` is roller shutter; setting shut={}%", channelUID, shut);
+                final Action action = ShutRevealAction.shut(shut);
+                channelsApi.executeAction(channel, action);
+            } else if (channel instanceof RgbLightningChannel || channel instanceof DimmerAndRgbLightningChannel) {
+                if (channelInfo.getAdditionalChannelType() == null) {
+                    logger.debug("Channel `{}` is LED controller; setting color={}%", channelUID, command);
+                    ledCommandExecutor.changeColorBrightness(channel, command);
+                } else if (channelInfo.getAdditionalChannelType() == LED_BRIGHTNESS) {
+                    logger.debug("Channel `{}` is brightness controller; setting brightness={}%", channelUID, command);
+                    ledCommandExecutor.changeBrightness(channel, command);
+                }
+            } else if (channel instanceof DimmerChannel) {
                 ledCommandExecutor.changeBrightness(channel, command);
+            } else {
+                logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
             }
-        } else if (channel instanceof DimmerChannel) {
-            ledCommandExecutor.changeBrightness(channel, command);
-        } else {
-            logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
-        }
+        });
     }
 
     @Override
     protected void handleDecimalCommand(final ChannelUID channelUID, final DecimalType command) {
-        // TODO handle this command
-        logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
+        handleCommand(() -> {
+            // TODO handle this command
+            logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
+        });
     }
 
     private void handleOneZeroCommand(final pl.grzeslowski.jsupla.api.channel.Channel channel,
@@ -352,14 +362,16 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleStopMoveTypeCommand(final @NotNull ChannelUID channelUID, final @NotNull StopMoveType command) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
-        if (channel instanceof RollerShutterChannel) {
-            handleStopMoveTypeCommandOnRollerShutter(channelUID, channel, command);
-        } else {
-            logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
-        }
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+            if (channel instanceof RollerShutterChannel) {
+                handleStopMoveTypeCommandOnRollerShutter(channelUID, channel, command);
+            } else {
+                logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
+            }
+        });
     }
 
     private void handleStopMoveTypeCommandOnRollerShutter(
@@ -379,25 +391,27 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
 
     @Override
     protected void handleStringCommand(final ChannelUID channelUID, final StringType command) {
-        final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
-        final int channelId = channelInfo.getChannelId();
-        final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
-        if (channel instanceof GateChannel || channel instanceof ControllingChannel) {
-            if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
-                channelsApi.executeAction(channel, ToggleAction.OPEN_CLOSE);
-            }
-        } else if (channel instanceof RgbLightningChannel || channel instanceof DimmerAndRgbLightningChannel) {
-            if (EXTRA_LIGHT_ACTIONS.equals(channelInfo.getAdditionalChannelType())) {
-                final ChannelUID mainLightChannel = new ChannelUID(channelUID.getThingUID(), String.valueOf(channelId));
-                if (command.toFullString().equals(WHITE_LIGHT_COMMAND)) {
-                    changeColorOfRgb(channel, HSBType.WHITE, mainLightChannel);
-                } else if (command.toFullString().equals(OFF_LIGHT_COMMAND)) {
-                    changeColorOfRgb(channel, HSBType.BLACK, mainLightChannel);
+        handleCommand(() -> {
+            final ChannelInfo channelInfo = ChannelInfoParser.PARSER.parse(channelUID);
+            final int channelId = channelInfo.getChannelId();
+            final pl.grzeslowski.jsupla.api.channel.Channel channel = queryForChannel(channelId);
+            if (channel instanceof GateChannel || channel instanceof ControllingChannel) {
+                if (command.toFullString().equals(OPEN_CLOSE_GATE_COMMAND)) {
+                    channelsApi.executeAction(channel, ToggleAction.OPEN_CLOSE);
                 }
+            } else if (channel instanceof RgbLightningChannel || channel instanceof DimmerAndRgbLightningChannel) {
+                if (EXTRA_LIGHT_ACTIONS.equals(channelInfo.getAdditionalChannelType())) {
+                    final ChannelUID mainLightChannel = new ChannelUID(channelUID.getThingUID(), String.valueOf(channelId));
+                    if (command.toFullString().equals(WHITE_LIGHT_COMMAND)) {
+                        changeColorOfRgb(channel, HSBType.WHITE, mainLightChannel);
+                    } else if (command.toFullString().equals(OFF_LIGHT_COMMAND)) {
+                        changeColorOfRgb(channel, HSBType.BLACK, mainLightChannel);
+                    }
+                }
+            } else {
+                logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
             }
-        } else {
-            logger.warn("Not handling `{}` on channel `{}#{}`", command, command.getClass().getSimpleName(), channelUID);
-        }
+        });
     }
 
     private void changeColorOfRgb(final pl.grzeslowski.jsupla.api.channel.Channel channel,
@@ -428,4 +442,11 @@ public final class CloudDeviceHandler extends AbstractDeviceHandler {
         return channelsApi.getChannel(channelId);
     }
 
+    private void handleCommand(Runnable runnable) {
+        if (initializing) {
+            logger.debug("CloudDeviceHandler is initializing, cannot refresh!");
+        } else {
+            runnable.run();
+        }
+    }
 }
