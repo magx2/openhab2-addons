@@ -6,7 +6,7 @@
 
 	<groupId>org.openhab.addons</groupId>
 	<artifactId>org.openhab.binding.supla</artifactId>
-	<version>1.0.0-oh.2.5.0-beta.1</version>
+	<version>1.0.0-oh.2.5.0-beta.2</version>
 
 	<name>openHAB Add-ons :: Bundles :: Supla Binding</name>
 
