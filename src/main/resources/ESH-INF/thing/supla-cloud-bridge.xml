@@ -7,7 +7,7 @@
 	<bridge-type id="supla-cloud-bridge">
 		<label>Supla Cloud</label>
 		<description>
-			This bridge allows OpenHAB to connect via REST API to Supla Cloud.&lt;br /&gt;
+			This bridge allows OpenHAB to connect via REST API to Supla Cloud.
 			Please double check that you enabled REST API in your server config.
 		</description>
 
@@ -23,7 +23,7 @@
 				<label>OAuth Token</label>
 				<description>
 					<![CDATA[
-						OAuth token generated from <em>https://cloud.supla.org/integrations/tokens</em>.
+						OAuth token generated from <a href="https://cloud.supla.org/integrations/tokens">https://cloud.supla.org/integrations/tokens</a>.
 					]]></description>
 				<context>password</context>
 			</parameter>
@@ -38,6 +38,7 @@
 
 	<channel-group-type id="supla-cloud-info">
 		<label>Info</label>
+		<description>Basic information about Supla Cloud.</description>
 		<channels>
 			<channel id="address" typeId="address"/>
 			<channel id="api-version" typeId="api-version"/>
@@ -47,6 +48,7 @@
 
 	<channel-group-type id="supla-cloud-api-statistics-usage">
 		<label>API Statistics Usage</label>
+		<description>Statistics about API usage for Supla Cloud.</description>
 		<channels>
 			<channel id="api-limit" typeId="api-limit"/>
 			<channel id="api-remaining-limit" typeId="api-remaining-limit"/>
@@ -81,21 +83,25 @@
 	<channel-type id="api-version">
 		<item-type>String</item-type>
 		<label>API Version</label>
+		<description>API version needs to match Supla Cloud version</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="cloud-version">
 		<item-type>String</item-type>
 		<label>Cloud Version</label>
+		<description>API version needs to match Supla Cloud version</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="api-limit">
 		<item-type>Number</item-type>
 		<label>API Limit</label>
+		<description>Maximum number of request per second.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="api-remaining-limit">
 		<item-type>Number</item-type>
 		<label>API Remaining Limit</label>
+		<description>Number of API requests that can be done before reset date.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="api-reset-date">

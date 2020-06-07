@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="supla"
 						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+						  xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="server-bridge">
 		<label>Supla Server</label>
 		<description>
-			This is native Supla server that connects with devices.
+			This is native Supla server that allows devices to connect.
 		</description>
 
 		<channels>
@@ -24,6 +24,14 @@
 					&lt;em&gt;Server Access ID Password&lt;/em&gt;
 				</description>
 			</parameter-group>
+			<parameter-group name="emailIdLogin">
+				<label>Email Login</label>
+				<description>
+					If you want to authenticate your devices with email/password flow fill
+					&lt;strong&gt;both&lt;/strong&gt; &lt;em&gt;Email&lt;/em&gt; and
+					&lt;em&gt;Email Password&lt;/em&gt;
+				</description>
+			</parameter-group>
 			<parameter name="serverAccessId" type="integer" min="1" groupName="accessIdLogin">
 				<label>Server Access ID</label>
 				<description>
@@ -36,15 +44,6 @@
 					This is password required to register to your server.
 				</description>
 			</parameter>
-
-			<parameter-group name="emailIdLogin">
-				<label>Email Login</label>
-				<description>
-					If you want to authenticate your devices with email/password flow fill
-					&lt;strong&gt;both&lt;/strong&gt; &lt;em&gt;Email&lt;/em&gt; and
-					&lt;em&gt;Email Password&lt;/em&gt;
-				</description>
-			</parameter-group>
 			<parameter name="email" type="text" min="1" groupName="emailIdLogin">
 				<label>Email</label>
 				<description>

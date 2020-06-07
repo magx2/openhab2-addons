@@ -1,13 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="supla" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+				 xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+				 xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Supla Binding</name>
-	<description>This binding is able to create native server for Supla devices.
-		For more information visit &lt;a href="https://github.com/SUPLA/openhab2-addons"&gt;https://github.com/magx2/jSupla&lt;/a&gt;
-		To get familiar with Supla system visit &lt;a href="https://www.supla.org"&gt;https://www.supla.org&lt;/a&gt;
+	<description>
+		<![CDATA[
+			<p>
+				Building automation systems available on the market are usually very complex, closed and expensive. In many cases they
+				must be installed on the very early stages of house construction. SUPLA is simple, open and free of charge. It gives an
+				opportunity to build elements based on RaspberryPI, Arduino or ESP8266 platforms and then join them either through LAN
+				or WiFi. Through SUPLA you can, among others, control the lighting, switch on and off household appliances and media,
+				open and shut gates and doors, or control room temperature. All the above can be done with just touch of a finger. SUPLA
+				is available from any place on Earth if you just have a smartphone or tables available as well as Internet access. SUPLA
+				is developed based on an Open Software and Open Hardware . This way, you can also develop this project!
+			</p>
+			<h4>Supla Cloud</h4>
+			<p>
+				SUPLA-CLOUD is a central point joining the executive devices for indirect and direct operation of your household or
+				office appliances and other elements with client applications which you can install on your tablets and smartphones.
+				This software allows to operate, from one spot, the whole system infrastructure using any modern Internet browser. Server
+				access is free of charge. You can also set up your own independent server working within the Internet or home network
+				using system sources which you can download from GITHUB.
+			</p>
+			<p>
+				More info:
+				<ol>
+					<li>Supla main site: <a href="https://www.supla.org/">https://www.supla.org/</a></li>
+					<li>Supla Binding on Github: <a href="https://github.com/SUPLA/openhab2-addons">https://github.com/SUPLA/openhab2-addons</a>.</li>
+					<li>Forum thread about this binding (PL): <a href="https://forum.supla.org/viewtopic.php?f=24&t=4595">https://forum.supla.org/viewtopic.php?f=24&t=4595</a>.</li>
+					<li>English forum about Supla: <a href="https://en-forum.supla.org/viewforum.php?f=3">https://en-forum.supla.org/</a>.</li>
+				</ol>
+			</p>
+		]]>
 	</description>
-	<author>Martin Grzeslowski</author>
+	<author>Martin Grześlowski</author>
 
 </binding:binding>

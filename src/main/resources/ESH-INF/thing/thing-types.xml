@@ -11,7 +11,7 @@
 			<bridge-type-ref id="supla-cloud-bridge"/>
 		</supported-bridge-type-refs>
 		<label>Supla Device</label>
-		<description>Generic type for all Supla devices. Channels will be provided by device at runtime</description>
+		<description>Generic type for all Supla devices. Channels will be provided by device at runtime.</description>
 		<!-- Note: Channels will be discovered at runtime -->
 		<representation-property>Supla-device-guid</representation-property>
 		<config-description>
@@ -30,21 +30,21 @@
 	<channel-type id="light-channel">
 		<item-type>Switch</item-type>
 		<label>Light switch</label>
-		<description>Allows you to turn light ON/OFF</description>
+		<description>Allows you to turn light ON/OFF.</description>
 		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="switch-channel">
 		<item-type>Switch</item-type>
 		<label>ON/OFF switch</label>
-		<description>Allows you to turn thing ON/OFF</description>
+		<description>Allows you to turn thing ON/OFF.</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="switch-channel-ro">
 		<item-type>Switch</item-type>
 		<label>Read only ON/OFF switch</label>
-		<description>Gives you information if channel is ON or OFF</description>
+		<description>Gives you information if channel is ON or OFF.</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -52,7 +52,7 @@
 	<channel-type id="decimal-channel">
 		<item-type>Number</item-type>
 		<label>Decimal value</label>
-		<category>This channel represents plain decimal value</category>
+		<category>This channel represents plain decimal value.</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -65,12 +65,12 @@
 	<channel-type id="rgb-channel">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<description>Pick desired color</description>
+		<description>Pick desired color.</description>
 	</channel-type>
 
 	<channel-type id="roller-shutter-channel">
 		<item-type>Rollershutter</item-type>
-		<label>Roller shutter</label>
+		<label>Roller shutter.</label>
 	</channel-type>
 
 	<channel-type id="temperature-channel">
