@@ -27,7 +27,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.units.indriya.unit.Units;
 
 import javax.measure.quantity.Mass;
 import java.math.BigDecimal;
@@ -47,13 +46,12 @@ public class FilamentDeviceHandler extends BaseThingHandler {
 
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
     private static final Logger logger = LoggerFactory.getLogger(FilamentDeviceHandler.class);
-    private static final QuantityType<Mass> DEFAULT_FILAMENT_MASS = new QuantityType<>(1, Units.KILOGRAM);
     private final WarehouseDb db;
 
     private @Nullable String color;
     private @Nullable FilamentType type;
     private @Nullable LocalDate dateOpened;
-    private @Nullable String photo;
+    private @Nullable QuantityType<Mass> initialWeight;
     private int nozzleTemperature;
 
     public FilamentDeviceHandler(Thing thing, WarehouseDb db) {
@@ -93,7 +91,8 @@ public class FilamentDeviceHandler extends BaseThingHandler {
             edit.put("dateOpened", FORMATTER.format(dateOpened));
             updateConfiguration(edit);
         }
-        photo = (String) config.get("photo");
+        var iw = ((BigDecimal) config.get("initialWeight")).doubleValue();
+        initialWeight = new QuantityType<>(iw, DEFAULT_FILAMENT_MASS_UNIT);
         BigDecimal configuredNozzleTemperature = (BigDecimal) config.get("nozzleTemperature");
         if (configuredNozzleTemperature != null && configuredNozzleTemperature.intValue() > 0) {
             this.nozzleTemperature = configuredNozzleTemperature.intValue();
@@ -124,7 +123,7 @@ public class FilamentDeviceHandler extends BaseThingHandler {
     }
 
     private void refreshWeight(ChannelUID channelUID) {
-        var weight = db.loadMass(channelUID).orElse(DEFAULT_FILAMENT_MASS);
+        var weight = db.loadMass(channelUID).orElse(initialWeight);
         updateState(channelUID, requireNonNull(weight));
     }
 

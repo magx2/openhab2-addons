@@ -37,9 +37,10 @@
 				<label>Date Opened</label>
 				<description>The date and time the filament was opened.</description>
 			</parameter>
-			<parameter name="photo" type="text" required="false">
-				<label>Photo</label>
-				<description>URL to filament's image.</description>
+			<parameter name="initialWeight" type="integer" required="true" min="1" unit="g">
+				<label>Initial Weight</label>
+				<description>Initial weight of the filament spool in grams.</description>
+				<default>1000</default>
 			</parameter>
 			<parameter name="nozzleTemperature" type="integer" required="false" min="1" unit="Cel">
 				<label>Preferred Nozzle Temperature (°C)</label>
