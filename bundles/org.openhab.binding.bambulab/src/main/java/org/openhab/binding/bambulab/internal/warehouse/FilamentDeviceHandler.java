@@ -28,7 +28,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,13 +139,16 @@ public class FilamentDeviceHandler extends BaseThingHandler {
 
     public void loadFilamentToExternalSpool(ThingUID printerUid) {
         var printerThing = thingRegistry.get(printerUid);
-        if (printerThing == null //
-                || !PRINTER_THING_TYPE.equals(printerThing.getThingTypeUID())) {
-            logger.warn("Given UID {} is not a Bambu printer", printerUid);
+        if (printerThing == null) {
+            logger.warn("Thing not found for printer {}", printerUid);
+            return;
+        }
+        if (!PRINTER_THING_TYPE.equals(printerThing.getThingTypeUID())) {
+            logger.warn("Given UID {} is not a Bambu printer, it's {}", printerUid, printerThing.getThingTypeUID());
             return;
         }
         var handler = (PrinterHandler) printerThing.getHandler();
-        if(handler==null){
+        if (handler == null) {
             logger.warn("Printer {} handler is null!", printerUid);
             return;
         }
