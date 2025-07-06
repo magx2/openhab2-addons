@@ -21,6 +21,10 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.units.indriya.unit.Units;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Mass;
 
 /**
  * The {@link BambuLabBindingConstants} class defines common constants, which are
@@ -231,4 +235,10 @@ public class BambuLabBindingConstants {
             }
         }
     }
+
+    public static final class FilamentChannel {
+        public static final String WEIGHT_CHANNEL = "weight";
+    }
+
+    public static final Unit<Mass> DEFAULT_FILAMENT_MASS_UNIT= Units.GRAM;
 }

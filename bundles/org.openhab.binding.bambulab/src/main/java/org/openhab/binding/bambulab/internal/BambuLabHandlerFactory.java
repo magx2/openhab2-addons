@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bambulab.internal.warehouse.FilamentDeviceHandler;
+import org.openhab.binding.bambulab.internal.warehouse.WarehouseDb;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -57,7 +58,7 @@ public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (FILAMENT_THING_TYPE.equals(thingTypeUID)) {
-            return new FilamentDeviceHandler(thing);
+            return new FilamentDeviceHandler(thing, WarehouseDb.INSTANCE);
         }
 
         return null;
