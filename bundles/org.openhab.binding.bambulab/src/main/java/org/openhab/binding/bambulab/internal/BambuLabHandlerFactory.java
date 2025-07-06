@@ -22,11 +22,14 @@ import org.openhab.binding.bambulab.internal.warehouse.FilamentDeviceHandler;
 import org.openhab.binding.bambulab.internal.warehouse.WarehouseDb;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link BambuLabHandlerFactory} is responsible for creating things and thing
@@ -39,6 +42,12 @@ import org.osgi.service.component.annotations.Component;
 public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PRINTER_THING_TYPE, AMS_THING_TYPE, FILAMENT_THING_TYPE);
+    private final ThingRegistry thingRegistry;
+
+    @Activate
+    public BambuLabHandlerFactory(@Reference ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,7 +67,7 @@ public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (FILAMENT_THING_TYPE.equals(thingTypeUID)) {
-            return new FilamentDeviceHandler(thing, WarehouseDb.INSTANCE);
+            return new FilamentDeviceHandler(thing, WarehouseDb.INSTANCE, thingRegistry);
         }
 
         return null;

@@ -15,16 +15,20 @@ package org.openhab.binding.bambulab.internal.warehouse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bambulab.internal.InitializationException;
+import org.openhab.binding.bambulab.internal.PrinterHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +38,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.DEFAULT_FILAMENT_MASS_UNIT;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.FilamentChannel.WEIGHT_CHANNEL;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 
@@ -47,6 +51,7 @@ public class FilamentDeviceHandler extends BaseThingHandler {
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
     private static final Logger logger = LoggerFactory.getLogger(FilamentDeviceHandler.class);
     private final WarehouseDb db;
+    private final ThingRegistry thingRegistry;
 
     private @Nullable String color;
     private @Nullable FilamentType type;
@@ -54,9 +59,10 @@ public class FilamentDeviceHandler extends BaseThingHandler {
     private @Nullable QuantityType<Mass> initialWeight;
     private int nozzleTemperature;
 
-    public FilamentDeviceHandler(Thing thing, WarehouseDb db) {
+    public FilamentDeviceHandler(Thing thing, WarehouseDb db, ThingRegistry thingRegistry) {
         super(thing);
         this.db = db;
+        this.thingRegistry = thingRegistry;
         db.initializeFilament(thing.getUID());
     }
 
@@ -116,7 +122,7 @@ public class FilamentDeviceHandler extends BaseThingHandler {
             switch (command) {
                 case RefreshType rt -> refreshWeight(channelUID);
                 case QuantityType<?> qt -> setWeight(channelUID, qt);
-                case DecimalType dt -> setWeight(channelUID, new QuantityType<>(dt,DEFAULT_FILAMENT_MASS_UNIT ));
+                case DecimalType dt -> setWeight(channelUID, new QuantityType<>(dt, DEFAULT_FILAMENT_MASS_UNIT));
                 default -> logger.debug("Unexpected value: {}", command);
             }
         }
@@ -128,7 +134,22 @@ public class FilamentDeviceHandler extends BaseThingHandler {
     }
 
     private void setWeight(ChannelUID channelUID, QuantityType<?> qt) {
-        db.saveMass(channelUID,  qt);
+        db.saveMass(channelUID, qt);
         updateState(channelUID, qt);
+    }
+
+    public void loadFilamentToExternalSpool(ThingUID printerUid) {
+        var printerThing = thingRegistry.get(printerUid);
+        if (printerThing == null //
+                || !PRINTER_THING_TYPE.equals(printerThing.getThingTypeUID())) {
+            logger.warn("Given UID {} is not a Bambu printer", printerUid);
+            return;
+        }
+        var handler = (PrinterHandler) printerThing.getHandler();
+        if(handler==null){
+            logger.warn("Printer {} handler is null!", printerUid);
+            return;
+        }
+//        handler.sendCommand();
     }
 }
