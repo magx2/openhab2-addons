@@ -39,6 +39,7 @@ public class BambuLabBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
     public static final ThingTypeUID AMS_THING_TYPE = new ThingTypeUID(BINDING_ID, "ams-device");
+    public static final ThingTypeUID FILAMENT_THING_TYPE = new ThingTypeUID(BINDING_ID, "filament");
 
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     public enum PrinterChannel {

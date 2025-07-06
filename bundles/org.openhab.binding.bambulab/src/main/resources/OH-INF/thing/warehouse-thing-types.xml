@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bambulab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="filament">
+		<label>Filament</label>
+		<description><!-- TODO(gemini): add description -->
+		</description>
+
+		<channels>
+			<channel id="weight" typeId="filament_weight"/>
+		</channels>
+		<config-description>
+			<parameter name="color" type="text" required="true">
+				<label>Color</label>
+				<description>The color of the filament.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>The type of the filament.</description>
+				<options>
+					<option value="PLA">PLA</option>
+					<option value="PETG">PETG</option>
+					<option value="ABS">ABS</option>
+					<option value="ASA">ASA</option>
+					<option value="Nylon">Nylon</option>
+					<option value="PC">PC</option>
+					<option value="TPU">TPU</option>
+					<option value="PVA">PVA</option>
+					<option value="HIPS">HIPS</option>
+					<option value="Other">Other</option>
+				</options>
+			</parameter>
+			<parameter name="dateOpened" type="text" required="false" pattern="(\d){2,4}-(\d){1,2}-(\d){1,2}">
+				<label>Date Opened</label>
+				<description>The date and time the filament was opened.</description>
+			</parameter>
+			<parameter name="photo" type="text" required="false">
+				<label>Photo</label>
+				<description>URL to filament's image.</description>
+			</parameter>
+			<parameter name="nozzleTemperature" type="integer" required="false" min="1" unit="Cel">
+				<label>Preferred Nozzle Temperature (°C)</label>
+				<description>The preferred nozzle temperature for this filament.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
